@@ -22,6 +22,8 @@ import pongo.Origin;
 import perdita.Update;
 import perdita.Msg;
 
+import jasper.Strength;
+
 class Main {
     public static function main() : Void
     {

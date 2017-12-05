@@ -4,3 +4,6 @@
 [submodule "src/Libraries/Pongo"]
 	path = src/Libraries/Pongo
 	url = https://github.com/PongoEngine/Pongo
+[submodule "src/Libraries/jasper"]
+	path = src/Libraries/jasper
+	url = https://github.com/PongoEngine/jasper
