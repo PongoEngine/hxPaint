@@ -14,9 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package pongui;
+package perdita;
 
-class Model
+import pongo.Origin;
+import pongo.scene.Scene;
+
+import perdita.Model;
+import perdita.Msg;
+import perdita.factory.Gui;
+
+class Update
 {
-
+    public static function update(msg :Msg, origin :Origin<Msg, Model>, scene :Scene<Msg, Model>, model :Model) : Void
+    {
+        switch msg {
+            case INIT_GUI:
+                Gui.build(origin,scene,model);
+        }
+    }
 }

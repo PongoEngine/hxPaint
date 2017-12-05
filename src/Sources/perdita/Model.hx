@@ -14,17 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package pongui;
+package perdita;
 
-import pongo.Origin;
-import pongo.scene.Scene;
-
-import pongui.Model;
-import pongui.Msg;
-
-class Update
+class Model
 {
-    public static function update(msg :Msg, origin :Origin<Msg, Model>, scene :Scene<Msg, Model>, model :Model) : Void
-    {
-    }
+
 }

@@ -14,20 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package;
+package perdita;
 
-import kha.System;
-
-import pongo.Origin;
-import perdita.Update;
-import perdita.Msg;
-
-class Main {
-    public static function main() : Void
-    {
-        System.init({title: "Perdita", width: 1366, height: 768}, function() {
-                var model = null;
-                new Origin(model, INIT_GUI, Update.update);
-        });
-    }
+enum Msg
+{
+    INIT_GUI;
 }

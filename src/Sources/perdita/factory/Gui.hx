@@ -14,9 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package pongui;
+package perdita.factory;
 
-enum Msg
+import pongo.Origin;
+import pongo.scene.Scene;
+
+import pongo.display.FillSprite;
+
+import perdita.Model;
+
+class Gui
 {
-    INIT_GUI;
+    public static function build(origin :Origin<Msg, Model>, scene :Scene<Msg, Model>, model :Model) : Void
+    {
+        scene.root.addEntity(new FillSprite(0xffff0000, 200, 200)
+            .setXY(40, 40));
+    }
 }

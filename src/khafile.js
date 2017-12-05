@@ -1,4 +1,4 @@
-let project = new Project('Finger Trap');
+let project = new Project('Perdita');
 
 project.addLibrary("Pongo");
 project.addSources('Sources');
