@@ -1,0 +1,6 @@
+[submodule "src/Kha"]
+	path = src/Kha
+	url = https://github.com/KTXSoftware/Kha
+[submodule "src/Libraries/Pongo"]
+	path = src/Libraries/Pongo
+	url = https://github.com/PongoEngine/Pongo

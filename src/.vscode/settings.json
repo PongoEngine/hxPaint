@@ -1,0 +1,23 @@
+{
+    "codedox": {
+        "fileheader": {
+            "templates": {
+                "*": [
+                    "${license_gpl_3_0}"
+                ]
+            },
+            "params": {
+                "haxe": {
+                    "company": "PongoEngine"
+                },
+                "json": {
+                    "company": "PongoEngine"
+                }
+            }
+        }
+    },
+    "haxe.displayConfigurations": [
+        ["--cwd", "build", "project-html5.hxml"]
+    ],
+    "haxe.displayPort": 6000
+}

@@ -1,0 +1,8 @@
+
+{
+	"version": "0.1.0",
+	"command": "node",
+	"args": ["Kha/make", "html5", "--debug"],
+	"isShellCommand": true,
+	"showOutput": "silent"
+}
