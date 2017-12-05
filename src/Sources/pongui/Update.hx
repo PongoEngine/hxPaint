@@ -14,20 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package;
-
-import kha.System;
+package pongui;
 
 import pongo.Origin;
-import pongui.Update;
+import pongo.scene.Scene;
+
+import pongui.Model;
 import pongui.Msg;
 
-class Main {
-    public static function main() : Void
+class Update
+{
+    public static function update(msg :Msg, origin :Origin<Msg, Model>, scene :Scene<Msg, Model>, model :Model) : Void
     {
-        System.init({title: "PonGUI", width: 1366, height: 768}, function() {
-                var model = null;
-                new Origin(model, INIT_GUI, Update.update);
-        });
     }
 }
