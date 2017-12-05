@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 PongoEngine
+ * Copyright (c) 2017 Jeremy Meltingtallow
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,5 +18,5 @@ package pongui;
 
 class Model
 {
-    
+
 }
