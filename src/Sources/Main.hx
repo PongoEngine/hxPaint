@@ -22,7 +22,40 @@ import pongo.Origin;
 import perdita.Update;
 import perdita.Msg;
 
+import jasper.C;
+import jasper.EditInfo;
+import jasper.Expression;
+import jasper.Hashable;
+import jasper.HashSet;
+import jasper.HashTable;
+import jasper.Point;
+import jasper.SimplexSolver;
 import jasper.Strength;
+import jasper.SymbolicWeight;
+import jasper.Tableau;
+
+import jasper.constraint.AbstractConstraint;
+import jasper.constraint.Constraint;
+import jasper.constraint.EditConstraint;
+import jasper.constraint.Equation;
+import jasper.constraint.Inequality;
+import jasper.constraint.StayConstraint;
+
+import jasper.error.ConstraintNotFound;
+import jasper.error.Error;
+import jasper.error.InternalError;
+import jasper.error.NonExpression;
+import jasper.error.NotEnoughStays;
+import jasper.error.RequiredFailure;
+import jasper.error.TooDifficult;
+
+import jasper.variable.AbstractValue;
+import jasper.variable.AbstractVariable;
+import jasper.variable.AbstractVariableArgs;
+import jasper.variable.DummyVariable;
+import jasper.variable.ObjectiveVariable;
+import jasper.variable.SlackVariable;
+import jasper.variable.Variable;
 
 class Main {
     public static function main() : Void
