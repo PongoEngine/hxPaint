@@ -18,6 +18,7 @@ package perdita.factory;
 
 import pongo.Origin;
 import pongo.scene.Scene;
+import jasper.*;
 
 import pongo.display.FillSprite;
 
@@ -27,7 +28,34 @@ class Gui
 {
     public static function build(origin :Origin<Msg, Model>, scene :Scene<Msg, Model>, model :Model) : Void
     {
-        scene.root.addEntity(new FillSprite(0xffff0000, 200, 200)
-            .setXY(40, 40));
+        var a_x1 = new Variable("a_x1");
+        var a_x2 = new Variable("a_x2");
+        var a_y1 = new Variable("a_y1");
+        var a_y2 = new Variable("a_y2");
+
+        var b_x1 = new Variable("b_x1");
+        var b_x2 = new Variable("b_x2");
+        var b_y1 = new Variable("b_y1");
+        var b_y2 = new Variable("b_y2");
+
+        var solver = new Solver();
+
+        solver.addConstraint(a_x1 == 50);
+        solver.addConstraint(a_x2 == a_x1 + 300);
+        solver.addConstraint(a_y1 == 50);
+        solver.addConstraint(a_y2 == a_y1 + 200);
+
+        solver.addConstraint(b_x1 == a_x1);
+        solver.addConstraint(b_x2 == b_x1 + 200);
+        solver.addConstraint(b_y1 == a_y2 + 10);
+        solver.addConstraint(b_y2 == b_y1 + 100);
+
+        solver.updateVariables();
+
+        scene.root.addEntity(new FillSprite(0xffff0000, a_x2.m_value - a_x1.m_value, a_y2.m_value - a_y1.m_value)
+            .setXY(a_x1.m_value, a_y1.m_value));
+
+        scene.root.addEntity(new FillSprite(0xff00ff00, b_x2.m_value - b_x1.m_value, b_y2.m_value - b_y1.m_value)
+            .setXY(b_x1.m_value, b_y1.m_value));
     }
 }
