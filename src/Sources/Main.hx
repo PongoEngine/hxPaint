@@ -17,16 +17,17 @@
 package;
 
 import kha.System;
+import kha.Assets;
 
 import jasper.Solver;
 import perdita.element.Box;
 import perdita.element.FillBox;
+import perdita.element.TextBox;
 import perdita.Window;
 import perdita.Style;
 
 class Main 
 {
-
     public static function init() : Window
     {
         var mainWindow = new Window(0xffaaaaaa, 800, 600);
@@ -62,8 +63,8 @@ class Main
             .addChild(new FillBox(0xffaa44aa, childStyle))
             .addChild(new FillBox(0xffaa44aa, childStyle)
                 .addChild(new FillBox(0x11000000, childStyle2))
-                .addChild(new FillBox(0x33000000, childStyle2))
-                .addChild(new FillBox(0x55000000, childStyle2))
+                .addChild(new TextBox("This is an untested example, with lots of things removed (eg. back buffering). It demonstrates the main steps:", childStyle2))
+                .addChild(new TextBox("This is an untested example, with lots of things removed (eg. back buffering). It demonstrates the main steps:", childStyle2))
                 .addChild(new FillBox(0x77000000, childStyle2))));
 
         return mainWindow;
@@ -72,18 +73,29 @@ class Main
     public static function main() : Void
     {
         System.init({title: "Perdita", width: 1366, height: 768}, function() {
-            var mainWindow = init();
-            var solver = new Solver();
+            var initialized = false;
+            Assets.loadEverything(function() {
+                var font = Assets.fonts.Roboto_Black;
 
-            addToSolver(mainWindow._root, solver);
+                var mainWindow = init();
+                var solver = new Solver();
 
-            solver.updateVariables();
+                addToSolver(mainWindow._root, solver);
 
-            System.notifyOnRender(function(framebuffer) {
-                framebuffer.g2.begin(true, 0xffffffff);
-                mainWindow.render(framebuffer);
-                framebuffer.g2.end();
+                solver.updateVariables();
+
+                System.notifyOnRender(function(framebuffer) {
+                    if(!initialized) {
+                        framebuffer.g2.font = font;
+                        framebuffer.g2.fontSize = 18;
+                        initialized = true;
+                    }
+                    framebuffer.g2.begin(true, 0xffffffff);
+                    mainWindow.render(framebuffer);
+                    framebuffer.g2.end();
+                });
             });
+            
         });
     }
 
