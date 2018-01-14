@@ -15,13 +15,13 @@ class Window
 
     @:final public function addBox(child :Box) : Window
     {
-        _root.addBox(child);
+        _root.addChild(child);
         return this;
     }
  
     public function render(graphics :kha.graphics2.Graphics) : Void
     {
-        _root.render(graphics);
+        Box.render(_root, graphics);
     }
 
     public var _root :Box;

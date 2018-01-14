@@ -30,14 +30,34 @@ class Main
     {
         var mainWindow = new Window(0xff00ff00, 800, 600);
 
-        var leftChildStyle = new Style();
-        leftChildStyle.width = PERCENT(.75);
-        leftChildStyle.height = PERCENT(0.5);
-        leftChildStyle.marginTop = PX(10);
-        leftChildStyle.marginLeft = PX(10);
+        var baseStyle = new Style();
+        baseStyle.width = CALC(function(variable) {
+            return (variable * 1) - 0;
+        });
+        baseStyle.height = CALC(function(variable) {
+            return (variable * 1) - 0;
+        });
+        // baseStyle.marginTop = PX(10);
+        // baseStyle.marginLeft = PX(10);
+        var baseBox = new Box(0xffff00ff, baseStyle);
 
-        mainWindow.addBox(new Box(0xffff0000, leftChildStyle)
-            .addBox(new Box(0xff0000ff, leftChildStyle)));
+        //-----------
+
+        var childStyle = new Style();
+        childStyle.width = CALC(function(variable) {
+            return (variable * 1) - 0;
+        });
+        childStyle.height = CALC(function(variable) {
+            return (variable * 0.5) - 0;
+        });
+        // childStyle.marginTop = PX(10);
+        // childStyle.marginLeft = PX(10);
+        var leftChildBox = new Box(0xffff0000, childStyle);
+        var rightChildBox = new Box(0xfffff0ff, childStyle);
+
+        mainWindow.addBox(baseBox
+            .addChild(leftChildBox)
+            .addChild(rightChildBox));
 
         return mainWindow;
     }
@@ -62,13 +82,15 @@ class Main
 
     private static function addToSolver(child :Box, solver :Solver) : Void
     {
-        trace(child.color);
         for(constraint in child._constraints) {
             solver.addConstraint(constraint);
         }
 
-        for(child in child._children) {
-            addToSolver(child, solver);
+        var p = child.firstChild;
+        while (p != null) {
+            var next = p.next;
+            addToSolver(p, solver);
+            p = next;
         }
     }
 }
