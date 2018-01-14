@@ -3,6 +3,7 @@ package perdita;
 import jasper.Variable;
 import jasper.Constraint;
 import perdita.Style;
+import perdita.Direction;
 
 @:allow(perdita.Window)
 @:final class Box
@@ -61,27 +62,18 @@ import perdita.Style;
             case CALC(expressionFn): child._constraints.push(child._height == expressionFn(_height));
         }
 
-        child._constraints.push(child._x == _x);
+        if(child.prev == null || child.style.direction == VERTICAL) {
+            child._constraints.push(child._x == _x);
+        }
+        else {
+            child._constraints.push(child._x == (child.prev._x + child.prev._width));
+        }
 
-        switch child.style.marginTop {
-            case NONE: {
-                if(child.prev == null) {
-                    child._constraints.push(child._y == _y);
-                }
-                else {
-                    child._constraints.push(child._y == (child.prev._y + child.prev._height));
-                }
-            }
-            case PX(val): {
-                if(child.prev == null) {
-                    child._constraints.push(child._y == _y + val);
-                }
-                else {
-                    child._constraints.push(child._y == (child.prev._y + child.prev._height) + val);
-                }
-            }
-            case PERCENT(val):
-            case CALC(expressionFn):
+        if(child.prev == null || child.style.direction == HORIZONTAL) {
+            child._constraints.push(child._y == _y);
+        }
+        else {
+            child._constraints.push(child._y == (child.prev._y + child.prev._height));
         }
     }
 

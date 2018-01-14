@@ -31,30 +31,39 @@ class Main
         var mainWindow = new Window(0xffaaaaaa, 800, 600);
 
         var baseStyle = new Style();
-        baseStyle.width = CALC(function(variable) {
-            return (variable * 1) - 0;
-        });
-        baseStyle.height = CALC(function(variable) {
-            return (variable * 1) - 0;
-        });
+        baseStyle.width = PERCENT(1);
+        baseStyle.height = PERCENT(1);
         var baseBox = new Box(0xffaaaaaa, baseStyle);
 
         //-----------
 
         var childStyle = new Style();
+        childStyle.direction = HORIZONTAL;
         childStyle.width = CALC(function(variable) {
-            return (variable*1) - 0;
+            return (variable/4) - 10;
         });
-        childStyle.height = CALC(function(variable) {
-            return (variable/4) - 20;
-        });
-        childStyle.marginTop = PX(20);
+        childStyle.height = PERCENT(0.7);
+
+        //-----------
+
+        var childStyle2 = new Style();
+        childStyle2.direction = VERTICAL;
+        childStyle2.width = PERCENT(1);
+        childStyle2.height = PERCENT(0.25);
 
         mainWindow.addBox(baseBox
             .addChild(new Box(0xff444444, childStyle))
-            .addChild(new Box(0xff222222, childStyle))
+            .addChild(new Box(0xff444444, childStyle)
+                .addChild(new Box(0x11000000, childStyle2))
+                .addChild(new Box(0x33000000, childStyle2))
+                .addChild(new Box(0x55000000, childStyle2))
+                .addChild(new Box(0x77000000, childStyle2)))
             .addChild(new Box(0xffaa44aa, childStyle))
-            .addChild(new Box(0xff224444, childStyle)));
+            .addChild(new Box(0xffaa44aa, childStyle)
+                .addChild(new Box(0x11000000, childStyle2))
+                .addChild(new Box(0x33000000, childStyle2))
+                .addChild(new Box(0x55000000, childStyle2))
+                .addChild(new Box(0x77000000, childStyle2))));
 
         return mainWindow;
     }

@@ -7,13 +7,15 @@ class Style
     // public var paddingBottom :ValueConstraint;
     // public var paddingLeft :ValueConstraint;
 
-    public var marginTop :ValueConstraint;
+    // public var marginTop :ValueConstraint;
     // public var marginRight :ValueConstraint;
     // public var marginBottom :ValueConstraint;
     // public var marginLeft :ValueConstraint;
 
     public var width :ValueConstraint;
     public var height :ValueConstraint;
+
+    public var direction :Direction;
 
     public function new() : Void
     {
@@ -22,13 +24,15 @@ class Style
         // paddingBottom = NONE;
         // paddingLeft = NONE;
 
-        marginTop = NONE;
+        // marginTop = NONE;
         // marginRight = NONE;
         // marginBottom = NONE;
         // marginLeft = NONE;
 
         width = NONE;
         height = NONE;
+        
+        direction = VERTICAL;
     }
 
     public function updateStyle(fn :Style -> Void) : Style
