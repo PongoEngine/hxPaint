@@ -57,7 +57,7 @@ class Main
             .addChild(new FillBox(0xff444444, childStyle))
             .addChild(new FillBox(0xff444444, childStyle)
                 .addChild(new FillBox(0x11000000, childStyle2))
-                .addChild(new FillBox(0x33000000, childStyle2))
+                .addChild(new TextBox("This is an untested example, with lots of things removed (eg. back buffering). It demonstrates the main steps:", childStyle2))
                 .addChild(new FillBox(0x55000000, childStyle2))
                 .addChild(new FillBox(0x77000000, childStyle2)))
             .addChild(new FillBox(0xffaa44aa, childStyle))
