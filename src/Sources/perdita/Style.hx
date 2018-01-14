@@ -19,18 +19,18 @@ class Style
 
     public function new() : Void
     {
-        // paddingTop = NONE;
-        // paddingRight = NONE;
-        // paddingBottom = NONE;
-        // paddingLeft = NONE;
+        // paddingTop = INHERIT;
+        // paddingRight = INHERIT;
+        // paddingBottom = INHERIT;
+        // paddingLeft = INHERIT;
 
-        // marginTop = NONE;
-        // marginRight = NONE;
-        // marginBottom = NONE;
-        // marginLeft = NONE;
+        // marginTop = INHERIT;
+        // marginRight = INHERIT;
+        // marginBottom = INHERIT;
+        // marginLeft = INHERIT;
 
-        width = NONE;
-        height = NONE;
+        width = INHERIT;
+        height = INHERIT;
         
         direction = VERTICAL;
     }

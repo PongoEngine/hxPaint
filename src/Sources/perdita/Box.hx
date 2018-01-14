@@ -3,7 +3,6 @@ package perdita;
 import jasper.Variable;
 import jasper.Constraint;
 import perdita.Style;
-import perdita.Direction;
 
 @:allow(perdita.Window)
 @:final class Box
@@ -49,14 +48,14 @@ import perdita.Direction;
     public function setConstraints(child :Box) : Void
     {
         switch child.style.width {
-            case NONE:
+            case INHERIT:
             case PX(val): child._constraints.push(child._width == val);
             case PERCENT(val): child._constraints.push(child._width == val * _width);
             case CALC(expressionFn): child._constraints.push(child._width == expressionFn(_width));
         }
 
         switch child.style.height {
-            case NONE:
+            case INHERIT:
             case PX(val): child._constraints.push(child._height == val);
             case PERCENT(val): child._constraints.push(child._height == val * _height);
             case CALC(expressionFn): child._constraints.push(child._height == expressionFn(_height));

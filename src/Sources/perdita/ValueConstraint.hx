@@ -8,5 +8,5 @@ enum ValueConstraint
     PX(val :Float);
     PERCENT(val :Float);
     CALC(variable :Variable -> Expression);
-    NONE;
+    INHERIT;
 }
