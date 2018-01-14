@@ -9,9 +9,9 @@ import perdita.Style;
 {
     public var color :Int;
     public var style (default, null):Style;
-    public var parent (default, null) :Box = null;
     public var firstChild (default, null) :Box = null;
     public var next (default, null) :Box = null;
+    public var prev (default, null) :Box = null;
 
     public function new(color :Int, style :Style) : Void
     {
@@ -25,55 +25,24 @@ import perdita.Style;
         _constraints = [];
     }
 
-    public function addChild (child :Box, append :Bool=true) :Box
+    public function addChild (child :Box) :Box
     {
-        if (child.parent != null) {
-            child.parent.removeChild(child);
+        var tail = null, p = firstChild;
+
+        while (p != null) {
+            tail = p;
+            p = p.next;
         }
-        child.parent = this;
 
-        if (append) {
-            // Append it to the child list
-            var tail = null, p = firstChild;
-            while (p != null) {
-                tail = p;
-                p = p.next;
-            }
-            if (tail != null) {
-                tail.next = child;
-            } else {
-                firstChild = child;
-            }
-
+        if (tail != null) {
+            tail.next = child;
+            child.prev = tail;
         } else {
-            // Prepend it to the child list
-            child.next = firstChild;
             firstChild = child;
         }
 
         setConstraints(child);
         return this;
-    }
-
-    public function removeChild (entity :Box) : Void
-    {
-        var prev :Box = null, p = firstChild;
-        while (p != null) {
-            var next = p.next;
-            if (p == entity) {
-                // Splice out the entity
-                if (prev == null) {
-                    firstChild = next;
-                } else {
-                    prev.next = next;
-                }
-                p.parent = null;
-                p.next = null;
-                return;
-            }
-            prev = p;
-            p = next;
-        }
     }
 
     public function setConstraints(child :Box) : Void
@@ -90,6 +59,29 @@ import perdita.Style;
             case PX(val): child._constraints.push(child._height == val);
             case PERCENT(val): child._constraints.push(child._height == val * _height);
             case CALC(expressionFn): child._constraints.push(child._height == expressionFn(_height));
+        }
+
+        child._constraints.push(child._x == _x);
+
+        switch child.style.marginTop {
+            case NONE: {
+                if(child.prev == null) {
+                    child._constraints.push(child._y == _y);
+                }
+                else {
+                    child._constraints.push(child._y == (child.prev._y + child.prev._height));
+                }
+            }
+            case PX(val): {
+                if(child.prev == null) {
+                    child._constraints.push(child._y == _y + val);
+                }
+                else {
+                    child._constraints.push(child._y == (child.prev._y + child.prev._height) + val);
+                }
+            }
+            case PERCENT(val):
+            case CALC(expressionFn):
         }
     }
 

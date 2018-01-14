@@ -28,7 +28,7 @@ class Main
 
     public static function init() : Window
     {
-        var mainWindow = new Window(0xff00ff00, 800, 600);
+        var mainWindow = new Window(0xffaaaaaa, 800, 600);
 
         var baseStyle = new Style();
         baseStyle.width = CALC(function(variable) {
@@ -37,27 +37,24 @@ class Main
         baseStyle.height = CALC(function(variable) {
             return (variable * 1) - 0;
         });
-        // baseStyle.marginTop = PX(10);
-        // baseStyle.marginLeft = PX(10);
-        var baseBox = new Box(0xffff00ff, baseStyle);
+        var baseBox = new Box(0xffaaaaaa, baseStyle);
 
         //-----------
 
         var childStyle = new Style();
         childStyle.width = CALC(function(variable) {
-            return (variable * 1) - 0;
+            return (variable*1) - 0;
         });
         childStyle.height = CALC(function(variable) {
-            return (variable * 0.5) - 0;
+            return (variable/4) - 20;
         });
-        // childStyle.marginTop = PX(10);
-        // childStyle.marginLeft = PX(10);
-        var leftChildBox = new Box(0xffff0000, childStyle);
-        var rightChildBox = new Box(0xfffff0ff, childStyle);
+        childStyle.marginTop = PX(20);
 
         mainWindow.addBox(baseBox
-            .addChild(leftChildBox)
-            .addChild(rightChildBox));
+            .addChild(new Box(0xff444444, childStyle))
+            .addChild(new Box(0xff222222, childStyle))
+            .addChild(new Box(0xffaa44aa, childStyle))
+            .addChild(new Box(0xff224444, childStyle)));
 
         return mainWindow;
     }

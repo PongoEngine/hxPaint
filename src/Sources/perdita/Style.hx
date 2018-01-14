@@ -7,7 +7,7 @@ class Style
     // public var paddingBottom :ValueConstraint;
     // public var paddingLeft :ValueConstraint;
 
-    // public var marginTop :ValueConstraint;
+    public var marginTop :ValueConstraint;
     // public var marginRight :ValueConstraint;
     // public var marginBottom :ValueConstraint;
     // public var marginLeft :ValueConstraint;
@@ -22,7 +22,7 @@ class Style
         // paddingBottom = NONE;
         // paddingLeft = NONE;
 
-        // marginTop = NONE;
+        marginTop = NONE;
         // marginRight = NONE;
         // marginBottom = NONE;
         // marginLeft = NONE;
