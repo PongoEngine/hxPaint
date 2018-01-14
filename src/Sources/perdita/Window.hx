@@ -1,10 +1,12 @@
 package perdita;
 
+import perdita.element.Box;
+
 class Window
 {
     public function new(color :Int, width :Float, height :Float) : Void
     {
-        _root = new Box(color, new Style());
+        _root = new Box(new Style());
         _root._constraints = [
             _root._x == 0,
             _root._y == 0,
@@ -19,9 +21,9 @@ class Window
         return this;
     }
  
-    public function render(graphics :kha.graphics2.Graphics) : Void
+    public function render(framebuffer :kha.Framebuffer) : Void
     {
-        Box.render(_root, graphics);
+        Box.render(_root, framebuffer);
     }
 
     public var _root :Box;

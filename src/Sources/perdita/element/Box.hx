@@ -1,21 +1,18 @@
-package perdita;
+package perdita.element;
 
 import jasper.Variable;
 import jasper.Constraint;
 import perdita.Style;
 
-@:allow(perdita.Window)
-@:final class Box
+@:allow(perdita.Window)class Box
 {
-    public var color :Int;
     public var style (default, null):Style;
     public var firstChild (default, null) :Box = null;
     public var next (default, null) :Box = null;
     public var prev (default, null) :Box = null;
 
-    public function new(color :Int, style :Style) : Void
+    public function new(style :Style) : Void
     {
-        this.color = color;
         this.style = style;
 
         _x = new Variable();
@@ -76,15 +73,18 @@ import perdita.Style;
         }
     }
 
-    public static function render (box :Box, graphics :kha.graphics2.Graphics)
+    public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        graphics.color = box.color;
-        graphics.fillRect(box._x.m_value, box._y.m_value, box._width.m_value, box._height.m_value);
+    }
+
+    public static function render (box :Box, framebuffer :kha.Framebuffer)
+    {
+        box.draw(framebuffer);
 
         var p = box.firstChild;
         while (p != null) {
             var next = p.next;
-            render(p, graphics);
+            render(p, framebuffer);
             p = next;
         }
     }

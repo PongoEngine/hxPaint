@@ -19,7 +19,8 @@ package;
 import kha.System;
 
 import jasper.Solver;
-import perdita.Box;
+import perdita.element.Box;
+import perdita.element.FillBox;
 import perdita.Window;
 import perdita.Style;
 
@@ -33,7 +34,7 @@ class Main
         var baseStyle = new Style();
         baseStyle.width = PERCENT(1);
         baseStyle.height = PERCENT(1);
-        var baseBox = new Box(0xffaaaaaa, baseStyle);
+        var baseBox = new FillBox(0xffaaaaaa, baseStyle);
 
         //-----------
 
@@ -52,18 +53,18 @@ class Main
         childStyle2.height = PERCENT(0.25);
 
         mainWindow.addBox(baseBox
-            .addChild(new Box(0xff444444, childStyle))
-            .addChild(new Box(0xff444444, childStyle)
-                .addChild(new Box(0x11000000, childStyle2))
-                .addChild(new Box(0x33000000, childStyle2))
-                .addChild(new Box(0x55000000, childStyle2))
-                .addChild(new Box(0x77000000, childStyle2)))
-            .addChild(new Box(0xffaa44aa, childStyle))
-            .addChild(new Box(0xffaa44aa, childStyle)
-                .addChild(new Box(0x11000000, childStyle2))
-                .addChild(new Box(0x33000000, childStyle2))
-                .addChild(new Box(0x55000000, childStyle2))
-                .addChild(new Box(0x77000000, childStyle2))));
+            .addChild(new FillBox(0xff444444, childStyle))
+            .addChild(new FillBox(0xff444444, childStyle)
+                .addChild(new FillBox(0x11000000, childStyle2))
+                .addChild(new FillBox(0x33000000, childStyle2))
+                .addChild(new FillBox(0x55000000, childStyle2))
+                .addChild(new FillBox(0x77000000, childStyle2)))
+            .addChild(new FillBox(0xffaa44aa, childStyle))
+            .addChild(new FillBox(0xffaa44aa, childStyle)
+                .addChild(new FillBox(0x11000000, childStyle2))
+                .addChild(new FillBox(0x33000000, childStyle2))
+                .addChild(new FillBox(0x55000000, childStyle2))
+                .addChild(new FillBox(0x77000000, childStyle2))));
 
         return mainWindow;
     }
@@ -80,7 +81,7 @@ class Main
 
             System.notifyOnRender(function(framebuffer) {
                 framebuffer.g2.begin(true, 0xffffffff);
-                mainWindow.render(framebuffer.g2);
+                mainWindow.render(framebuffer);
                 framebuffer.g2.end();
             });
         });
