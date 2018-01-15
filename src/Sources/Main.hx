@@ -22,7 +22,6 @@ import kha.Assets;
 import jasper.Solver;
 import perdita.element.Box;
 import perdita.element.FillBox;
-import perdita.element.TextBox;
 import perdita.Window;
 import perdita.Style;
 
@@ -40,31 +39,29 @@ class Main
         //-----------
 
         var childStyle = new Style();
-        childStyle.direction = HORIZONTAL;
         childStyle.width = CALC(function(variable) {
-            return (variable/4) - 10;
+            return (variable/4) - 0;
         });
         childStyle.height = PERCENT(0.7);
 
         //-----------
 
         var childStyle2 = new Style();
-        childStyle2.direction = VERTICAL;
-        childStyle2.width = PERCENT(1);
+        childStyle2.width = PERCENT(0.5);
         childStyle2.height = PERCENT(0.25);
 
         mainWindow.addBox(baseBox
             .addChild(new FillBox(0xff444444, childStyle))
             .addChild(new FillBox(0xff444444, childStyle)
                 .addChild(new FillBox(0x11000000, childStyle2))
-                .addChild(new TextBox("This is an untested example, with lots of things removed (eg. back buffering). It demonstrates the main steps:", childStyle2))
+                .addChild(new FillBox(0x33000000, childStyle2))
                 .addChild(new FillBox(0x55000000, childStyle2))
                 .addChild(new FillBox(0x77000000, childStyle2)))
             .addChild(new FillBox(0xffaa44aa, childStyle))
             .addChild(new FillBox(0xffaa44aa, childStyle)
                 .addChild(new FillBox(0x11000000, childStyle2))
-                .addChild(new TextBox("This is an untested example, with lots of things removed (eg. back buffering). It demonstrates the main steps:", childStyle2))
-                .addChild(new TextBox("This is an untested example, with lots of things removed (eg. back buffering). It demonstrates the main steps:", childStyle2))
+                .addChild(new FillBox(0x33000000, childStyle2))
+                .addChild(new FillBox(0x55000000, childStyle2))
                 .addChild(new FillBox(0x77000000, childStyle2))));
 
         return mainWindow;
@@ -87,7 +84,7 @@ class Main
                 System.notifyOnRender(function(framebuffer) {
                     if(!initialized) {
                         framebuffer.g2.font = font;
-                        framebuffer.g2.fontSize = 18;
+                        framebuffer.g2.fontSize = 14;
                         initialized = true;
                     }
                     framebuffer.g2.begin(true, 0xffffffff);

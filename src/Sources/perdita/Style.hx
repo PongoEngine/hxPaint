@@ -15,8 +15,6 @@ class Style
     public var width :ValueConstraint;
     public var height :ValueConstraint;
 
-    public var direction :Direction;
-
     public function new() : Void
     {
         // paddingTop = INHERIT;
@@ -31,8 +29,6 @@ class Style
 
         width = INHERIT;
         height = INHERIT;
-        
-        direction = VERTICAL;
     }
 
     public function updateStyle(fn :Style -> Void) : Style

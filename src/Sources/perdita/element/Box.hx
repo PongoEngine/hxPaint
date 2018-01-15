@@ -58,19 +58,14 @@ import perdita.Style;
             case CALC(expressionFn): child._constraints.push(child._height == expressionFn(_height));
         }
 
-        if(child.prev == null || child.style.direction == VERTICAL) {
+        if(child.prev == null) {
             child._constraints.push(child._x == _x);
         }
         else {
             child._constraints.push(child._x == (child.prev._x + child.prev._width));
         }
 
-        if(child.prev == null || child.style.direction == HORIZONTAL) {
-            child._constraints.push(child._y == _y);
-        }
-        else {
-            child._constraints.push(child._y == (child.prev._y + child.prev._height));
-        }
+        child._constraints.push(child._y == _y);
     }
 
     public function draw(framebuffer :kha.Framebuffer) : Void
