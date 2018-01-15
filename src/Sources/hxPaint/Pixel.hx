@@ -37,7 +37,6 @@ class Pixel extends Box
         var x = index%this.rowLength;
         var y = Math.floor(index/this.rowLength);
         var pixelSize = parent.width.m_value/rowLength;
-        trace(pixelSize);
         this.x.m_value = parent.x.m_value + (x * pixelSize);
         this.y.m_value = parent.y.m_value + (y * pixelSize);
         this.width.m_value = pixelSize;

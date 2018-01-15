@@ -5,11 +5,15 @@ import jasper.Solver;
 class Button extends Box
 {
     public var color :Int;
+    public var name :String;
 
-    public function new(solver :Solver, color :Int) : Void
+    public function new(name :String, solver :Solver, color :Int) : Void
     {
         super(solver);
         this.color = color;
+        this.name = name;
+        _textAnchorX = Main.font.width(Main.fontSize, name)/2;
+        _textAnchorY = Main.font.height(Main.fontSize)/2;
     }
 
     override public function onAdded() : Void
@@ -32,5 +36,10 @@ class Button extends Box
     {
         framebuffer.g2.color = this.color;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
+        framebuffer.g2.color = 0xff000000;
+        framebuffer.g2.drawString(this.name, x.m_value + width.m_value/2 - _textAnchorX, y.m_value + height.m_value/2 - _textAnchorY);
     }
+
+    private var _textAnchorX :Float;
+    private var _textAnchorY :Float;
 }
