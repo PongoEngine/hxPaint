@@ -34,6 +34,8 @@ class Main
             var width = System.windowWidth();
             var height = System.windowHeight();
             var solver = new Solver();
+            var colorRef :ColorRef = {val: 0xff000000};
+            var mainPanel = new MainPanel(solver, colorRef, 0xffffffff);
 
             var window = new WindowBox(0xff444444, width, height, solver);
             window.addChild(new LeftPanel(solver, 0xffaaaaaa)
@@ -41,23 +43,23 @@ class Main
                 .addChild(new Button(solver, 0xff334455))
                 .addChild(new Button(solver, 0xff334455)));
             window.addChild(new RightPanel(solver, 0xffaaaaaa)
-                .addChild(new Color(solver, 0xff000000)) //black
-                .addChild(new Color(solver, 0xff808080)) //grey
-                .addChild(new Color(solver, 0xffC0C0C0)) //silver
-                .addChild(new Color(solver, 0xffFFFFFF)) //white
-                .addChild(new Color(solver, 0xff800000)) //maroon
-                .addChild(new Color(solver, 0xffFF0000)) //red
-                .addChild(new Color(solver, 0xff808000)) //olive
-                .addChild(new Color(solver, 0xffFFFF00)) //yellow
-                .addChild(new Color(solver, 0xff008000)) //green
-                .addChild(new Color(solver, 0xff00FF00)) //lime
-                .addChild(new Color(solver, 0xff008080)) //teal
-                .addChild(new Color(solver, 0xff00FFFF)) //aqua
-                .addChild(new Color(solver, 0xff000080)) //navy
-                .addChild(new Color(solver, 0xff0000FF)) //blue
-                .addChild(new Color(solver, 0xff800080)) //purple
-                .addChild(new Color(solver, 0xffFF00FF))); //fuchsia
-            window.addChild(new MainPanel(solver, 0xffffffff));
+                .addChild(new Color(solver, colorRef, 0xff000000)) //black
+                .addChild(new Color(solver, colorRef, 0xff808080)) //grey
+                .addChild(new Color(solver, colorRef, 0xffC0C0C0)) //silver
+                .addChild(new Color(solver, colorRef, 0xffFFFFFF)) //white
+                .addChild(new Color(solver, colorRef, 0xff800000)) //maroon
+                .addChild(new Color(solver, colorRef, 0xffFF0000)) //red
+                .addChild(new Color(solver, colorRef, 0xff808000)) //olive
+                .addChild(new Color(solver, colorRef, 0xffFFFF00)) //yellow
+                .addChild(new Color(solver, colorRef, 0xff008000)) //green
+                .addChild(new Color(solver, colorRef, 0xff00FF00)) //lime
+                .addChild(new Color(solver, colorRef, 0xff008080)) //teal
+                .addChild(new Color(solver, colorRef, 0xff00FFFF)) //aqua
+                .addChild(new Color(solver, colorRef, 0xff000080)) //navy
+                .addChild(new Color(solver, colorRef, 0xff0000FF)) //blue
+                .addChild(new Color(solver, colorRef, 0xff800080)) //purple
+                .addChild(new Color(solver, colorRef, 0xffFF00FF))); //fuchsia
+            window.addChild(mainPanel);
 
             window.solver.updateVariables();
 
@@ -67,24 +69,20 @@ class Main
                 framebuffer.g2.end();
             });
 
-            var _isDown :Bool = false;
             kha.input.Mouse.get().notify(function(b,x,y) {
-                _isDown = true;
-                Box.hitTest(window,x,y);
-                // window.solver.suggestValue(window.width, x);
-                // window.solver.suggestValue(window.height, y);
-                // window.solver.updateVariables();
+                Box.hitTest(window,x,y, DOWN);
             }, function(b,x,y) {
-                _isDown = false;
+                Box.hitTest(window,x,y, UP);
+                mainPanel.onUp(-1,-1);
             }, function(x,y,cX,cY) {
-                if(_isDown) {
-                    // window.solver.suggestValue(window.width, x);
-                    // window.solver.suggestValue(window.height, y);
-                    // window.solver.updateVariables();
-                }
-                
+                Box.hitTest(window,x,y, MOVE);
             }, function(c) {
             });
         });
     }
+}
+
+typedef ColorRef =
+{
+    var val :Int;
 }

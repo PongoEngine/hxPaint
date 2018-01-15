@@ -12,11 +12,6 @@ class Button extends Box
         this.color = color;
     }
 
-    override public function hit(x :Int, y :Int) : Void
-    {
-        trace("onButtonHit");
-    }
-
     override public function onAdded() : Void
     {
         solver.addConstraint(this.x == parent.x + 5);

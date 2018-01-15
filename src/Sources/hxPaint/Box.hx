@@ -33,7 +33,15 @@ class Box
     {
     }
 
-    public function hit(x :Int, y :Int) : Void
+    public function onUp(x :Int, y :Int) : Void
+    {
+    }
+
+    public function onDown(x :Int, y :Int) : Void
+    {
+    }
+
+    public function onMove(x :Int, y :Int) : Void
     {
     }
 
@@ -70,7 +78,7 @@ class Box
         }
     }
 
-    public static function hitTest (box :Box, x :Int, y :Int)
+    public static function hitTest (box :Box, x :Int, y :Int, type :HitType)
     {
         var minX = box.x.m_value;
         var maxX = box.width.m_value + minX;
@@ -80,13 +88,25 @@ class Box
             minX <= x && maxX >= x &&
             minY <= y && maxY >= y
         ) {
-            box.hit(x,y);
+            switch type {
+                case DOWN: box.onDown(x,y);
+                case UP: box.onUp(x,y);
+                case MOVE: box.onMove(x,y);
+            }
             var p = box.firstChild;
             while (p != null) {
                 var next = p.next;
-                hitTest(p, x, y);
+                hitTest(p, x, y, type);
                 p = next;
             }
         }
     }
+}
+
+@:enum
+abstract HitType(Int)
+{
+    var DOWN = 0;
+    var UP = 1;
+    var MOVE = 2;
 }
