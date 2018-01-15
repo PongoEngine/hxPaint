@@ -34,35 +34,18 @@ class Main
         var baseStyle = new Style();
         baseStyle.width = PERCENT(1);
         baseStyle.height = PERCENT(1);
-        var baseBox = new FillBox(0xffaaaaaa, baseStyle);
+        var baseBox = new FillBox("baseBox", 0xffaaaaaa, baseStyle);
 
         //-----------
 
         var childStyle = new Style();
-        childStyle.width = CALC(function(variable) {
-            return (variable/4) - 0;
-        });
-        childStyle.height = PERCENT(0.7);
+        childStyle.width = PERCENT(0.35);
+        childStyle.height = PERCENT(0.5);
 
-        //-----------
-
-        var childStyle2 = new Style();
-        childStyle2.width = PERCENT(0.5);
-        childStyle2.height = PERCENT(0.25);
-
-        mainWindow.addBox(baseBox
-            .addChild(new FillBox(0xff444444, childStyle))
-            .addChild(new FillBox(0xff444444, childStyle)
-                .addChild(new FillBox(0x11000000, childStyle2))
-                .addChild(new FillBox(0x33000000, childStyle2))
-                .addChild(new FillBox(0x55000000, childStyle2))
-                .addChild(new FillBox(0x77000000, childStyle2)))
-            .addChild(new FillBox(0xffaa44aa, childStyle))
-            .addChild(new FillBox(0xffaa44aa, childStyle)
-                .addChild(new FillBox(0x11000000, childStyle2))
-                .addChild(new FillBox(0x33000000, childStyle2))
-                .addChild(new FillBox(0x55000000, childStyle2))
-                .addChild(new FillBox(0x77000000, childStyle2))));
+        mainWindow
+            .addChild(new FillBox("red", 0xffff0000, childStyle))
+            .addChild(new FillBox("green", 0x5500ff00, childStyle))
+            .addChild(new FillBox("blue", 0xff0000ff, childStyle));
 
         return mainWindow;
     }
@@ -80,6 +63,7 @@ class Main
                 addToSolver(mainWindow._root, solver);
 
                 solver.updateVariables();
+                traceInfo(mainWindow._root);
 
                 System.notifyOnRender(function(framebuffer) {
                     if(!initialized) {
@@ -96,17 +80,28 @@ class Main
         });
     }
 
+    private static function traceInfo(child :Box) : Void
+    {
+        trace(child.name, child._x.m_value, child._y.m_value, child._width.m_value, child._height.m_value);
+        var p = child.firstChild;
+        while (p != null) {
+            var next = p.next;
+            traceInfo(p);
+            p = next;
+        }
+    }
+
     private static function addToSolver(child :Box, solver :Solver) : Void
     {
-        for(constraint in child._constraints) {
-            solver.addConstraint(constraint);
-        }
-
         var p = child.firstChild;
         while (p != null) {
             var next = p.next;
             addToSolver(p, solver);
             p = next;
+        }
+
+        for(constraint in child._constraints) {
+            solver.addConstraint(constraint);
         }
     }
 }

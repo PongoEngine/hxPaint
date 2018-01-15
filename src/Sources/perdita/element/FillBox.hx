@@ -6,9 +6,9 @@ class FillBox extends Box
 {
     public var color :Int;
 
-    public function new(color :Int, style :Style) : Void{
+    public function new(name :String = "", color :Int, style :Style) : Void{
         this.color = color;
-        super(style);
+        super(name, style);
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void

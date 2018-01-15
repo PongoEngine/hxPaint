@@ -15,7 +15,7 @@ class Window
         ];
     }
 
-    @:final public function addBox(child :Box) : Window
+    @:final public function addChild(child :Box) : Window
     {
         _root.addChild(child);
         return this;

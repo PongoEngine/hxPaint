@@ -1,6 +1,7 @@
 package perdita.element;
 
 import jasper.Variable;
+import jasper.Strength;
 import jasper.Constraint;
 import perdita.Style;
 
@@ -10,9 +11,11 @@ import perdita.Style;
     public var firstChild (default, null) :Box = null;
     public var next (default, null) :Box = null;
     public var prev (default, null) :Box = null;
+    public var name :String;
 
-    public function new(style :Style) : Void
+    public function new(name :String = "", style :Style) : Void
     {
+        this.name = name;
         this.style = style;
 
         _x = new Variable();
@@ -48,24 +51,30 @@ import perdita.Style;
             case INHERIT:
             case PX(val): child._constraints.push(child._width == val);
             case PERCENT(val): child._constraints.push(child._width == val * _width);
-            case CALC(expressionFn): child._constraints.push(child._width == expressionFn(_width));
         }
 
         switch child.style.height {
             case INHERIT:
             case PX(val): child._constraints.push(child._height == val);
             case PERCENT(val): child._constraints.push(child._height == val * _height);
-            case CALC(expressionFn): child._constraints.push(child._height == expressionFn(_height));
         }
 
-        if(child.prev == null) {
-            child._constraints.push(child._x == _x);
-        }
-        else {
-            child._constraints.push(child._x == (child.prev._x + child.prev._width));
+        child._constraints.push((child._x >= _x) | Strength.WEAK);
+        
+        if(child.prev != null) {
+            child._constraints.push((child._x == (child.prev._x + child.prev._width)) | Strength.MEDIUM);
+            child._constraints.push(((child._x + child._width) <= _width) | Strength.REQUIRED);
         }
 
-        child._constraints.push(child._y == _y);
+        // if(child.prev == null) {
+        //     child._constraints.push((child._y == _y) | Strength.WEAK);
+        // }
+        // else {
+        //     child._constraints.push((child._y == _y) | Strength.MEDIUM);
+        //     child._constraints.push((child._y == (child.prev._y + child.prev._height)) | Strength.WEAK);
+        // }
+
+        
     }
 
     public function draw(framebuffer :kha.Framebuffer) : Void
@@ -84,10 +93,10 @@ import perdita.Style;
         }
     }
 
-    private var _x :Variable;
-    private var _y :Variable;
-    private var _width :Variable;
-    private var _height :Variable;
+    public var _x :Variable;
+    public var _y :Variable;
+    public var _width :Variable;
+    public var _height :Variable;
 
     public var _constraints :Array<Constraint>;
 }
