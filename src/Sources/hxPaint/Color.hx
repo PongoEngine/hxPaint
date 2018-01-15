@@ -24,7 +24,7 @@ class Color extends Box
         }
         
         solver.addConstraint(this.width == parent.width - 10);
-        solver.addConstraint(this.height == 40);
+        solver.addConstraint(this.height == 30);
         solver.addConstraint(parent.height >= this.height + this.y - 5);
     }
 
@@ -32,5 +32,7 @@ class Color extends Box
     {
         framebuffer.g2.color = this.color;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
+        framebuffer.g2.color = 0xdd000000;
+        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value - 0.5, height.m_value - 0.5, 1);
     }
 }

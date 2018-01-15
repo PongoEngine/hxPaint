@@ -33,6 +33,10 @@ class Box
     {
     }
 
+    public function hit(x :Int, y :Int) : Void
+    {
+    }
+
     public function addChild (child :Box) :Box
     {
         child.parent = this;
@@ -63,6 +67,26 @@ class Box
             var next = p.next;
             render(p, framebuffer);
             p = next;
+        }
+    }
+
+    public static function hitTest (box :Box, x :Int, y :Int)
+    {
+        var minX = box.x.m_value;
+        var maxX = box.width.m_value + minX;
+        var minY = box.y.m_value;
+        var maxY = box.height.m_value + minY;
+        if(
+            minX <= x && maxX >= x &&
+            minY <= y && maxY >= y
+        ) {
+            box.hit(x,y);
+            var p = box.firstChild;
+            while (p != null) {
+                var next = p.next;
+                hitTest(p, x, y);
+                p = next;
+            }
         }
     }
 }
