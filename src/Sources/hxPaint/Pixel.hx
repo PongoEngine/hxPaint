@@ -5,13 +5,15 @@ import jasper.Solver;
 class Pixel extends Box
 {
     public var index :Int;
+    public var rowLength :Int;
     public var isColored :Bool;
     public var color :Int;
 
-    public function new(solver :Solver, index :Int) : Void
+    public function new(solver :Solver, rowLength :Int, index :Int) : Void
     {
         super(solver);
         this.index = index;
+        this.rowLength = rowLength;
         this.isColored = false;
     }
 
@@ -30,14 +32,16 @@ class Pixel extends Box
     }
 
 
-    override public function onAdded() : Void
+    override public function onSolved() : Void
     {
-        var x = index%8;
-        var y = Math.floor(index/8);
-        solver.addConstraint(this.x == parent.x + (x * 50) + 20);
-        solver.addConstraint(this.y == parent.y + (y * 50) + 20);
-        solver.addConstraint(this.width == 50);
-        solver.addConstraint(this.height == 50);
+        var x = index%this.rowLength;
+        var y = Math.floor(index/this.rowLength);
+        var pixelSize = parent.width.m_value/rowLength;
+        trace(pixelSize);
+        this.x.m_value = parent.x.m_value + (x * pixelSize);
+        this.y.m_value = parent.y.m_value + (y * pixelSize);
+        this.width.m_value = pixelSize;
+        this.height.m_value = pixelSize;
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void

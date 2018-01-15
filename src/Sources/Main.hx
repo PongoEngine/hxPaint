@@ -29,7 +29,7 @@ import hxPaint.Color;
 
 class Main 
 {
-    public static var color :Int 0xff000000;
+    public static var color :Int = 0xff000000;
 
     public static function main() : Void
     {
@@ -38,11 +38,13 @@ class Main
             var height = System.windowHeight();
             var solver = new Solver();
             var mainPanel = new MainPanel(solver, 0xffffffff);
-            for(i in 0...8*8) {
-                mainPanel.addChild(new Pixel(solver, i));
+            var rowLength = 32;
+            for(i in 0...rowLength*rowLength) {
+                mainPanel.addChild(new Pixel(solver, rowLength, i));
             }
 
             var window = new WindowBox(0xff444444, width, height, solver);
+            window.addChild(mainPanel);
             window.addChild(new LeftPanel(solver, 0xffaaaaaa)
                 .addChild(new Button(solver, 0xff334455))
                 .addChild(new Button(solver, 0xff334455))
@@ -64,9 +66,9 @@ class Main
                 .addChild(new Color(solver, 0xff0000FF)) //blue
                 .addChild(new Color(solver, 0xff800080)) //purple
                 .addChild(new Color(solver, 0xffFF00FF))); //fuchsia
-            window.addChild(mainPanel);
 
             window.solver.updateVariables();
+            Box.solved(window);
 
             System.notifyOnRender(function(framebuffer) {
                 framebuffer.g2.begin(0xffffffff);

@@ -9,20 +9,20 @@ class Box
     public var firstChild (default, null) :Box = null;
     public var next (default, null) :Box = null;
     public var prev (default, null) :Box = null;
-    public var solver (default, null) :Solver = null;
 
     public var x :Variable;
     public var y :Variable;
     public var width :Variable;
     public var height :Variable;
+    public var solver :Solver;
 
     public function new(solver :Solver) : Void
     {
+        this.solver = solver;
         x = new Variable();
         y = new Variable();
         width = new Variable();
         height = new Variable();
-        this.solver = solver;
     }
 
     public function onAdded() : Void
@@ -42,6 +42,10 @@ class Box
     }
 
     public function onMove(x :Int, y :Int) : Void
+    {
+    }
+
+    public function onSolved() : Void
     {
     }
 
@@ -74,6 +78,17 @@ class Box
         while (p != null) {
             var next = p.next;
             render(p, framebuffer);
+            p = next;
+        }
+    }
+
+    public static function solved (box :Box)
+    {
+        box.onSolved();
+        var p = box.firstChild;
+        while (p != null) {
+            var next = p.next;
+            solved(p);
             p = next;
         }
     }

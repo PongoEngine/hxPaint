@@ -11,6 +11,7 @@ class WindowBox extends Box
     {
         super(solver);
         this.color = color;
+        
         init(width, height);
     }
 
