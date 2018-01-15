@@ -1,12 +1,14 @@
 package hxPaint;
 
+import jasper.Solver;
+
 class LeftPanel extends Box
 {
     public var color :Int;
 
-    public function new(color :Int) : Void
+    public function new(solver :Solver, color :Int) : Void
     {
-        super();
+        super(solver);
         this.color = color;
     }
 
@@ -16,6 +18,7 @@ class LeftPanel extends Box
         solver.addConstraint(this.y == parent.y + 10);
         solver.addConstraint(this.width == 100);
         solver.addConstraint(this.height == parent.height - 20);
+        solver.addConstraint(parent.height >= this.height + 20);
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void

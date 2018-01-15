@@ -16,12 +16,13 @@ class Box
     public var width :Variable;
     public var height :Variable;
 
-    public function new() : Void
+    public function new(solver :Solver) : Void
     {
         x = new Variable();
         y = new Variable();
         width = new Variable();
         height = new Variable();
+        this.solver = solver;
     }
 
     public function onAdded() : Void
@@ -35,7 +36,6 @@ class Box
     public function addChild (child :Box) :Box
     {
         child.parent = this;
-        child.solver = this.solver;
 
         var tail = null, p = firstChild;
         while (p != null) {

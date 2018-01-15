@@ -9,9 +9,8 @@ class WindowBox extends Box
 
     public function new(color :Int, width :Int, height :Int, solver :Solver) : Void
     {
-        super();
+        super(solver);
         this.color = color;
-        this.solver = solver;
         init(width, height);
     }
 

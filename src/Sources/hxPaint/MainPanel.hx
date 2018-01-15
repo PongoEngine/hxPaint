@@ -1,12 +1,14 @@
 package hxPaint;
 
+import jasper.Solver;
+
 class MainPanel extends Box
 {
     public var color :Int;
 
-    public function new(color :Int) : Void
+    public function new(solver :Solver, color :Int) : Void
     {
-        super();
+        super(solver);
         this.color = color;
     }
 

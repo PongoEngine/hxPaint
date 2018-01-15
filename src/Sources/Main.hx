@@ -23,6 +23,8 @@ import hxPaint.WindowBox;
 import hxPaint.LeftPanel;
 import hxPaint.RightPanel;
 import hxPaint.MainPanel;
+import hxPaint.Button;
+import hxPaint.Color;
 
 class Main {
     public static function main() : Void
@@ -30,12 +32,22 @@ class Main {
         System.init({title: "jasper-example", width: 800, height: 600}, function() {
             var width = System.windowWidth();
             var height = System.windowHeight();
+            var solver = new Solver();
 
-            var window = new WindowBox(0xff444444, width, height, new Solver());
-            window.addChild(new LeftPanel(0xffaaaaaa));
-            window.addChild(new RightPanel(0xffaaaaaa));
-            window.addChild(new MainPanel(0xffffffff));
-
+            var window = new WindowBox(0xff444444, width, height, solver);
+            window.addChild(new LeftPanel(solver, 0xffaaaaaa)
+                .addChild(new Button(solver, 0xff334455))
+                .addChild(new Button(solver, 0xff334455))
+                .addChild(new Button(solver, 0xff334455))
+                .addChild(new Button(solver, 0xff334455)));
+            window.addChild(new RightPanel(solver, 0xffaaaaaa)
+                .addChild(new Color(solver, 0xff334455))
+                .addChild(new Color(solver, 0xff334455))
+                .addChild(new Color(solver, 0xff334455))
+                .addChild(new Color(solver, 0xff334455))
+                .addChild(new Color(solver, 0xff334455))
+                .addChild(new Color(solver, 0xff334455)));
+            window.addChild(new MainPanel(solver, 0xffffffff));
 
             window.solver.updateVariables();
 
