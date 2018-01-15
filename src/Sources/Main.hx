@@ -17,91 +17,51 @@
 package;
 
 import kha.System;
-import kha.Assets;
+import jasper.*;
+import hxPaint.Box;
+import hxPaint.WindowBox;
+import hxPaint.LeftPanel;
+import hxPaint.RightPanel;
+import hxPaint.MainPanel;
 
-import jasper.Solver;
-import perdita.element.Box;
-import perdita.element.FillBox;
-import perdita.Window;
-import perdita.Style;
-
-class Main 
-{
-    public static function init() : Window
-    {
-        var mainWindow = new Window(0xffaaaaaa, 800, 600);
-
-        var baseStyle = new Style();
-        baseStyle.width = PERCENT(1);
-        baseStyle.height = PERCENT(1);
-        var baseBox = new FillBox("baseBox", 0xffaaaaaa, baseStyle);
-
-        //-----------
-
-        var childStyle = new Style();
-        childStyle.width = PERCENT(0.35);
-        childStyle.height = PERCENT(0.5);
-
-        mainWindow
-            .addChild(new FillBox("red", 0xffff0000, childStyle))
-            .addChild(new FillBox("green", 0x5500ff00, childStyle))
-            .addChild(new FillBox("blue", 0xff0000ff, childStyle));
-
-        return mainWindow;
-    }
-
+class Main {
     public static function main() : Void
     {
-        System.init({title: "Perdita", width: 1366, height: 768}, function() {
-            var initialized = false;
-            Assets.loadEverything(function() {
-                var font = Assets.fonts.Roboto_Black;
+        System.init({title: "jasper-example", width: 800, height: 600}, function() {
+            var width = System.windowWidth();
+            var height = System.windowHeight();
 
-                var mainWindow = init();
-                var solver = new Solver();
+            var window = new WindowBox(0xff444444, width, height, new Solver());
+            window.addChild(new LeftPanel(0xffaaaaaa));
+            window.addChild(new RightPanel(0xffaaaaaa));
+            window.addChild(new MainPanel(0xffffffff));
 
-                addToSolver(mainWindow._root, solver);
 
-                solver.updateVariables();
-                traceInfo(mainWindow._root);
+            window.solver.updateVariables();
 
-                System.notifyOnRender(function(framebuffer) {
-                    if(!initialized) {
-                        framebuffer.g2.font = font;
-                        framebuffer.g2.fontSize = 14;
-                        initialized = true;
-                    }
-                    framebuffer.g2.begin(true, 0xffffffff);
-                    mainWindow.render(framebuffer);
-                    framebuffer.g2.end();
-                });
+            System.notifyOnRender(function(framebuffer) {
+                framebuffer.g2.begin(0xffffffff);
+                Box.render(window, framebuffer);
+                framebuffer.g2.end();
             });
-            
+
+            var _isDown :Bool = false;
+            kha.input.Mouse.get().notify(function(b,x,y) {
+                _isDown = true;
+                window.solver.suggestValue(window.width, x);
+                window.solver.suggestValue(window.height, y);
+                window.solver.updateVariables();
+            }, function(b,x,y) {
+                _isDown = false;
+            }, function(x,y,cX,cY) {
+                if(_isDown) {
+                    window.solver.suggestValue(window.width, x);
+                    window.solver.suggestValue(window.height, y);
+                    window.solver.updateVariables();
+                }
+                
+            }, function(c) {
+            });
         });
-    }
-
-    private static function traceInfo(child :Box) : Void
-    {
-        trace(child.name, child._x.m_value, child._y.m_value, child._width.m_value, child._height.m_value);
-        var p = child.firstChild;
-        while (p != null) {
-            var next = p.next;
-            traceInfo(p);
-            p = next;
-        }
-    }
-
-    private static function addToSolver(child :Box, solver :Solver) : Void
-    {
-        var p = child.firstChild;
-        while (p != null) {
-            var next = p.next;
-            addToSolver(p, solver);
-            p = next;
-        }
-
-        for(constraint in child._constraints) {
-            solver.addConstraint(constraint);
-        }
     }
 }
