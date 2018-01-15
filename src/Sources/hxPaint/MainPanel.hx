@@ -24,7 +24,6 @@ class MainPanel extends Box
     override public function onMove(x :Int, y :Int) : Void
     {
         if(_isDown) {
-            _points.push(_colorRef.val);
             _points.push(x);
             _points.push(y);
         }
@@ -33,7 +32,6 @@ class MainPanel extends Box
     override public function onDown(x :Int, y :Int) : Void
     {
         _isDown = true;
-        _points.push(_colorRef.val);
         _points.push(x);
         _points.push(y);
     }
@@ -50,17 +48,26 @@ class MainPanel extends Box
     {
         framebuffer.g2.color = this.color;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
+        framebuffer.g2.color = 0xffff0000;
        
 
         var index = 0;
         var length = _points.length;
+        var lastX = 0;
+        var lastY = 0;
+
+        if(length != 0) {
+            lastX= _points[0];
+            lastY= _points[1];
+        }
+
         while(index != length) {
-            var color = _points[index];
-            var x = _points[index+1];
-            var y = _points[index+2];
-            framebuffer.g2.color = color;
-            framebuffer.g2.fillRect(x-6,y-6,12,12);
-            index += 3;
+            lastX= _points[index];
+            lastY= _points[index+1];
+
+            framebuffer.g2.fillRect(lastX,lastY,4,4);
+
+            index += 2;
         }
     }
 
