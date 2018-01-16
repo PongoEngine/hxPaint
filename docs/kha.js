@@ -162,7 +162,7 @@ var Main = function() { };
 $hxClasses["Main"] = Main;
 Main.__name__ = true;
 Main.main = function() {
-	kha_System.init({ title : "jasper-example", width : 800, height : 600},function() {
+	kha_System.init({ title : "jasper-example", width : 1366, height : 768},function() {
 		kha_Assets.loadEverything(Main.onLoaded);
 	});
 };
@@ -174,28 +174,31 @@ Main.onLoaded = function() {
 	var solver = this1;
 	var rowLength = 32;
 	var mainPanel = new hxPaint_MainPanel(solver,-1);
-	var pixels = [];
 	var _g1 = 0;
 	var _g = rowLength * rowLength;
 	while(_g1 < _g) {
 		var i = _g1++;
-		var pixel = new hxPaint_Pixel(solver,rowLength,i);
-		mainPanel.addChild(pixel);
 		var x = i % rowLength;
 		var y = Math.floor(i / rowLength);
-		pixels[x * y] = pixel;
-		if(y > 0) {
-			pixels[x * (y - 1)].down = pixel;
-			pixel.up = pixels[x * (y - 1)];
-		}
-		if(x > 0) {
-			pixels[(x - 1) * y].right = pixel;
-			pixel.left = pixels[(x - 1) * y];
-		}
+		var pixel = new hxPaint_Pixel(solver,x,y,rowLength);
+		Main.pixels[y * rowLength + x] = pixel;
+		mainPanel.addChild(pixel);
 	}
 	var $window = new hxPaint_WindowBox(-12303292,width,height,solver);
 	$window.addChild(mainPanel);
-	var tmp = new hxPaint_LeftPanel(solver,-5592406).addChild(new hxPaint_Button("Pencil",solver,-13417387)).addChild(new hxPaint_Button("Fill",solver,-48043)).addChild(new hxPaint_Button("Eraser",solver,-13417387));
+	var tmp = new hxPaint_LeftPanel(solver,-5592406).addChild(new hxPaint_button_ButtonPencil(solver,function() {
+		Main.operation = 0;
+	}).addChild(new hxPaint_button_ButtonColor(solver,0,function() {
+	})).addChild(new hxPaint_button_ButtonColor(solver,1,function() {
+	})).addChild(new hxPaint_button_ButtonColor(solver,2,function() {
+	}))).addChild(new hxPaint_button_ButtonFill(solver,function() {
+		Main.operation = 1;
+	}).addChild(new hxPaint_button_ButtonColor(solver,0,function() {
+	})).addChild(new hxPaint_button_ButtonColor(solver,1,function() {
+	})).addChild(new hxPaint_button_ButtonColor(solver,2,function() {
+	}))).addChild(new hxPaint_button_ButtonEraser(solver,function() {
+		Main.operation = 2;
+	}));
 	$window.addChild(tmp);
 	var tmp1 = new hxPaint_RightPanel(solver,-5592406).addChild(new hxPaint_Color(solver,-16777216)).addChild(new hxPaint_Color(solver,-8355712)).addChild(new hxPaint_Color(solver,-4144960)).addChild(new hxPaint_Color(solver,-1)).addChild(new hxPaint_Color(solver,-8388608)).addChild(new hxPaint_Color(solver,-65536)).addChild(new hxPaint_Color(solver,-8355840)).addChild(new hxPaint_Color(solver,-256)).addChild(new hxPaint_Color(solver,-16744448)).addChild(new hxPaint_Color(solver,-16711936)).addChild(new hxPaint_Color(solver,-16744320)).addChild(new hxPaint_Color(solver,-16711681)).addChild(new hxPaint_Color(solver,-16777088)).addChild(new hxPaint_Color(solver,-16776961)).addChild(new hxPaint_Color(solver,-8388480)).addChild(new hxPaint_Color(solver,-65281));
 	$window.addChild(tmp1);
@@ -212,20 +215,34 @@ Main.onLoaded = function() {
 		hxPaint_Box.render($window,framebuffer);
 		framebuffer.get_g2().end();
 	});
-	kha_input_Mouse.get().notify(function(b,x1,y1) {
-		if(b == 1) {
-			$window.solver.suggestValue($window.width,x1);
-			$window.solver.suggestValue($window.height,y1);
-			$window.solver.updateVariables();
-			hxPaint_Box.solved($window);
-		} else {
-			hxPaint_Box.hitTest($window,x1,y1,0);
+	Main.initMouse($window,mainPanel);
+	kha_input_Keyboard.get().notify(function(downKey) {
+		if(downKey == 81) {
+			Main.operation = 0;
+		} else if(downKey == 87) {
+			Main.operation = 1;
+		} else if(downKey == 69) {
+			Main.operation = 2;
 		}
-	},function(b1,x2,y2) {
-		hxPaint_Box.hitTest($window,x2,y2,1);
+	},function(upKey) {
+	},function(str) {
+	});
+};
+Main.initMouse = function(window,mainPanel) {
+	kha_input_Mouse.get().notify(function(b,x,y) {
+		if(b == 1) {
+			window.solver.suggestValue(window.width,x);
+			window.solver.suggestValue(window.height,y);
+			window.solver.updateVariables();
+			hxPaint_Box.solved(window);
+		} else {
+			hxPaint_Box.hitTest(window,x,y,0);
+		}
+	},function(b1,x1,y1) {
+		hxPaint_Box.hitTest(window,x1,y1,1);
 		mainPanel.onUp(-1,-1);
-	},function(x3,y3,cX,cY) {
-		hxPaint_Box.hitTest($window,x3,y3,2);
+	},function(x2,y2,cX,cY) {
+		hxPaint_Box.hitTest(window,x2,y2,2);
 	},function(c) {
 	});
 };
@@ -1472,20 +1489,23 @@ haxe_io__$UInt8Array_UInt8Array_$Impl_$.fromBytes = function(bytes,bytePos,lengt
 	}
 	return new Uint8Array(bytes.b.bufferValue,bytePos,length);
 };
-var hxPaint_Box = function(solver) {
+var hxPaint_Box = function() {
 	this.prev = null;
 	this.next = null;
 	this.firstChild = null;
 	this.parent = null;
-	this.solver = solver;
 	var this1 = new jasper__$Variable_$("");
 	this.x = this1;
-	var this11 = new jasper__$Variable_$("");
-	this.y = this11;
-	var this12 = new jasper__$Variable_$("");
-	this.width = this12;
-	var this13 = new jasper__$Variable_$("");
-	this.height = this13;
+	var this2 = new jasper__$Variable_$("");
+	this.y = this2;
+	var this3 = new jasper__$Variable_$("");
+	this.width = this3;
+	var this4 = new jasper__$Variable_$("");
+	this.height = this4;
+	var this5 = new jasper__$Variable_$("");
+	this.boundsWidth = this5;
+	var this6 = new jasper__$Variable_$("");
+	this.boundsHeight = this6;
 };
 $hxClasses["hxPaint.Box"] = hxPaint_Box;
 hxPaint_Box.__name__ = true;
@@ -1541,7 +1561,8 @@ hxPaint_Box.prototype = {
 	,y: null
 	,width: null
 	,height: null
-	,solver: null
+	,boundsWidth: null
+	,boundsHeight: null
 	,onAdded: function() {
 	}
 	,draw: function(framebuffer) {
@@ -1573,76 +1594,17 @@ hxPaint_Box.prototype = {
 	}
 	,__class__: hxPaint_Box
 };
-var hxPaint_Button = function(name,solver,color) {
-	hxPaint_Box.call(this,solver);
-	this.color = color;
-	this.name = name;
-	this._textAnchorX = Main.font.width(Main.fontSize,name) / 2;
-	this._textAnchorY = Main.font.height(Main.fontSize) / 2;
-};
-$hxClasses["hxPaint.Button"] = hxPaint_Button;
-hxPaint_Button.__name__ = true;
-hxPaint_Button.__super__ = hxPaint_Box;
-hxPaint_Button.prototype = $extend(hxPaint_Box.prototype,{
-	color: null
-	,name: null
-	,onDown: function(x,y) {
-		if(this.name == "Pencil") {
-			haxe_Log.trace("Pencil",{ fileName : "Button.hx", lineNumber : 22, className : "hxPaint.Button", methodName : "onDown"});
-			Main.operation = 0;
-		} else if(this.name == "Fill") {
-			haxe_Log.trace("Fill",{ fileName : "Button.hx", lineNumber : 26, className : "hxPaint.Button", methodName : "onDown"});
-			Main.operation = 1;
-		} else if(this.name == "Eraser") {
-			haxe_Log.trace("Eraser",{ fileName : "Button.hx", lineNumber : 30, className : "hxPaint.Button", methodName : "onDown"});
-			Main.operation = 2;
-		}
-	}
-	,onAdded: function() {
-		var this1 = this.solver;
-		var _g = this.x;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,5);
-		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		if(this.prev == null) {
-			var this11 = this.solver;
-			var _g2 = this.y;
-			var _g3 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,5);
-			this11.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
-		} else {
-			var this12 = this.solver;
-			var _g21 = this.y;
-			var _g31 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.prev.y,this.prev.height),5);
-			this12.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g31,_g21));
-		}
-		var this13 = this.solver;
-		var _g22 = this.width;
-		var _g32 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this13.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g32,_g22));
-		var this14 = this.solver;
-		var _g4 = this.height;
-		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this14.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Expression_Expression_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.height,this.y),5)));
-	}
-	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(this.color);
-		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		framebuffer.get_g2().set_color(-16777216);
-		framebuffer.get_g2().drawString(this.name,this.x.m_value + this.width.m_value / 2 - this._textAnchorX,this.y.m_value + this.height.m_value / 2 - this._textAnchorY);
-	}
-	,_textAnchorX: null
-	,_textAnchorY: null
-	,__class__: hxPaint_Button
-});
 var hxPaint_Color = function(solver,color) {
-	hxPaint_Box.call(this,solver);
+	hxPaint_Box.call(this);
 	this.color = color;
+	this.solver = solver;
 };
 $hxClasses["hxPaint.Color"] = hxPaint_Color;
 hxPaint_Color.__name__ = true;
 hxPaint_Color.__super__ = hxPaint_Box;
 hxPaint_Color.prototype = $extend(hxPaint_Box.prototype,{
 	color: null
+	,solver: null
 	,onDown: function(x,y) {
 		Main.color = this.color;
 	}
@@ -1652,20 +1614,20 @@ hxPaint_Color.prototype = $extend(hxPaint_Box.prototype,{
 		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,5);
 		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
 		if(this.prev == null) {
-			var this11 = this.solver;
+			var this2 = this.solver;
 			var _g2 = this.y;
 			var _g3 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,5);
-			this11.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
+			this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
 		} else {
-			var this12 = this.solver;
+			var this3 = this.solver;
 			var _g21 = this.y;
 			var _g31 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.prev.y,this.prev.height),2);
-			this12.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g31,_g21));
+			this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g31,_g21));
 		}
-		var this13 = this.solver;
+		var this4 = this.solver;
 		var _g22 = this.width;
 		var _g32 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this13.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g32,_g22));
+		this4.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g32,_g22));
 		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.height,30));
 		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Expression_Expression_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.height,this.y),5)));
 	}
@@ -1678,28 +1640,30 @@ hxPaint_Color.prototype = $extend(hxPaint_Box.prototype,{
 	,__class__: hxPaint_Color
 });
 var hxPaint_LeftPanel = function(solver,color) {
-	hxPaint_Box.call(this,solver);
+	hxPaint_Box.call(this);
 	this.color = color;
+	this.solver = solver;
 };
 $hxClasses["hxPaint.LeftPanel"] = hxPaint_LeftPanel;
 hxPaint_LeftPanel.__name__ = true;
 hxPaint_LeftPanel.__super__ = hxPaint_Box;
 hxPaint_LeftPanel.prototype = $extend(hxPaint_Box.prototype,{
 	color: null
+	,solver: null
 	,onAdded: function() {
 		var this1 = this.solver;
 		var _g = this.x;
 		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,10);
 		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		var this11 = this.solver;
+		var this2 = this.solver;
 		var _g2 = this.y;
 		var _g3 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,10);
-		this11.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
+		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
 		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,100));
-		var this12 = this.solver;
+		var this3 = this.solver;
 		var _g4 = this.height;
 		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.height,20);
-		this12.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
+		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
 		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Variable_Variable_$Impl_$.addValue(this.height,20)));
 	}
 	,draw: function(framebuffer) {
@@ -1709,28 +1673,30 @@ hxPaint_LeftPanel.prototype = $extend(hxPaint_Box.prototype,{
 	,__class__: hxPaint_LeftPanel
 });
 var hxPaint_MainPanel = function(solver,color) {
-	hxPaint_Box.call(this,solver);
+	hxPaint_Box.call(this);
 	this.color = color;
+	this.solver = solver;
 };
 $hxClasses["hxPaint.MainPanel"] = hxPaint_MainPanel;
 hxPaint_MainPanel.__name__ = true;
 hxPaint_MainPanel.__super__ = hxPaint_Box;
 hxPaint_MainPanel.prototype = $extend(hxPaint_Box.prototype,{
 	color: null
+	,solver: null
 	,onAdded: function() {
 		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.x,120));
 		var this1 = this.solver;
 		var _g = this.y;
 		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,10);
 		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		var this11 = this.solver;
+		var this2 = this.solver;
 		var _g2 = this.width;
 		var _g3 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,240);
-		this11.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
-		var this12 = this.solver;
+		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
+		var this3 = this.solver;
 		var _g4 = this.height;
 		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.height,20);
-		this12.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
+		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
 	}
 	,draw: function(framebuffer) {
 		framebuffer.get_g2().set_color(this.color);
@@ -1738,107 +1704,147 @@ hxPaint_MainPanel.prototype = $extend(hxPaint_Box.prototype,{
 	}
 	,__class__: hxPaint_MainPanel
 });
-var hxPaint_Pixel = function(solver,rowLength,index) {
-	hxPaint_Box.call(this,solver);
-	this.index = index;
+var hxPaint__$Operation_Operation_$Impl_$ = {};
+$hxClasses["hxPaint._Operation.Operation_Impl_"] = hxPaint__$Operation_Operation_$Impl_$;
+hxPaint__$Operation_Operation_$Impl_$.__name__ = true;
+hxPaint__$Operation_Operation_$Impl_$.toString = function(this1) {
+	var _g = js_Boot.__cast(this1 , Int);
+	switch(_g) {
+	case 0:
+		return "Pencil";
+	case 1:
+		return "Fill";
+	case 2:
+		return "Eraser";
+	}
+};
+var hxPaint_Pixel = function(solver,xIndex,yIndex,rowLength) {
+	hxPaint_Box.call(this);
+	this.color = -1;
+	this.xIndex = xIndex;
+	this.yIndex = yIndex;
 	this.rowLength = rowLength;
-	this.isColored = false;
 };
 $hxClasses["hxPaint.Pixel"] = hxPaint_Pixel;
 hxPaint_Pixel.__name__ = true;
+hxPaint_Pixel.fill = function(pixel,targetColor,replacementColor) {
+	if(targetColor == replacementColor) {
+		return;
+	}
+	if(pixel.color != targetColor) {
+		return;
+	}
+	pixel.color = replacementColor;
+	if(pixel.yIndex != pixel.rowLength - 1) {
+		var pixel1 = Main.pixels[(pixel.yIndex + 1) * pixel.rowLength + pixel.xIndex];
+		hxPaint_Pixel.fill(pixel1,targetColor,replacementColor);
+	}
+	if(pixel.yIndex != 0) {
+		var pixel2 = Main.pixels[(pixel.yIndex - 1) * pixel.rowLength + pixel.xIndex];
+		hxPaint_Pixel.fill(pixel2,targetColor,replacementColor);
+	}
+	if(pixel.xIndex != 0) {
+		var pixel3 = Main.pixels[pixel.yIndex * pixel.rowLength + pixel.xIndex - 1];
+		hxPaint_Pixel.fill(pixel3,targetColor,replacementColor);
+	}
+	if(pixel.xIndex != pixel.rowLength - 1) {
+		var pixel4 = Main.pixels[pixel.yIndex * pixel.rowLength + pixel.xIndex + 1];
+		hxPaint_Pixel.fill(pixel4,targetColor,replacementColor);
+	}
+	return;
+};
 hxPaint_Pixel.__super__ = hxPaint_Box;
 hxPaint_Pixel.prototype = $extend(hxPaint_Box.prototype,{
-	index: null
+	xIndex: null
+	,yIndex: null
 	,rowLength: null
-	,isColored: null
 	,color: null
-	,up: null
-	,right: null
-	,down: null
-	,left: null
 	,onDown: function(x,y) {
 		var _g = Main.operation;
 		switch(_g) {
 		case 0:
+			hxPaint_Pixel.CAN_PENCIL = true;
 			this.pencil();
 			break;
 		case 1:
-			this.fill(this,this.color,Main.color);
+			hxPaint_Pixel.fill(this,this.color,Main.color);
 			break;
 		case 2:
+			hxPaint_Pixel.CAN_ERASE = true;
+			this.erase();
 			break;
+		}
+	}
+	,onUp: function(x,y) {
+		hxPaint_Pixel.CAN_PENCIL = false;
+		hxPaint_Pixel.CAN_ERASE = false;
+	}
+	,onMove: function(x,y) {
+		if(hxPaint_Pixel.CAN_PENCIL) {
+			this.pencil();
+		}
+		if(hxPaint_Pixel.CAN_ERASE) {
+			this.erase();
 		}
 	}
 	,pencil: function() {
-		if(this.color != Main.color && this.isColored) {
-			this.color = Main.color;
-		} else if(this.isColored) {
-			this.isColored = false;
-		} else {
-			this.isColored = true;
-			this.color = Main.color;
-		}
+		this.color = Main.color;
 	}
-	,fill: function(pixel,targetColor,replacementColor) {
-		if(pixel == null) {
-			return;
-		}
-		if(targetColor == replacementColor) {
-			return;
-		}
-		if(pixel.color != targetColor) {
-			return;
-		}
-		pixel.color = replacementColor;
-		pixel.isColored = true;
-		this.fill(pixel.down,targetColor,replacementColor);
-		this.fill(pixel.up,targetColor,replacementColor);
-		this.fill(pixel.left,targetColor,replacementColor);
-		this.fill(pixel.right,targetColor,replacementColor);
-		return;
+	,erase: function() {
+		this.color = -1;
+	}
+	,isLeftWall: function() {
+		return this.xIndex == 0;
+	}
+	,isRightWall: function() {
+		return this.xIndex == this.rowLength - 1;
+	}
+	,isTopWall: function() {
+		return this.yIndex == 0;
+	}
+	,isBottomWall: function() {
+		return this.yIndex == this.rowLength - 1;
 	}
 	,onSolved: function() {
-		var x = this.index % this.rowLength;
-		var y = Math.floor(this.index / this.rowLength);
 		var pixelSize = this.parent.width.m_value / this.rowLength;
-		this.x.m_value = this.parent.x.m_value + x * pixelSize;
-		this.y.m_value = this.parent.y.m_value + y * pixelSize;
+		this.x.m_value = this.parent.x.m_value + this.xIndex * pixelSize;
+		this.y.m_value = this.parent.y.m_value + this.yIndex * pixelSize;
 		this.width.m_value = pixelSize;
 		this.height.m_value = pixelSize;
 	}
 	,draw: function(framebuffer) {
-		if(this.isColored) {
-			framebuffer.get_g2().set_color(this.color);
-			framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		}
+		framebuffer.get_g2().set_color(this.color);
+		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
 		framebuffer.get_g2().set_color(-16777216);
 		framebuffer.get_g2().drawRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
 	}
 	,__class__: hxPaint_Pixel
 });
 var hxPaint_RightPanel = function(solver,color) {
-	hxPaint_Box.call(this,solver);
+	hxPaint_Box.call(this);
 	this.color = color;
+	this.solver = solver;
 };
 $hxClasses["hxPaint.RightPanel"] = hxPaint_RightPanel;
 hxPaint_RightPanel.__name__ = true;
 hxPaint_RightPanel.__super__ = hxPaint_Box;
 hxPaint_RightPanel.prototype = $extend(hxPaint_Box.prototype,{
 	color: null
+	,solver: null
 	,onAdded: function() {
 		var this1 = this.solver;
 		var _g = this.x;
 		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractExpression(this.parent.width,jasper__$Variable_Variable_$Impl_$.addValue(this.width,10));
 		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		var this11 = this.solver;
+		var this2 = this.solver;
 		var _g2 = this.y;
 		var _g3 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,10);
-		this11.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
+		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
 		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,100));
-		var this12 = this.solver;
+		var this3 = this.solver;
 		var _g4 = this.height;
 		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.height,20);
-		this12.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
+		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
 	}
 	,draw: function(framebuffer) {
 		framebuffer.get_g2().set_color(this.color);
@@ -1847,8 +1853,9 @@ hxPaint_RightPanel.prototype = $extend(hxPaint_Box.prototype,{
 	,__class__: hxPaint_RightPanel
 });
 var hxPaint_WindowBox = function(color,width,height,solver) {
-	hxPaint_Box.call(this,solver);
+	hxPaint_Box.call(this);
 	this.color = color;
+	this.solver = solver;
 	this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.x,0));
 	this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.y,0));
 	this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,width),1));
@@ -1867,6 +1874,7 @@ hxPaint_WindowBox.__name__ = true;
 hxPaint_WindowBox.__super__ = hxPaint_Box;
 hxPaint_WindowBox.prototype = $extend(hxPaint_Box.prototype,{
 	color: null
+	,solver: null
 	,draw: function(framebuffer) {
 		framebuffer.get_g2().set_color(this.color);
 		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
@@ -1886,6 +1894,165 @@ hxPaint_WindowBox.prototype = $extend(hxPaint_Box.prototype,{
 		this.solver.suggestValue(this.height,height);
 	}
 	,__class__: hxPaint_WindowBox
+});
+var hxPaint_button_Button = function(onClick) {
+	hxPaint_Box.call(this);
+	this._onClick = onClick;
+};
+$hxClasses["hxPaint.button.Button"] = hxPaint_button_Button;
+hxPaint_button_Button.__name__ = true;
+hxPaint_button_Button.__super__ = hxPaint_Box;
+hxPaint_button_Button.prototype = $extend(hxPaint_Box.prototype,{
+	onDown: function(x,y) {
+		this._onClick();
+	}
+	,_onClick: null
+	,__class__: hxPaint_button_Button
+});
+var hxPaint_button_ButtonColor = function(solver,index,onClick) {
+	hxPaint_button_Button.call(this,onClick);
+	this.solver = solver;
+	this.index = index;
+};
+$hxClasses["hxPaint.button.ButtonColor"] = hxPaint_button_ButtonColor;
+hxPaint_button_ButtonColor.__name__ = true;
+hxPaint_button_ButtonColor.__super__ = hxPaint_button_Button;
+hxPaint_button_ButtonColor.prototype = $extend(hxPaint_button_Button.prototype,{
+	solver: null
+	,index: null
+	,onAdded: function() {
+		var this1 = this.solver;
+		var _g4 = this.x;
+		var _g2 = this.parent.x;
+		var _g = this.index;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.divideValue(this.parent.width,3);
+		var _g3 = jasper__$Term_Term_$Impl_$.multiplyValue(_g1,_g);
+		var _g5 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Term_Term_$Impl_$.addVariable(_g3,_g2),1);
+		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
+		var this2 = this.solver;
+		var _g6 = this.y;
+		var _g7 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.parent.y,this.parent.height),2);
+		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g7,_g6));
+		var this3 = this.solver;
+		var _g8 = this.width;
+		var _g9 = jasper__$Term_Term_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.divideValue(this.parent.width,3),2);
+		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g9,_g8));
+		var this4 = this.solver;
+		var _g10 = this.height;
+		var _g11 = jasper__$Variable_Variable_$Impl_$.divideValue(this.parent.width,3);
+		this4.addConstraint(jasper__$Term_Term_$Impl_$.equalsVariable(_g11,_g10));
+	}
+	,draw: function(framebuffer) {
+		framebuffer.get_g2().set_color(-12303292);
+		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+		framebuffer.get_g2().set_color(-16777216);
+	}
+	,__class__: hxPaint_button_ButtonColor
+});
+var hxPaint_button_ButtonEraser = function(solver,onClick) {
+	hxPaint_button_Button.call(this,onClick);
+	this.solver = solver;
+};
+$hxClasses["hxPaint.button.ButtonEraser"] = hxPaint_button_ButtonEraser;
+hxPaint_button_ButtonEraser.__name__ = true;
+hxPaint_button_ButtonEraser.__super__ = hxPaint_button_Button;
+hxPaint_button_ButtonEraser.prototype = $extend(hxPaint_button_Button.prototype,{
+	solver: null
+	,onAdded: function() {
+		var this1 = this.solver;
+		var _g = this.x;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,5);
+		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		var this2 = this.solver;
+		var _g2 = this.y;
+		var _g3 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.prev.y,this.prev.height),40);
+		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
+		var this3 = this.solver;
+		var _g4 = this.width;
+		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
+		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
+		var this4 = this.solver;
+		var _g6 = this.height;
+		var _g7 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
+		this4.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g7,_g6));
+		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Expression_Expression_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.height,this.y),5)));
+	}
+	,draw: function(framebuffer) {
+		framebuffer.get_g2().set_color(-12303292);
+		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+		framebuffer.get_g2().set_color(-16777216);
+	}
+	,__class__: hxPaint_button_ButtonEraser
+});
+var hxPaint_button_ButtonFill = function(solver,onClick) {
+	hxPaint_button_Button.call(this,onClick);
+	this.solver = solver;
+};
+$hxClasses["hxPaint.button.ButtonFill"] = hxPaint_button_ButtonFill;
+hxPaint_button_ButtonFill.__name__ = true;
+hxPaint_button_ButtonFill.__super__ = hxPaint_button_Button;
+hxPaint_button_ButtonFill.prototype = $extend(hxPaint_button_Button.prototype,{
+	solver: null
+	,onAdded: function() {
+		var this1 = this.solver;
+		var _g = this.x;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,5);
+		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		var this2 = this.solver;
+		var _g2 = this.y;
+		var _g3 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.prev.y,this.prev.height),40);
+		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
+		var this3 = this.solver;
+		var _g4 = this.width;
+		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
+		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
+		var this4 = this.solver;
+		var _g6 = this.height;
+		var _g7 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
+		this4.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g7,_g6));
+		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Expression_Expression_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.height,this.y),5)));
+	}
+	,draw: function(framebuffer) {
+		framebuffer.get_g2().set_color(-12303292);
+		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+		framebuffer.get_g2().set_color(-16777216);
+	}
+	,__class__: hxPaint_button_ButtonFill
+});
+var hxPaint_button_ButtonPencil = function(solver,onClick) {
+	hxPaint_button_Button.call(this,onClick);
+	this.solver = solver;
+};
+$hxClasses["hxPaint.button.ButtonPencil"] = hxPaint_button_ButtonPencil;
+hxPaint_button_ButtonPencil.__name__ = true;
+hxPaint_button_ButtonPencil.__super__ = hxPaint_button_Button;
+hxPaint_button_ButtonPencil.prototype = $extend(hxPaint_button_Button.prototype,{
+	solver: null
+	,onAdded: function() {
+		var this1 = this.solver;
+		var _g = this.x;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,5);
+		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		var this2 = this.solver;
+		var _g2 = this.y;
+		var _g3 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,5);
+		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
+		var this3 = this.solver;
+		var _g4 = this.width;
+		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
+		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
+		var this4 = this.solver;
+		var _g6 = this.height;
+		var _g7 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
+		this4.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g7,_g6));
+		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Expression_Expression_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.height,this.y),5)));
+	}
+	,draw: function(framebuffer) {
+		framebuffer.get_g2().set_color(-12303292);
+		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+		framebuffer.get_g2().set_color(-16777216);
+	}
+	,__class__: hxPaint_button_ButtonPencil
 });
 var jasper__$Constraint_$ = function(expr,op,strength) {
 	this.m_expression = expr;
@@ -5616,29 +5783,29 @@ kha_Shaders.init = function() {
 	var _g = 0;
 	while(_g < 3) {
 		var i = _g++;
-		var data = Reflect.field(kha_Shaders,"painter_colored_vertData" + i);
+		var data = Reflect.field(kha_Shaders,"painter_colored_fragData" + i);
 		var bytes = haxe_Unserializer.run(data);
 		blobs.push(kha_internal_BytesBlob.fromBytes(bytes));
 	}
-	kha_Shaders.painter_colored_vert = new kha_graphics4_VertexShader(blobs,["painter-colored.vert.essl","painter-colored-relaxed.vert.essl","painter-colored-webgl2.vert.essl"]);
+	kha_Shaders.painter_colored_frag = new kha_graphics4_FragmentShader(blobs,["painter-colored.frag.essl","painter-colored-relaxed.frag.essl","painter-colored-webgl2.frag.essl"]);
 	var blobs1 = [];
 	var _g1 = 0;
 	while(_g1 < 3) {
 		var i1 = _g1++;
-		var data1 = Reflect.field(kha_Shaders,"painter_image_fragData" + i1);
+		var data1 = Reflect.field(kha_Shaders,"painter_colored_vertData" + i1);
 		var bytes1 = haxe_Unserializer.run(data1);
 		blobs1.push(kha_internal_BytesBlob.fromBytes(bytes1));
 	}
-	kha_Shaders.painter_image_frag = new kha_graphics4_FragmentShader(blobs1,["painter-image.frag.essl","painter-image-relaxed.frag.essl","painter-image-webgl2.frag.essl"]);
+	kha_Shaders.painter_colored_vert = new kha_graphics4_VertexShader(blobs1,["painter-colored.vert.essl","painter-colored-relaxed.vert.essl","painter-colored-webgl2.vert.essl"]);
 	var blobs2 = [];
 	var _g2 = 0;
 	while(_g2 < 3) {
 		var i2 = _g2++;
-		var data2 = Reflect.field(kha_Shaders,"painter_colored_fragData" + i2);
+		var data2 = Reflect.field(kha_Shaders,"painter_image_fragData" + i2);
 		var bytes2 = haxe_Unserializer.run(data2);
 		blobs2.push(kha_internal_BytesBlob.fromBytes(bytes2));
 	}
-	kha_Shaders.painter_colored_frag = new kha_graphics4_FragmentShader(blobs2,["painter-colored.frag.essl","painter-colored-relaxed.frag.essl","painter-colored-webgl2.frag.essl"]);
+	kha_Shaders.painter_image_frag = new kha_graphics4_FragmentShader(blobs2,["painter-image.frag.essl","painter-image-relaxed.frag.essl","painter-image-webgl2.frag.essl"]);
 	var blobs3 = [];
 	var _g3 = 0;
 	while(_g3 < 3) {
@@ -25037,7 +25204,8 @@ var Float32Array = $global.Float32Array || js_html_compat_Float32Array._new;
 var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
 Main.color = -16777216;
 Main.fontSize = 18;
-Main.operation = 1;
+Main.operation = 0;
+Main.pixels = [];
 haxe_Unserializer.DEFAULT_RESOLVER = new haxe__$Unserializer_DefaultResolver();
 haxe_Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -25049,6 +25217,11 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 	$r = this1;
 	return $r;
 }(this));
+hxPaint__$Operation_Operation_$Impl_$.PENCIL = 0;
+hxPaint__$Operation_Operation_$Impl_$.FILL = 1;
+hxPaint__$Operation_Operation_$Impl_$.ERASER = 2;
+hxPaint_Pixel.CAN_PENCIL = false;
+hxPaint_Pixel.CAN_ERASE = false;
 jasper__$Strength_Strength_$Impl_$.REQUIRED = 1001001000;
 jasper__$Strength_Strength_$Impl_$.STRONG = 1000000;
 jasper__$Strength_Strength_$Impl_$.MEDIUM = 1000;
@@ -25115,15 +25288,15 @@ kha_Scheduler.timeWarpSaveTime = 1.0;
 kha_Scheduler.DIF_COUNT = 3;
 kha_Scheduler.maxframetime = 0.5;
 kha_Scheduler.startTime = 0;
+kha_Shaders.painter_colored_fragData0 = "s198:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdmFyeWluZyBoaWdocCB2ZWM0IGZyYWdtZW50Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9GcmFnRGF0YVswXSA9IGZyYWdtZW50Q29sb3I7Cn0KCg";
+kha_Shaders.painter_colored_fragData1 = "s192:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX0ZyYWdEYXRhWzBdID0gZnJhZ21lbnRDb2xvcjsKfQoK";
+kha_Shaders.painter_colored_fragData2 = "s210:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7CgpvdXQgdmVjNCBGcmFnQ29sb3I7CmluIHZlYzQgZnJhZ21lbnRDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIEZyYWdDb2xvciA9IGZyYWdtZW50Q29sb3I7Cn0KCg";
 kha_Shaders.painter_colored_vertData0 = "s331:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IHByb2plY3Rpb25NYXRyaXggKiB2ZWM0KHZlcnRleFBvc2l0aW9uLCAxLjApOwogICAgZnJhZ21lbnRDb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
 kha_Shaders.painter_colored_vertData1 = "s374:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKYXR0cmlidXRlIG1lZGl1bXAgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyBtZWRpdW1wIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIG1lZGl1bXAgdmVjNCB2ZXJ0ZXhDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX1Bvc2l0aW9uID0gcHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCk7CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
 kha_Shaders.painter_colored_vertData2 = "s354:I3ZlcnNpb24gMzAwIGVzCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKaW4gbWVkaXVtcCB2ZWMzIHZlcnRleFBvc2l0aW9uOwpvdXQgbWVkaXVtcCB2ZWM0IGZyYWdtZW50Q29sb3I7CmluIG1lZGl1bXAgdmVjNCB2ZXJ0ZXhDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX1Bvc2l0aW9uID0gcHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCk7CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
 kha_Shaders.painter_image_fragData0 = "s471:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4OwoKdmFyeWluZyBoaWdocCB2ZWMyIHRleENvb3JkOwp2YXJ5aW5nIGhpZ2hwIHZlYzQgY29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBoaWdocCB2ZWM0IHRleGNvbG9yID0gdGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpICogY29sb3I7CiAgICBoaWdocCB2ZWMzIF8zMiA9IHRleGNvbG9yLnh5eiAqIGNvbG9yLnc7CiAgICB0ZXhjb2xvciA9IHZlYzQoXzMyLngsIF8zMi55LCBfMzIueiwgdGV4Y29sb3Iudyk7CiAgICBnbF9GcmFnRGF0YVswXSA9IHRleGNvbG9yOwp9Cgo";
 kha_Shaders.painter_image_fragData1 = "s444:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp1bmlmb3JtIG1lZGl1bXAgc2FtcGxlcjJEIHRleDsKCnZhcnlpbmcgdmVjMiB0ZXhDb29yZDsKdmFyeWluZyB2ZWM0IGNvbG9yOwoKdm9pZCBtYWluKCkKewogICAgdmVjNCB0ZXhjb2xvciA9IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkKSAqIGNvbG9yOwogICAgdmVjMyBfMzIgPSB0ZXhjb2xvci54eXogKiBjb2xvci53OwogICAgdGV4Y29sb3IgPSB2ZWM0KF8zMi54LCBfMzIueSwgXzMyLnosIHRleGNvbG9yLncpOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB0ZXhjb2xvcjsKfQoK";
 kha_Shaders.painter_image_fragData2 = "s452:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp1bmlmb3JtIG1lZGl1bXAgc2FtcGxlcjJEIHRleDsKCmluIHZlYzIgdGV4Q29vcmQ7CmluIHZlYzQgY29sb3I7Cm91dCB2ZWM0IEZyYWdDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIHZlYzQgdGV4Y29sb3IgPSB0ZXh0dXJlKHRleCwgdGV4Q29vcmQpICogY29sb3I7CiAgICB2ZWMzIF8zMiA9IHRleGNvbG9yLnh5eiAqIGNvbG9yLnc7CiAgICB0ZXhjb2xvciA9IHZlYzQoXzMyLngsIF8zMi55LCBfMzIueiwgdGV4Y29sb3Iudyk7CiAgICBGcmFnQ29sb3IgPSB0ZXhjb2xvcjsKfQoK";
-kha_Shaders.painter_colored_fragData0 = "s198:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdmFyeWluZyBoaWdocCB2ZWM0IGZyYWdtZW50Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9GcmFnRGF0YVswXSA9IGZyYWdtZW50Q29sb3I7Cn0KCg";
-kha_Shaders.painter_colored_fragData1 = "s192:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX0ZyYWdEYXRhWzBdID0gZnJhZ21lbnRDb2xvcjsKfQoK";
-kha_Shaders.painter_colored_fragData2 = "s210:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7CgpvdXQgdmVjNCBGcmFnQ29sb3I7CmluIHZlYzQgZnJhZ21lbnRDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIEZyYWdDb2xvciA9IGZyYWdtZW50Q29sb3I7Cn0KCg";
 kha_Shaders.painter_image_vertData0 = "s415:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgY29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSBwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKTsKICAgIHRleENvb3JkID0gdGV4UG9zaXRpb247CiAgICBjb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
 kha_Shaders.painter_image_vertData1 = "s479:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKYXR0cmlidXRlIG1lZGl1bXAgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyBtZWRpdW1wIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247CnZhcnlpbmcgbWVkaXVtcCB2ZWM0IGNvbG9yOwphdHRyaWJ1dGUgbWVkaXVtcCB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSBwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKTsKICAgIHRleENvb3JkID0gdGV4UG9zaXRpb247CiAgICBjb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
 kha_Shaders.painter_image_vertData2 = "s444:I3ZlcnNpb24gMzAwIGVzCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKaW4gbWVkaXVtcCB2ZWMzIHZlcnRleFBvc2l0aW9uOwpvdXQgbWVkaXVtcCB2ZWMyIHRleENvb3JkOwppbiBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247Cm91dCBtZWRpdW1wIHZlYzQgY29sb3I7CmluIG1lZGl1bXAgdmVjNCB2ZXJ0ZXhDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX1Bvc2l0aW9uID0gcHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCk7CiAgICB0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwogICAgY29sb3IgPSB2ZXJ0ZXhDb2xvcjsKfQoK";
