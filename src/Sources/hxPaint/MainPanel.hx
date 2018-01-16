@@ -12,7 +12,6 @@ class MainPanel extends Box
         this.color = color;
     }
 
-
     override public function onAdded() : Void
     {
         solver.addConstraint(this.x == 120);

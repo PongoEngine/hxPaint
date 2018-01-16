@@ -36,6 +36,7 @@ class Main
     public static var font :Font = null;
     public static var fontSize :Int = 18;
     public static var operation :Operation = FILL;
+    public static var pixels :Array<Pixel> = [];
 
     public static function main() : Void
     {
@@ -52,23 +53,12 @@ class Main
         var solver = new Solver();
         var rowLength = 32;
         var mainPanel = new MainPanel(solver, 0xffffffff);
-        var pixels :Array<Pixel> = [];
         for(i in 0...rowLength*rowLength) {
-            var pixel = new Pixel(solver, rowLength, i);
-            mainPanel.addChild(pixel);
-
             var x = i%rowLength;
             var y = Math.floor(i/rowLength);
-            pixels[x*y] = pixel;
-
-            if(y > 0) {
-                pixels[x*(y-1)].down = pixel;
-                pixel.up = pixels[x*(y-1)];
-            }
-            if(x > 0) {
-                pixels[(x-1)*y].right = pixel;
-                pixel.left = pixels[(x-1)*y];
-            }
+            var pixel = new Pixel(solver, x, y, rowLength);
+            pixels[y*rowLength + x] = pixel;
+            mainPanel.addChild(pixel);
         }
 
         var window = new WindowBox(0xff444444, width, height, solver);

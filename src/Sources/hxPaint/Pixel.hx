@@ -4,21 +4,17 @@ import jasper.Solver;
 
 class Pixel extends Box
 {
-    public var index :Int;
+    public var xIndex :Int;
+    public var yIndex :Int;
     public var rowLength :Int;
-    public var isColored :Bool;
     public var color :Int;
-    public var up :Pixel;
-    public var right :Pixel;
-    public var down :Pixel;
-    public var left :Pixel;
 
-    public function new(solver :Solver, rowLength :Int, index :Int) : Void
+    public function new(solver :Solver, xIndex :Int, yIndex :Int, rowLength :Int) : Void
     {
         super(solver);
-        this.index = index;
+        this.xIndex = xIndex;
+        this.yIndex = yIndex;
         this.rowLength = rowLength;
-        this.isColored = false;
     }
 
     override public function onDown(x:Int, y:Int) : Void
@@ -32,50 +28,68 @@ class Pixel extends Box
 
     private function pencil() : Void
     {
-        if(this.color != Main.color && isColored) {
-            this.color = Main.color;
-        }
-        else if(isColored) {
-            this.isColored = false;
-        }
-        else {
-            this.isColored = true;
-            this.color = Main.color;
-        }
+        this.color = Main.color;
     }
 
-    private function fill(pixel :Pixel, targetColor :Int, replacementColor :Int) : Void
+    private static function fill(pixel :Pixel, targetColor :Int, replacementColor :Int) : Void
     {
-        if(pixel == null) return;
         if(targetColor == replacementColor) return;
         if(pixel.color != targetColor) return;
         pixel.color = replacementColor;
-        pixel.isColored = true;
 
-        fill(pixel.down, targetColor, replacementColor);
-        fill(pixel.up, targetColor, replacementColor);
-        fill(pixel.left, targetColor, replacementColor);
-        fill(pixel.right, targetColor, replacementColor);
+        if(!pixel.isBottomWall()) {
+            var pixel = Main.pixels[(pixel.yIndex+1)*pixel.rowLength + pixel.xIndex];
+            fill(pixel, targetColor, replacementColor);
+        }
+        if(!pixel.isTopWall()) {
+            var pixel = Main.pixels[(pixel.yIndex-1)*pixel.rowLength + pixel.xIndex];
+            fill(pixel, targetColor, replacementColor);
+        }
+        if(!pixel.isLeftWall()) {
+            var pixel = Main.pixels[pixel.yIndex*pixel.rowLength + pixel.xIndex - 1];
+            fill(pixel, targetColor, replacementColor);
+        }
+        if(!pixel.isRightWall()) {
+            var pixel = Main.pixels[pixel.yIndex*pixel.rowLength + pixel.xIndex + 1];
+            fill(pixel, targetColor, replacementColor);
+        }
+        
         return;
+    }
+
+    public inline function isLeftWall() : Bool
+    {
+        return xIndex == 0;
+    }
+
+    public inline function isRightWall() : Bool
+    {
+        return xIndex == rowLength - 1;
+    }
+
+    public inline function isTopWall() : Bool
+    {
+        return yIndex == 0;
+    }
+
+    public inline function isBottomWall() : Bool
+    {
+        return yIndex == rowLength - 1;
     }
 
     override public function onSolved() : Void
     {
-        var x = index%this.rowLength;
-        var y = Math.floor(index/this.rowLength);
         var pixelSize = parent.width.m_value/rowLength;
-        this.x.m_value = parent.x.m_value + (x * pixelSize);
-        this.y.m_value = parent.y.m_value + (y * pixelSize);
+        this.x.m_value = parent.x.m_value + (xIndex * pixelSize);
+        this.y.m_value = parent.y.m_value + (yIndex * pixelSize);
         this.width.m_value = pixelSize;
         this.height.m_value = pixelSize;
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        if(isColored) {
-            framebuffer.g2.color = this.color;
-            framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
-        }
+        framebuffer.g2.color = this.color;
+        framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         framebuffer.g2.color = 0xff000000;
         framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value);
     }
