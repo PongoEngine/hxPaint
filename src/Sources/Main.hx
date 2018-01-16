@@ -26,8 +26,11 @@ import hxPaint.WindowBox;
 import hxPaint.LeftPanel;
 import hxPaint.RightPanel;
 import hxPaint.MainPanel;
+import hxPaint.button.ButtonColor;
+import hxPaint.button.ButtonPencil;
+import hxPaint.button.ButtonFill;
+import hxPaint.button.ButtonEraser;
 import hxPaint.Pixel;
-import hxPaint.Button;
 import hxPaint.Color;
 import kha.input.KeyCode;
 
@@ -65,9 +68,15 @@ class Main
         var window = new WindowBox(0xff444444, width, height, solver);
         window.addChild(mainPanel);
         window.addChild(new LeftPanel(solver, 0xffaaaaaa)
-            .addChild(new Button(PENCIL, solver))
-            .addChild(new Button(FILL, solver))
-            .addChild(new Button(ERASER, solver)));
+            .addChild(new ButtonPencil(solver, function() {Main.operation = PENCIL;})
+                .addChild(new ButtonColor(solver, 0, function() {}))
+                .addChild(new ButtonColor(solver, 1, function() {}))
+                .addChild(new ButtonColor(solver, 2, function() {})))
+            .addChild(new ButtonFill(solver, function() {Main.operation = FILL;})
+                .addChild(new ButtonColor(solver, 0, function() {}))
+                .addChild(new ButtonColor(solver, 1, function() {}))
+                .addChild(new ButtonColor(solver, 2, function() {})))
+            .addChild(new ButtonEraser(solver, function() {Main.operation = ERASER;})));
         window.addChild(new RightPanel(solver, 0xffaaaaaa)
             .addChild(new Color(solver, 0xff000000)) //black
             .addChild(new Color(solver, 0xff808080)) //grey

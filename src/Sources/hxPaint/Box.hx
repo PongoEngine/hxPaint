@@ -14,12 +14,18 @@ class Box
     public var width :Variable;
     public var height :Variable;
 
+    public var boundsWidth :Variable;
+    public var boundsHeight :Variable;
+
     public function new() : Void
     {
         x = new Variable();
         y = new Variable();
         width = new Variable();
         height = new Variable();
+
+        boundsWidth = new Variable();
+        boundsHeight = new Variable();
     }
 
     public function onAdded() : Void
