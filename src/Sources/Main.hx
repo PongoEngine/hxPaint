@@ -21,6 +21,7 @@ import kha.Assets;
 import kha.Font;
 import jasper.*;
 import hxPaint.Box;
+import hxPaint.Operation;
 import hxPaint.WindowBox;
 import hxPaint.LeftPanel;
 import hxPaint.RightPanel;
@@ -34,6 +35,7 @@ class Main
     public static var color :Int = 0xff000000;
     public static var font :Font = null;
     public static var fontSize :Int = 18;
+    public static var operation :Operation = FILL;
 
     public static function main() : Void
     {
@@ -48,10 +50,25 @@ class Main
         var width = System.windowWidth();
         var height = System.windowHeight();
         var solver = new Solver();
-        var mainPanel = new MainPanel(solver, 0xffffffff);
         var rowLength = 32;
+        var mainPanel = new MainPanel(solver, 0xffffffff);
+        var pixels :Array<Pixel> = [];
         for(i in 0...rowLength*rowLength) {
-            mainPanel.addChild(new Pixel(solver, rowLength, i));
+            var pixel = new Pixel(solver, rowLength, i);
+            mainPanel.addChild(pixel);
+
+            var x = i%rowLength;
+            var y = Math.floor(i/rowLength);
+            pixels[x*y] = pixel;
+
+            if(y > 0) {
+                pixels[x*(y-1)].down = pixel;
+                pixel.up = pixels[x*(y-1)];
+            }
+            if(x > 0) {
+                pixels[(x-1)*y].right = pixel;
+                pixel.left = pixels[(x-1)*y];
+            }
         }
 
         var window = new WindowBox(0xff444444, width, height, solver);
@@ -94,7 +111,15 @@ class Main
         });
 
         kha.input.Mouse.get().notify(function(b,x,y) {
-            Box.hitTest(window,x,y, DOWN);
+            if(b==1) {
+                window.solver.suggestValue(window.width, x);
+                window.solver.suggestValue(window.height, y);
+                window.solver.updateVariables();
+                Box.solved(window);
+            }
+            else {
+                Box.hitTest(window,x,y, DOWN);
+            }
         }, function(b,x,y) {
             Box.hitTest(window,x,y, UP);
             mainPanel.onUp(-1,-1);

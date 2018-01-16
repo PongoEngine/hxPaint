@@ -8,6 +8,10 @@ class Pixel extends Box
     public var rowLength :Int;
     public var isColored :Bool;
     public var color :Int;
+    public var up :Pixel;
+    public var right :Pixel;
+    public var down :Pixel;
+    public var left :Pixel;
 
     public function new(solver :Solver, rowLength :Int, index :Int) : Void
     {
@@ -18,6 +22,15 @@ class Pixel extends Box
     }
 
     override public function onDown(x:Int, y:Int) : Void
+    {
+        switch Main.operation {
+            case PENCIL: pencil();
+            case FILL: fill(this, this.color, Main.color);
+            case ERASER:
+        }
+    }
+
+    private function pencil() : Void
     {
         if(this.color != Main.color && isColored) {
             this.color = Main.color;
@@ -31,6 +44,20 @@ class Pixel extends Box
         }
     }
 
+    private function fill(pixel :Pixel, targetColor :Int, replacementColor :Int) : Void
+    {
+        if(pixel == null) return;
+        if(targetColor == replacementColor) return;
+        if(pixel.color != targetColor) return;
+        pixel.color = replacementColor;
+        pixel.isColored = true;
+
+        fill(pixel.down, targetColor, replacementColor);
+        fill(pixel.up, targetColor, replacementColor);
+        fill(pixel.left, targetColor, replacementColor);
+        fill(pixel.right, targetColor, replacementColor);
+        return;
+    }
 
     override public function onSolved() : Void
     {

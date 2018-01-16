@@ -16,6 +16,22 @@ class Button extends Box
         _textAnchorY = Main.font.height(Main.fontSize)/2;
     }
 
+    override public function onDown(x :Int,y :Int) : Void
+    {
+        if(name == "Pencil") {
+            trace("Pencil");
+            Main.operation = PENCIL;
+        }
+        else if(name == "Fill") {
+            trace("Fill");
+            Main.operation = FILL;
+        }
+        else if(name == "Eraser") {
+            trace("Eraser");
+            Main.operation = ERASER;
+        }
+    }
+
     override public function onAdded() : Void
     {
         solver.addConstraint(this.x == parent.x + 5);
