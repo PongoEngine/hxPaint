@@ -40,7 +40,7 @@ class Main
 
     public static function main() : Void
     {
-        System.init({title: "jasper-example", width: 800, height: 600}, function() {
+        System.init({title: "jasper-example", width: 1366, height: 768}, function() {
             Assets.loadEverything(onLoaded);
         });
     }
@@ -64,9 +64,9 @@ class Main
         var window = new WindowBox(0xff444444, width, height, solver);
         window.addChild(mainPanel);
         window.addChild(new LeftPanel(solver, 0xffaaaaaa)
-            .addChild(new Button("Pencil", solver, 0xff334455))
-            .addChild(new Button("Fill", solver, 0xffff4455))
-            .addChild(new Button("Eraser", solver, 0xff334455)));
+            .addChild(new Button(PENCIL, solver))
+            .addChild(new Button(FILL, solver))
+            .addChild(new Button(ERASER, solver)));
         window.addChild(new RightPanel(solver, 0xffaaaaaa)
             .addChild(new Color(solver, 0xff000000)) //black
             .addChild(new Color(solver, 0xff808080)) //grey

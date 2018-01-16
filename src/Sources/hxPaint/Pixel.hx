@@ -9,9 +9,13 @@ class Pixel extends Box
     public var rowLength :Int;
     public var color :Int;
 
+    public static var CAN_PENCIL :Bool = false;
+    public static var CAN_ERASE :Bool = false;
+
     public function new(solver :Solver, xIndex :Int, yIndex :Int, rowLength :Int) : Void
     {
         super(solver);
+        this.color = 0xffffffff;
         this.xIndex = xIndex;
         this.yIndex = yIndex;
         this.rowLength = rowLength;
@@ -20,15 +24,42 @@ class Pixel extends Box
     override public function onDown(x:Int, y:Int) : Void
     {
         switch Main.operation {
-            case PENCIL: pencil();
+            case PENCIL: {
+                CAN_PENCIL = true;
+                pencil();
+            }
             case FILL: fill(this, this.color, Main.color);
-            case ERASER:
+            case ERASER: {
+                CAN_ERASE = true;
+                erase();
+            }
+        }
+    }
+
+    override public function onUp(x:Int, y:Int) : Void
+    {
+        CAN_PENCIL = false;
+        CAN_ERASE = false;
+    }
+
+    override public function onMove(x:Int, y:Int) : Void
+    {
+        if(CAN_PENCIL) {
+            pencil();
+        }
+        if(CAN_ERASE) {
+            erase();
         }
     }
 
     private function pencil() : Void
     {
         this.color = Main.color;
+    }
+
+    private function erase() : Void
+    {
+        this.color = 0xffffffff;
     }
 
     private static function fill(pixel :Pixel, targetColor :Int, replacementColor :Int) : Void

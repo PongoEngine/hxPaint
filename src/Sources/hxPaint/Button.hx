@@ -1,35 +1,23 @@
 package hxPaint;
 
 import jasper.Solver;
+import hxPaint.Operation;
 
 class Button extends Box
 {
-    public var color :Int;
-    public var name :String;
+    public var operation :Operation;
 
-    public function new(name :String, solver :Solver, color :Int) : Void
+    public function new(operation :Operation, solver :Solver) : Void
     {
         super(solver);
-        this.color = color;
-        this.name = name;
-        _textAnchorX = Main.font.width(Main.fontSize, name)/2;
+        this.operation = operation;
+        _textAnchorX = Main.font.width(Main.fontSize, operation.toString())/2;
         _textAnchorY = Main.font.height(Main.fontSize)/2;
     }
 
     override public function onDown(x :Int,y :Int) : Void
     {
-        if(name == "Pencil") {
-            trace("Pencil");
-            Main.operation = PENCIL;
-        }
-        else if(name == "Fill") {
-            trace("Fill");
-            Main.operation = FILL;
-        }
-        else if(name == "Eraser") {
-            trace("Eraser");
-            Main.operation = ERASER;
-        }
+        Main.operation = operation;
     }
 
     override public function onAdded() : Void
@@ -50,10 +38,10 @@ class Button extends Box
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = this.color;
+        framebuffer.g2.color = Main.operation == this.operation ? Main.color : 0xff444444;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         framebuffer.g2.color = 0xff000000;
-        framebuffer.g2.drawString(this.name, x.m_value + width.m_value/2 - _textAnchorX, y.m_value + height.m_value/2 - _textAnchorY);
+        framebuffer.g2.drawString(this.operation.toString(), x.m_value + width.m_value/2 - _textAnchorX, y.m_value + height.m_value/2 - _textAnchorY);
     }
 
     private var _textAnchorX :Float;
