@@ -29,13 +29,14 @@ import hxPaint.MainPanel;
 import hxPaint.Pixel;
 import hxPaint.Button;
 import hxPaint.Color;
+import kha.input.KeyCode;
 
 class Main 
 {
     public static var color :Int = 0xff000000;
     public static var font :Font = null;
     public static var fontSize :Int = 18;
-    public static var operation :Operation = FILL;
+    public static var operation :Operation = PENCIL;
     public static var pixels :Array<Pixel> = [];
 
     public static function main() : Void
@@ -100,6 +101,27 @@ class Main
             framebuffer.g2.end();
         });
 
+        initMouse(window, mainPanel);
+
+        kha.input.Keyboard.get().notify(function(downKey :KeyCode) {
+            if(downKey == KeyCode.Q) { //pencil
+                Main.operation = PENCIL;
+            }
+            else if(downKey == KeyCode.W) { //fill
+                Main.operation = FILL;
+            }
+            else if(downKey == KeyCode.E) { //eraser
+                Main.operation = ERASER;
+            }
+        }, function(upKey :KeyCode) {
+
+        }, function(str :String) {
+
+        });
+    }
+
+    public static function initMouse(window :WindowBox, mainPanel :MainPanel) : Void
+    {
         kha.input.Mouse.get().notify(function(b,x,y) {
             if(b==1) {
                 window.solver.suggestValue(window.width, x);
