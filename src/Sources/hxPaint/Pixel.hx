@@ -14,7 +14,7 @@ class Pixel extends Box
 
     public function new(solver :Solver, xIndex :Int, yIndex :Int, rowLength :Int) : Void
     {
-        super(solver);
+        super();
         this.color = 0xffffffff;
         this.xIndex = xIndex;
         this.yIndex = yIndex;

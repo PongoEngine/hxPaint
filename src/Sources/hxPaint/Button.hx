@@ -6,11 +6,13 @@ import hxPaint.Operation;
 class Button extends Box
 {
     public var operation :Operation;
+    public var solver :Solver;
 
     public function new(operation :Operation, solver :Solver) : Void
     {
-        super(solver);
+        super();
         this.operation = operation;
+        this.solver = solver;
         _textAnchorX = Main.font.width(Main.fontSize, operation.toString())/2;
         _textAnchorY = Main.font.height(Main.fontSize)/2;
     }

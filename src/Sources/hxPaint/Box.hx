@@ -1,7 +1,6 @@
 package hxPaint;
 
 import jasper.Variable;
-import jasper.Solver;
 
 class Box
 {
@@ -14,11 +13,9 @@ class Box
     public var y :Variable;
     public var width :Variable;
     public var height :Variable;
-    public var solver :Solver;
 
-    public function new(solver :Solver) : Void
+    public function new() : Void
     {
-        this.solver = solver;
         x = new Variable();
         y = new Variable();
         width = new Variable();

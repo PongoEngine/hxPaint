@@ -6,11 +6,13 @@ import jasper.Strength;
 class WindowBox extends Box
 {
     public var color :Int;
+    public var solver :Solver;
 
     public function new(color :Int, width :Int, height :Int, solver :Solver) : Void
     {
-        super(solver);
+        super();
         this.color = color;
+        this.solver = solver;
         
         init(width, height);
     }

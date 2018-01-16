@@ -5,11 +5,13 @@ import jasper.Solver;
 class MainPanel extends Box
 {
     public var color :Int;
+    public var solver :Solver;
 
     public function new(solver :Solver, color :Int) : Void
     {
-        super(solver);
+        super();
         this.color = color;
+        this.solver = solver;
     }
 
     override public function onAdded() : Void
