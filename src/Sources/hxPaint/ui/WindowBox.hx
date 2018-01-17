@@ -1,4 +1,4 @@
-package hxPaint;
+package hxPaint.ui;
 
 import jasper.Solver;
 import jasper.Strength;

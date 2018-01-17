@@ -1,6 +1,7 @@
-package hxPaint;
+package hxPaint.ui;
 
 import jasper.Variable;
+import hxPaint.app.Model;
 
 class Box
 {
@@ -29,6 +30,10 @@ class Box
     }
 
     public function onAdded() : Void
+    {
+    }
+
+    public function onUpdate(model :Model) : Void
     {
     }
 
@@ -85,13 +90,24 @@ class Box
         }
     }
 
-    public static function solved (box :Box)
+    public static function update(box :Box, model :Model)
+    {
+        box.onUpdate(model);
+        var p = box.firstChild;
+        while (p != null) {
+            var next = p.next;
+            update(p, model);
+            p = next;
+        }
+    }
+
+    public static function solve(box :Box)
     {
         box.onSolved();
         var p = box.firstChild;
         while (p != null) {
             var next = p.next;
-            solved(p);
+            solve(p);
             p = next;
         }
     }

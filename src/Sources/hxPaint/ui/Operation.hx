@@ -1,4 +1,4 @@
-package hxPaint;
+package hxPaint.ui;
 
 @:enum
 abstract Operation(Int)
