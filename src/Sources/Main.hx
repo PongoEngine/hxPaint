@@ -36,7 +36,6 @@ import hxPaint.ui.Color;
 
 import hxPaint.app.Application;
 import hxPaint.app.Model;
-import hxPaint.app.Update;
 
 class Main 
 {
@@ -97,27 +96,27 @@ class Main
         var solver = new Solver();
 
         var window = new WindowBox(0xff444444, width, height, solver);
-        var application = new Application(SET_FILL, model, window, Update.update);
+        var application = new Application(model, window);
 
         var mainPanel = new MainPanel(solver, 0xffffffff, model, function(index) {
-            application.update(FILL_PIXEL(index));
+            application.fillPixel(index);
         });
     
         var colorFunc = function(color) {
-            application.update(SET_COLOR(color));
+            application.setColor(color);
         }
         
         window.addChild(mainPanel);
         window.addChild(new LeftPanel(solver, 0xffaaaaaa)
-            .addChild(new ButtonPencil(solver, function() {application.update(SET_PENCIL);}).setOn(true)
+            .addChild(new ButtonPencil(solver, function() {application.setPencil();}).setOn(true)
                 .addChild(new ButtonColor(solver, 0, function() {}))
                 .addChild(new ButtonColor(solver, 1, function() {}))
                 .addChild(new ButtonColor(solver, 2, function() {})))
-            .addChild(new ButtonFill(solver, function() {application.update(SET_FILL);})
+            .addChild(new ButtonFill(solver, function() {application.setFill();})
                 .addChild(new ButtonColor(solver, 0, function() {}))
                 .addChild(new ButtonColor(solver, 1, function() {}))
                 .addChild(new ButtonColor(solver, 2, function() {})))
-            .addChild(new ButtonEraser(solver, function() {application.update(SET_ERASER);})));
+            .addChild(new ButtonEraser(solver, function() {application.setEraser();})));
         window.addChild(new RightPanel(solver, 0xffaaaaaa)
             .addChild(new Color(solver, 0xff000000, colorFunc)) //black
             .addChild(new Color(solver, 0xff808080, colorFunc)) //grey
@@ -136,7 +135,7 @@ class Main
             .addChild(new Color(solver, 0xff800080, colorFunc)) //purple
             .addChild(new Color(solver, 0xffFF00FF, colorFunc))); //fuchsia
 
-        application.update(SET_FILL);
+        application.setFill();
         window.solver.updateVariables();
         Box.solve(window);
 
@@ -150,13 +149,13 @@ class Main
 
         kha.input.Keyboard.get().notify(function(downKey :KeyCode) {
             if(downKey == KeyCode.Q) { //pencil
-                application.update(SET_PENCIL);
+                application.setPencil();
             }
             else if(downKey == KeyCode.W) { //fill
-                application.update(SET_FILL);
+                application.setFill();
             }
             else if(downKey == KeyCode.E) { //eraser
-                application.update(SET_ERASER);
+                application.setEraser();
             }
         }, function(upKey :KeyCode) {
 

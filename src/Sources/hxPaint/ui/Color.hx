@@ -1,7 +1,6 @@
 package hxPaint.ui;
 
 import jasper.Solver;
-import hxPaint.app.Msg;
 
 class Color extends Box
 {
