@@ -1,8 +1,11 @@
 package hxPaint.app;
 
+import hxPaint.ui.Operation;
+
 typedef Model =
 {
     var color :Int;
+    var operation :Operation;
     var pencil :DrawOption;
     var fill :DrawOption;
     var eraser :Eraser;

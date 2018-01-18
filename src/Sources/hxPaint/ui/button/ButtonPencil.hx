@@ -15,13 +15,7 @@ class ButtonPencil extends Button
 
     override public function onUpdate(model :Model) : Void
     {
-        if(model.pencil.isOn) {
-            this.isOn = true;
-            Main.operation = PENCIL;
-        }
-        else {
-            this.isOn = false;
-        }
+        this.isOn = model.pencil.isOn;
     }
 
     override public function onAdded() : Void

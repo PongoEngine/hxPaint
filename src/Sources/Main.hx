@@ -39,8 +39,6 @@ import hxPaint.app.Model;
 
 class Main 
 {
-    public static var operation :Operation = PENCIL;
-
     public static function main() : Void
     {
         System.init({title: "jasper-example", width: 1366, height: 768}, function() {
@@ -55,6 +53,7 @@ class Main
 
         var model :Model = 
             { color: 0xff000000
+            , operation: PENCIL
             , pencil:
                 { isOn: true
                 , color1: 0xff000000

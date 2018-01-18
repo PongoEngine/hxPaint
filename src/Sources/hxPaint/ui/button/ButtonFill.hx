@@ -15,13 +15,7 @@ class ButtonFill extends Button
 
     override public function onUpdate(model :Model) : Void
     {
-        if(model.fill.isOn) {
-            this.isOn = true;
-            Main.operation = FILL;
-        }
-        else {
-            this.isOn = false;
-        }
+        this.isOn = model.fill.isOn;
     }
 
     override public function onAdded() : Void
