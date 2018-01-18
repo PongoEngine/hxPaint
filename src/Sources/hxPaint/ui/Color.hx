@@ -1,22 +1,24 @@
 package hxPaint.ui;
 
 import jasper.Solver;
+import hxPaint.app.Msg;
 
 class Color extends Box
 {
     public var color :Int;
     public var solver :Solver;
 
-    public function new(solver :Solver, color :Int) : Void
+    public function new(solver :Solver, color :Int, onClick : Int -> Void) : Void
     {
         super();
         this.color = color;
         this.solver = solver;
+        _onClick = onClick;
     }
 
     override public function onDown(x :Int, y :Int) : Void
     {
-        Main.color = this.color;
+        _onClick(this.color);
     }
 
     override public function onAdded() : Void
@@ -42,4 +44,6 @@ class Color extends Box
         framebuffer.g2.color = 0xdd000000;
         framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value - 0.5, height.m_value - 0.5, 1);
     }
+
+    private var _onClick :Int -> Void;
 }

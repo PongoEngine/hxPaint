@@ -20,6 +20,12 @@ class Update
                 model.fill.isOn = false;
                 model.eraser.isOn = true;
             }
+            case SET_COLOR(color): {
+                model.color = color;
+            }
+            case FILL_PIXEL(index): {
+                model.pixels[index] = model.color;
+            }
         }
         return model;
     }

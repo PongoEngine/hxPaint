@@ -2,11 +2,13 @@ package hxPaint.app;
 
 typedef Model =
 {
-    var pencil: DrawOption;
-    var fill: DrawOption;
+    var color :Int;
+    var pencil :DrawOption;
+    var fill :DrawOption;
     var eraser :Eraser;
     var colors :Array<Int>;
     var pixels :Array<Int>;
+    var rowLength :Int;
 }
 
 typedef DrawOption =

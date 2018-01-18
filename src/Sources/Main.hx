@@ -19,7 +19,6 @@ package;
 import kha.System;
 import kha.Assets;
 import kha.input.KeyCode;
-import kha.Font;
 
 import jasper.*;
 
@@ -33,7 +32,6 @@ import hxPaint.ui.button.ButtonColor;
 import hxPaint.ui.button.ButtonPencil;
 import hxPaint.ui.button.ButtonFill;
 import hxPaint.ui.button.ButtonEraser;
-import hxPaint.ui.Pixel;
 import hxPaint.ui.Color;
 
 import hxPaint.app.Application;
@@ -42,11 +40,7 @@ import hxPaint.app.Update;
 
 class Main 
 {
-    public static var color :Int = 0xff000000;
-    public static var font :Font = null;
-    public static var fontSize :Int = 18;
     public static var operation :Operation = PENCIL;
-    public static var pixels :Array<Pixel> = [];
 
     public static function main() : Void
     {
@@ -57,12 +51,12 @@ class Main
 
     private static function onLoaded() : Void
     {
-        font = Assets.fonts.Roboto_Black;
         var width = System.windowWidth();
         var height = System.windowHeight();
 
         var model :Model = 
-            { pencil:
+            { color: 0xff000000
+            , pencil:
                 { isOn: true
                 , color1: 0xff000000
                 , color2: 0xff000000
@@ -97,21 +91,21 @@ class Main
                 ]
             , pixels:
                 [for (i in 0...(16*16)) 0xffffffff]
+            , rowLength: 16
             };
 
         var solver = new Solver();
-        var rowLength = 32;
-        var mainPanel = new MainPanel(solver, 0xffffffff);
-        for(i in 0...rowLength*rowLength) {
-            var x = i%rowLength;
-            var y = Math.floor(i/rowLength);
-            var pixel = new Pixel(solver, x, y, rowLength);
-            pixels[y*rowLength + x] = pixel;
-            mainPanel.addChild(pixel);
-        }
 
         var window = new WindowBox(0xff444444, width, height, solver);
         var application = new Application(SET_FILL, model, window, Update.update);
+
+        var mainPanel = new MainPanel(solver, 0xffffffff, model, function(index) {
+            application.update(FILL_PIXEL(index));
+        });
+    
+        var colorFunc = function(color) {
+            application.update(SET_COLOR(color));
+        }
         
         window.addChild(mainPanel);
         window.addChild(new LeftPanel(solver, 0xffaaaaaa)
@@ -125,34 +119,28 @@ class Main
                 .addChild(new ButtonColor(solver, 2, function() {})))
             .addChild(new ButtonEraser(solver, function() {application.update(SET_ERASER);})));
         window.addChild(new RightPanel(solver, 0xffaaaaaa)
-            .addChild(new Color(solver, 0xff000000)) //black
-            .addChild(new Color(solver, 0xff808080)) //grey
-            .addChild(new Color(solver, 0xffC0C0C0)) //silver
-            .addChild(new Color(solver, 0xffFFFFFF)) //white
-            .addChild(new Color(solver, 0xff800000)) //maroon
-            .addChild(new Color(solver, 0xffFF0000)) //red
-            .addChild(new Color(solver, 0xff808000)) //olive
-            .addChild(new Color(solver, 0xffFFFF00)) //yellow
-            .addChild(new Color(solver, 0xff008000)) //green
-            .addChild(new Color(solver, 0xff00FF00)) //lime
-            .addChild(new Color(solver, 0xff008080)) //teal
-            .addChild(new Color(solver, 0xff00FFFF)) //aqua
-            .addChild(new Color(solver, 0xff000080)) //navy
-            .addChild(new Color(solver, 0xff0000FF)) //blue
-            .addChild(new Color(solver, 0xff800080)) //purple
-            .addChild(new Color(solver, 0xffFF00FF))); //fuchsia
+            .addChild(new Color(solver, 0xff000000, colorFunc)) //black
+            .addChild(new Color(solver, 0xff808080, colorFunc)) //grey
+            .addChild(new Color(solver, 0xffC0C0C0, colorFunc)) //silver
+            .addChild(new Color(solver, 0xffFFFFFF, colorFunc)) //white
+            .addChild(new Color(solver, 0xff800000, colorFunc)) //maroon
+            .addChild(new Color(solver, 0xffFF0000, colorFunc)) //red
+            .addChild(new Color(solver, 0xff808000, colorFunc)) //olive
+            .addChild(new Color(solver, 0xffFFFF00, colorFunc)) //yellow
+            .addChild(new Color(solver, 0xff008000, colorFunc)) //green
+            .addChild(new Color(solver, 0xff00FF00, colorFunc)) //lime
+            .addChild(new Color(solver, 0xff008080, colorFunc)) //teal
+            .addChild(new Color(solver, 0xff00FFFF, colorFunc)) //aqua
+            .addChild(new Color(solver, 0xff000080, colorFunc)) //navy
+            .addChild(new Color(solver, 0xff0000FF, colorFunc)) //blue
+            .addChild(new Color(solver, 0xff800080, colorFunc)) //purple
+            .addChild(new Color(solver, 0xffFF00FF, colorFunc))); //fuchsia
 
         application.update(SET_FILL);
         window.solver.updateVariables();
         Box.solve(window);
 
-        var initialized = false;
         System.notifyOnRender(function(framebuffer) {
-            if(!initialized) {
-                framebuffer.g2.font = font;
-                framebuffer.g2.fontSize = fontSize;
-                initialized = true;
-            }
             framebuffer.g2.begin(0xffffffff);
             Box.render(window, framebuffer);
             framebuffer.g2.end();
