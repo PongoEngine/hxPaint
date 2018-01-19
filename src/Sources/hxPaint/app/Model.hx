@@ -1,6 +1,7 @@
 package hxPaint.app;
 
 import hxPaint.ui.Operation;
+import hxPaint.ui.Pixels;
 
 typedef Model =
 {
@@ -10,7 +11,7 @@ typedef Model =
     var fill :DrawOption;
     var eraser :Eraser;
     var colors :Array<Int>;
-    var pixels :Array<Int>;
+    var pixels :Pixels;
     var rowLength :Int;
 }
 

@@ -23,7 +23,7 @@ import kha.input.KeyCode;
 import jasper.*;
 
 import hxPaint.ui.Box;
-import hxPaint.ui.Operation;
+import hxPaint.ui.Pixels;
 import hxPaint.ui.WindowBox;
 import hxPaint.ui.LeftPanel;
 import hxPaint.ui.RightPanel;
@@ -87,8 +87,7 @@ class Main
                 , 0xff800080
                 , 0xffFF00FF
                 ]
-            , pixels:
-                [for (i in 0...(16*16)) 0xffffffff]
+            , pixels: new Pixels(16, 16)
             , rowLength: 16
             };
 
@@ -97,8 +96,10 @@ class Main
         var window = new WindowBox(0xff444444, width, height, solver);
         var application = new Application(model, window);
 
-        var mainPanel = new MainPanel(solver, 0xffffffff, model, function(index) {
-            application.fillPixel(index);
+        var mainPanel = new MainPanel(solver, 0xffffffff, model, function(x,y) {
+            application.colorPixel(x,y);
+        }, function(x,y) {
+            application.fillPixel(x,y);
         });
     
         var colorFunc = function(color) {

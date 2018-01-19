@@ -3,6 +3,8 @@ package hxPaint.ui.button;
 class Button extends Box
 {
     public var isOn :Bool;
+    public var color :Int = 0xff000000;
+    public var shadow :Int = 0xff666666;
 
     public function new(onClick : Void -> Void) : Void
     {
@@ -18,12 +20,12 @@ class Button extends Box
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xff444444;
+        framebuffer.g2.color = isOn ? color : shadow;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
 
-        if(isOn) {
-            framebuffer.g2.color = 0xffffffff;
-            framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value, 3);
+        if(!isOn) {
+            framebuffer.g2.color = color;
+            framebuffer.g2.fillRect(x.m_value, y.m_value + 3, width.m_value, height.m_value);
         }
     }
 

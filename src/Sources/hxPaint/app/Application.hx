@@ -13,6 +13,7 @@ class Application
 
     public function setPencil() : Void
     {
+        _model.operation = PENCIL;
         _model.pencil.isOn = true;
         _model.fill.isOn = false;
         _model.eraser.isOn = false;
@@ -21,6 +22,7 @@ class Application
 
     public function setFill() : Void
     {
+        _model.operation = FILL;
         _model.pencil.isOn = false;
         _model.fill.isOn = true;
         _model.eraser.isOn = false;
@@ -29,6 +31,7 @@ class Application
 
     public function setEraser() : Void
     {
+        _model.operation = ERASER;
         _model.pencil.isOn = false;
         _model.fill.isOn = false;
         _model.eraser.isOn = true;
@@ -41,9 +44,16 @@ class Application
         Box.update(_window, _model);
     }
 
-    public function fillPixel(index) : Void
+    public function fillPixel(x :Int, y :Int) : Void
     {
-        _model.pixels[index] = _model.color;
+        var target = _model.pixels.getColor(x,y);
+        _model.pixels.fill(x,y, target, _model.color);
+        Box.update(_window, _model);
+    }
+
+    public function colorPixel(x :Int, y :Int) : Void
+    {
+        _model.pixels.setColor(x,y, _model.color);
         Box.update(_window, _model);
     }
 
