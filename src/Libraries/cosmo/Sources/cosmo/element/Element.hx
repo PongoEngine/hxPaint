@@ -2,6 +2,7 @@ package cosmo.element;
 
 import jasper.Variable;
 import jasper.Solver;
+import cosmo.style.Style;
 
 class Element
 {
@@ -13,13 +14,15 @@ class Element
     public var y :Variable;
     public var width :Variable;
     public var height :Variable;
+    public var style :Style;
 
-    public function new() : Void
+    public function new(style :Style) : Void
     {
         x = new Variable();
         y = new Variable();
         width = new Variable();
         height = new Variable();
+        this.style = style;
     }
 
     public function draw(framebuffer :kha.Framebuffer) : Void

@@ -49,9 +49,9 @@ class Virtual
     private static function createElement<Msg>(updateFn :Msg -> Void, dElem :VElement) : Element
     {
         var element :Element = switch dElem.nodeType {
-            case ELEMENT: new Element();
-            case CONTAINER: new Container();
-            case BUTTON: new Button();
+            case ELEMENT: new Element(dElem.style);
+            case CONTAINER: new Container(dElem.style);
+            case BUTTON: new Button(dElem.style);
         }
 
         for(c in dElem.children) {

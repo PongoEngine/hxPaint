@@ -1,21 +1,22 @@
 package wanda.element;
 
+import cosmo.style.Style;
 import wanda.virtual.VElement;
 
 class Element
 {
-    public static function element(children :Array<VElement>) : VElement
+    public static function element(style :Style, children :Array<VElement>) : VElement
     {
-        return new VElement(ELEMENT, children);
+        return new VElement(ELEMENT, style, children);
     }
 
-    public static function container(children :Array<VElement>) : VElement
+    public static function container(style :Style, children :Array<VElement>) : VElement
     {
-        return new VElement(CONTAINER, children);
+        return new VElement(CONTAINER, style, children);
     }
 
-    public static function button(children :Array<VElement>) : VElement
+    public static function button(style :Style, children :Array<VElement>) : VElement
     {
-        return new VElement(BUTTON, children);
+        return new VElement(BUTTON, style, children);
     }
 }

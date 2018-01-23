@@ -1,6 +1,6 @@
 package wanda.program;
 
-import cosmo.element.Element;
+import cosmo.style.Style;
 import cosmo.element.Element;
 import wanda.virtual.Virtual;
 import wanda.virtual.VElement;
@@ -14,7 +14,7 @@ class Program<Model, Msg>
         _viewFn = viewFn;
 
         _oldView = null;
-        _root = new Element();
+        _root = new Element(new Style());
         processView(_model);
     }
 
