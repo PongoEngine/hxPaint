@@ -6,6 +6,7 @@ class Style
     public var y :Constraint;
     public var width :Constraint;
     public var height :Constraint;
+    public var direction :Direction;
     public var color :Int;
 
     public function new() : Void
@@ -14,6 +15,7 @@ class Style
         this.y = INHERIT;
         this.width = INHERIT;
         this.height = INHERIT;
+        this.direction = VERTICAL;
         this.color = 0;
     }
 }

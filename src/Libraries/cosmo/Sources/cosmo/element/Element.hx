@@ -1,11 +1,14 @@
 package cosmo.element;
 
 import jasper.Variable;
+import jasper.Constraint;
 import jasper.Solver;
 import cosmo.style.Style;
 
 class Element
 {
+    public static var solver (default, null) = new Solver();
+
     public var firstChild (default, null) : Element;
     public var nextSibling (default, null) : Element;
     public var parentElement (default, null) : Element;
@@ -27,6 +30,8 @@ class Element
 
     public function draw(framebuffer :kha.Framebuffer) : Void
     {
+        framebuffer.g2.color = style.color;
+        framebuffer.g2.fillRect(x, y, width, height);
     }
 
     public function onUp(x :Int, y :Int) : Void
@@ -77,6 +82,7 @@ class Element
                 }
                 p.parentElement = null;
                 p.nextSibling = null;
+                child.clean();
                 return;
             }
             prev = p;
@@ -118,7 +124,72 @@ class Element
 
     private function layout(parent :Element) : Void
     {
+        _constraints = [];
+        
+        switch(parent.style.direction) {
+            case VERTICAL: {
+                _constraints.push(this.x == parent.x);
 
+                if((parent.firstChild == null)) {
+                    _constraints.push(this.y == parent.y);
+                }
+                else {
+                    var lastChild = parent.lastChild();
+                    _constraints.push(this.y == (lastChild.y + lastChild.height));
+                }
+            }
+            case HORIZONTAL: {
+                _constraints.push(this.y == parent.y);
+
+                if((parent.firstChild == null)) {
+                    _constraints.push(this.x == parent.x);
+                }
+                else {
+                    var lastChild = parent.lastChild();
+                    _constraints.push(this.x == (lastChild.x + lastChild.width));
+                }
+            }
+        }
+
+        switch this.style.width {
+            case INHERIT:
+            case PX(val): _constraints.push(this.width == val);
+            case FUNC(val):
+        }
+
+        switch this.style.height {
+            case INHERIT:
+            case PX(val): _constraints.push(this.height == val);
+            case FUNC(val):
+        }
+
+        for(c in _constraints) {
+            solver.addConstraint(c);
+        }
+
+        solver.updateVariables();
+    }
+
+    private function lastChild() : Element
+    {
+        if(this.firstChild != null) {
+            var p = this.firstChild;
+            var cur = p;
+            while(p != null) {
+                cur = p;
+                p = p.nextSibling;
+            }
+            return cur;
+        }
+        return null;
+    }
+
+    private function clean() : Void
+    {
+        for(c in _constraints) {
+            solver.removeConstraint(c);
+        }
+        _constraints = [];
     }
 
     private function swapVars(newChild :Element, oldChild :Element) : Void
@@ -138,4 +209,6 @@ class Element
         oldChild.width = newChildWidth;
         oldChild.height = newChildHeight;
     }
+
+    private var _constraints :Array<Constraint>;
 }
