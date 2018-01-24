@@ -41,7 +41,7 @@ class Layout
             }
             case PX(val): constraints.push((element.width == val ) | Strength.REQUIRED);
             case PERCENT(val): constraints.push((element.width == parent.width * val ) | Strength.REQUIRED);
-            case CALC(fn):
+            case CALC(fn): constraints.push((element.width == fn(parent.width) ) | Strength.REQUIRED);
         }
         constraints.push((parent.width + parent.x >= element.width + element.x) | Strength.MEDIUM);
     }
@@ -62,7 +62,7 @@ class Layout
             }
             case PX(val): constraints.push((element.height == val ) | Strength.REQUIRED);
             case PERCENT(val): constraints.push((element.height == parent.height * val ) | Strength.REQUIRED);
-            case CALC(fn):
+            case CALC(fn): constraints.push((element.height == fn(parent.height) ) | Strength.REQUIRED);
         }
         constraints.push((parent.height + parent.y >= element.height + element.y) | Strength.MEDIUM);
     }
@@ -103,6 +103,11 @@ class Layout
                 }, constraints);
 
             case [HORIZONTAL, CALC(fn)]:
+                layoutRelative(parent, function(parent) {
+                    return element.x == parent.x + fn(parent.width);
+                }, function(sibling) {
+                    return element.x == sibling.x + sibling.width + fn(parent.width);
+                }, constraints);
             
         }
     }
@@ -143,6 +148,11 @@ class Layout
                 }, constraints);
 
             case [VERTICAL, CALC(fn)]:
+                layoutRelative(parent, function(parent) {
+                    return element.y == parent.y + fn(parent.height);
+                }, function(sibling) {
+                    return element.y == sibling.y + sibling.height + fn(parent.height);
+                }, constraints);
         }
     }
 

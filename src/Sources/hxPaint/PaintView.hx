@@ -25,7 +25,9 @@ class PaintView
 
         var mainContent = new Style();
         mainContent.direction = HORIZONTAL;
-        mainContent.height = PX(500);
+        mainContent.height = CALC(function(p) {
+            return p - 60;
+        });
         mainContent.width = PERCENT(1);
         mainContent.color = 0xffddffee;
 
@@ -34,6 +36,20 @@ class PaintView
         leftColumn.height = PERCENT(1);
         leftColumn.width = PX(200);
         leftColumn.color = 0xff444444;
+
+        var centerColumn = new Style();
+        centerColumn.direction = VERTICAL;
+        centerColumn.height = PERCENT(1);
+        centerColumn.width = CALC(function(p) {
+            return p - 400;
+        });
+        centerColumn.color = 0xff777777;
+
+        var rightColumn = new Style();
+        rightColumn.direction = VERTICAL;
+        rightColumn.height = PERCENT(1);
+        rightColumn.width = PX(200);
+        rightColumn.color = 0xff444444;
 
         return container(mainContainerStyle,
             [ container(toolbar, 
@@ -44,6 +60,12 @@ class PaintView
                 ])
             , container(mainContent,
                 [ container(leftColumn, 
+                    [
+                    ])
+                , container(centerColumn, 
+                    [
+                    ])
+                , container(rightColumn, 
                     [
                     ])
                 ])
