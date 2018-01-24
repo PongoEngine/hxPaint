@@ -37,11 +37,16 @@ class PaintView
         leftColumn.width = PX(200);
         leftColumn.color = 0xff444444;
 
+        var hDivider = new Style();
+        hDivider.height = PERCENT(1);
+        hDivider.width = PX(20);
+        hDivider.color = 0xffaaaaaa;
+
         var centerColumn = new Style();
         centerColumn.direction = VERTICAL;
         centerColumn.height = PERCENT(1);
         centerColumn.width = CALC(function(p) {
-            return p - 400;
+            return p - 420;
         });
         centerColumn.color = 0xff777777;
 
@@ -60,6 +65,9 @@ class PaintView
                 ])
             , container(mainContent,
                 [ container(leftColumn, 
+                    [
+                    ])
+                , horizontalDivider(hDivider, 
                     [
                     ])
                 , container(centerColumn, 

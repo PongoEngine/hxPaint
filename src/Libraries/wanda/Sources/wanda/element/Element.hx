@@ -19,4 +19,9 @@ class Element
     {
         return new VElement(BUTTON, style, children);
     }
+
+    public static function horizontalDivider(style :Style, children :Array<VElement>) : VElement
+    {
+        return new VElement(HORIZONTAL_DIVIDER, style, children);
+    }
 }

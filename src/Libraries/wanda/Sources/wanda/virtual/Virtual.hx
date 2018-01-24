@@ -52,6 +52,7 @@ class Virtual
             case ELEMENT: new Element(dElem.style);
             case CONTAINER: new Container(dElem.style);
             case BUTTON: new Button(dElem.style);
+            case HORIZONTAL_DIVIDER: new HorizontalDivider(dElem.style);
         }
 
         for(c in dElem.children) {
