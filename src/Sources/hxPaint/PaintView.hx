@@ -24,6 +24,18 @@ class PaintView
         toolbarItem.width = PX(170, Strength.MEDIUM);
         toolbarItem.color = 0xff888888;
 
+        var toolbar = new Style();
+        toolbar.direction = HORIZONTAL;
+        toolbar.minHeight = PX(60, Strength.REQUIRED);
+        toolbar.maxHeight = PX(80, Strength.REQUIRED);
+        toolbar.height = PX(60, Strength.WEAK);
+        toolbar.color = 0xff444444;
+
+        var hDivider = new Style();
+        hDivider.width = PERCENT(1, Strength.MEDIUM);
+        hDivider.height = PX(20, Strength.MEDIUM);
+        hDivider.color = 0xffaaaaaa;
+
         var mainContent = new Style();
         mainContent.direction = HORIZONTAL;
         mainContent.height = CALC(function(p) {
@@ -37,13 +49,13 @@ class PaintView
         leftColumn.height = PERCENT(1, Strength.MEDIUM);
         leftColumn.width = PX(200, Strength.WEAK);
         leftColumn.minWidth = PX(200, Strength.REQUIRED);
-        leftColumn.maxWidth = PX(400, Strength.REQUIRED);
+        leftColumn.maxWidth = PX(300, Strength.REQUIRED);
         leftColumn.color = 0xff444444;
 
-        var hDivider = new Style();
-        hDivider.height = PERCENT(1, Strength.MEDIUM);
-        hDivider.width = PX(20, Strength.MEDIUM);
-        hDivider.color = 0xffaaaaaa;
+        var vDivider = new Style();
+        vDivider.height = PERCENT(1, Strength.MEDIUM);
+        vDivider.width = PX(20, Strength.MEDIUM);
+        vDivider.color = 0xffaaaaaa;
 
         var centerColumn = new Style();
         centerColumn.direction = VERTICAL;
@@ -66,13 +78,12 @@ class PaintView
                 , container(toolbarItem, [])
                 , container(toolbarItem, [])
                 ])
+            , horizontalDivider(hDivider)
             , container(mainContent,
                 [ container(leftColumn, 
                     [
                     ])
-                , verticalDivider(hDivider, 
-                    [
-                    ])
+                , verticalDivider(vDivider)
                 , container(centerColumn, 
                     [
                     ])

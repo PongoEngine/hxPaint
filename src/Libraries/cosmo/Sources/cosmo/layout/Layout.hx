@@ -24,6 +24,8 @@ class Layout
         layoutMaxWidth(parent.style.direction, element, parent, constraints);
         layoutWidth(parent.style.direction, element, parent, constraints);
 
+        layoutMinHeight(parent.style.direction, element, parent, constraints);
+        layoutMaxHeight(parent.style.direction, element, parent, constraints);
         layoutHeight(parent.style.direction, element, parent, constraints);
 
         return constraints;
@@ -100,7 +102,7 @@ class Layout
      */
     public static function layoutMinHeight(direction :Direction, element :Element, parent :Element, constraints :Array<Constraint>) : Void
     {
-        switch element.style.height {
+        switch element.style.minHeight {
             case INHERIT:
             case PX(val, str): constraints.push((element.height >= val ) | str);
             case PERCENT(val, str): constraints.push((element.height >= parent.height * val ) | str);
@@ -117,7 +119,7 @@ class Layout
      */
     public static function layoutMaxHeight(direction :Direction, element :Element, parent :Element, constraints :Array<Constraint>) : Void
     {
-        switch element.style.height {
+        switch element.style.maxHeight {
             case INHERIT:
             case PX(val, str): constraints.push((element.height <= val ) | str);
             case PERCENT(val, str): constraints.push((element.height <= parent.height * val ) | str);

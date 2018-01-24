@@ -20,8 +20,13 @@ class Element
         return new VElement(BUTTON, style, children);
     }
 
-    public static function verticalDivider(style :Style, children :Array<VElement>) : VElement
+    public static function verticalDivider(style :Style) : VElement
     {
-        return new VElement(VERTICAL_DIVIDER, style, children);
+        return new VElement(VERTICAL_DIVIDER, style, []);
+    }
+
+    public static function horizontalDivider(style :Style) : VElement
+    {
+        return new VElement(HORIZONTAL_DIVIDER, style, []);
     }
 }
