@@ -33,8 +33,8 @@ class PaintView
 
         var buttonStyle5 = new Style();
         buttonStyle5.color = 0x99556633;
-        buttonStyle5.width = PERCENT(0.25);
-        buttonStyle5.x = PERCENT(0.5);
+        // buttonStyle5.width = PERCENT(0.25);
+        // buttonStyle5.x = PERCENT(0.5);
         buttonStyle5.height = PX(400);
 
         var containerStyle2 = new Style();

@@ -1,5 +1,6 @@
 package wanda.program;
 
+import jasper.Strength;
 import cosmo.style.Style;
 import cosmo.element.Element;
 import wanda.virtual.Virtual;
@@ -14,9 +15,13 @@ class Program<Model, Msg>
         _viewFn = viewFn;
 
         _oldView = null;
-        _root = new Element(new Style());
+        var mainStyle = new Style();
+        mainStyle.color = 0xff333333;
+        _root = new Element(mainStyle);
         Element.solver.addConstraint(_root.x == 0);
         Element.solver.addConstraint(_root.y == 0);
+        Element.solver.addConstraint((_root.width == kha.System.windowWidth()) | Strength.WEAK);
+        Element.solver.addConstraint((_root.height == kha.System.windowHeight()) | Strength.WEAK);
         processView(_model);
     }
 
