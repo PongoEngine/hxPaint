@@ -16,10 +16,10 @@ class Cosmo
         mainStyle.color = 0xff333333;
         this.root = new Element(mainStyle);
 
-        Element.solver.addConstraint(this.root.x == 0);
-        Element.solver.addConstraint(this.root.y == 0);
-        Element.solver.addConstraint((this.root.width == kha.System.windowWidth()) | Strength.WEAK);
-        Element.solver.addConstraint((this.root.height == kha.System.windowHeight()) | Strength.WEAK);
+        Cosmo.solver.addConstraint(this.root.x == 0);
+        Cosmo.solver.addConstraint(this.root.y == 0);
+        Cosmo.solver.addConstraint((this.root.width == kha.System.windowWidth()) | Strength.WEAK);
+        Cosmo.solver.addConstraint((this.root.height == kha.System.windowHeight()) | Strength.WEAK);
 
         initMouse();
     }

@@ -1,5 +1,6 @@
 package cosmo.element;
 
+import jasper.Strength;
 import cosmo.style.Style;
 
 class HorizontalDivider extends Element
@@ -9,6 +10,7 @@ class HorizontalDivider extends Element
         super(style);
         _isDown = false;
         _xVal = 0;
+        trace("wdjfskldfj");
     }
 
     override public function onUp(x :Int, y :Int) : Void
@@ -22,11 +24,22 @@ class HorizontalDivider extends Element
         _xVal = x;
     }
 
+    override public function onAdded() : Void
+    {
+        Cosmo.solver.addEditVariable(this.x, Strength.STRONG);
+    }
+
+    override public function onRemoved() : Void
+    {
+        Cosmo.solver.removeEditVariable(this.x);
+    }
+
     override public function onMove(x :Int, y :Int) : Void
     {
         if(_isDown) {
             var change = x - _xVal;
-            trace(change);
+            Cosmo.solver.suggestValue(this.x, this.x.m_value + change);
+            Cosmo.solver.updateVariables();
             _xVal = x;
         }
     }

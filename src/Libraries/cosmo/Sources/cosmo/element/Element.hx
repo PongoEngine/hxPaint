@@ -2,14 +2,11 @@ package cosmo.element;
 
 import jasper.Variable;
 import jasper.Constraint;
-import jasper.Solver;
 import cosmo.style.Style;
 import cosmo.layout.Layout;
 
 class Element
 {
-    public static var solver (default, null) = new Solver();
-
     public var firstChild (default, null) : Element;
     public var nextSibling (default, null) : Element;
     public var parentElement (default, null) : Element;
@@ -35,6 +32,14 @@ class Element
         framebuffer.g2.fillRect(x, y, width, height);
         framebuffer.g2.color = 0xff000000;
         framebuffer.g2.drawRect(x, y, width, height, 2);
+    }
+
+    public function onAdded() : Void
+    {
+    }
+
+    public function onRemoved() : Void
+    {
     }
 
     public function onUp(x :Int, y :Int) : Void
@@ -68,6 +73,7 @@ class Element
             firstChild = child;
         }
 
+        child.onAdded();
         return this;
     }
 
@@ -86,6 +92,7 @@ class Element
                 p.parentElement = null;
                 p.nextSibling = null;
                 child.clean();
+                child.onRemoved();
                 return;
             }
             prev = p;
@@ -142,16 +149,16 @@ class Element
     private function add(constraints :Array<Constraint>) : Void
     {
         for(c in constraints) {
-            solver.addConstraint(c);
+            Cosmo.solver.addConstraint(c);
         }
-        solver.updateVariables();
+        Cosmo.solver.updateVariables();
         _constraints = constraints;
     }
 
     private function clean() : Void
     {
         for(c in _constraints) {
-            solver.removeConstraint(c);
+            Cosmo.solver.removeConstraint(c);
         }
         _constraints = [];
     }

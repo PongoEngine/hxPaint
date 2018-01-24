@@ -1,7 +1,6 @@
 package wanda.program;
 
 import cosmo.Cosmo;
-import cosmo.element.Element;
 import wanda.virtual.Virtual;
 import wanda.virtual.VElement;
 
