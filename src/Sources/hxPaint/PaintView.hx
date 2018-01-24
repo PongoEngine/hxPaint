@@ -8,46 +8,44 @@ class PaintView
 {
     public static function view(model :PaintModel) : VElement
     {
-        var containerStyle1 = new Style();
-        containerStyle1.color = 0xffff0000;
+        var mainContainerStyle = new Style();
+        mainContainerStyle.direction = VERTICAL;
+        mainContainerStyle.width = PERCENT(1);
+        mainContainerStyle.color = 0xffaaaaaa;
 
-        var buttonStyle1 = new Style();
-        buttonStyle1.color = 0xffff00ff;
-        buttonStyle1.width = PX(100);
-        buttonStyle1.height = PX(100);
+        var toolbar = new Style();
+        toolbar.direction = HORIZONTAL;
+        toolbar.height = PX(60);
+        toolbar.color = 0xff444444;
 
-        var buttonStyle2 = new Style();
-        buttonStyle2.color = 0xff00000f;
-        buttonStyle2.width = PX(100);
-        buttonStyle2.height = PX(100);
+        var toolbarItem = new Style();
+        toolbarItem.height = PERCENT(1);
+        toolbarItem.width = PX(170);
+        toolbarItem.color = 0xff888888;
 
-        var buttonStyle3 = new Style();
-        buttonStyle3.color = 0xfffff0ff;
-        buttonStyle3.width = PX(100);
-        buttonStyle3.height = PX(100);
+        var mainContent = new Style();
+        mainContent.direction = HORIZONTAL;
+        mainContent.height = PX(500);
+        mainContent.width = PERCENT(1);
+        mainContent.color = 0xffddffee;
 
-        var buttonStyle4 = new Style();
-        buttonStyle4.color = 0xaa2233ff;
-        buttonStyle4.width = PX(400);
-        buttonStyle4.height = PX(100);
+        var leftColumn = new Style();
+        leftColumn.direction = VERTICAL;
+        leftColumn.height = PERCENT(1);
+        leftColumn.width = PX(200);
+        leftColumn.color = 0xff444444;
 
-        var buttonStyle5 = new Style();
-        buttonStyle5.color = 0x99556633;
-        // buttonStyle5.width = PERCENT(0.25);
-        // buttonStyle5.x = PERCENT(0.5);
-        buttonStyle5.height = PX(400);
-
-        var containerStyle2 = new Style();
-        containerStyle2.direction = VERTICAL;
-        containerStyle2.color = 0xaa343ff0;
-
-        return container(containerStyle1,
-            [ button(buttonStyle1, [])
-            , button(buttonStyle2, [])
-            , button(buttonStyle3, [])
-            , container(containerStyle2, 
-                [ button(buttonStyle4, [])
-                , button(buttonStyle5, [])
+        return container(mainContainerStyle,
+            [ container(toolbar, 
+                [ container(toolbarItem, [])
+                , container(toolbarItem, [])
+                , container(toolbarItem, [])
+                , container(toolbarItem, [])
+                ])
+            , container(mainContent,
+                [ container(leftColumn, 
+                    [
+                    ])
                 ])
             ]);
     }
