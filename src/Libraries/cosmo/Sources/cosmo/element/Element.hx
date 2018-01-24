@@ -4,6 +4,7 @@ import jasper.Variable;
 import jasper.Constraint;
 import jasper.Solver;
 import cosmo.style.Style;
+import cosmo.layout.Layout;
 
 class Element
 {
@@ -32,6 +33,8 @@ class Element
     {
         framebuffer.g2.color = style.color;
         framebuffer.g2.fillRect(x, y, width, height);
+        framebuffer.g2.color = 0xff000000;
+        framebuffer.g2.drawRect(x, y, width, height, 2);
     }
 
     public function onUp(x :Int, y :Int) : Void
@@ -52,7 +55,7 @@ class Element
             child.parentElement.removeChild(child);
         }
         child.parentElement = this;
-        child.layout(this);
+        add(Layout.layout(child));
 
         var tail = null, p = firstChild;
         while (p != null) {
@@ -122,55 +125,7 @@ class Element
         }
     }
 
-    private function layout(parent :Element) : Void
-    {
-        _constraints = [];
-        
-        switch(parent.style.direction) {
-            case VERTICAL: {
-                _constraints.push(this.x == parent.x);
-
-                if((parent.firstChild == null)) {
-                    _constraints.push(this.y == parent.y);
-                }
-                else {
-                    var lastChild = parent.lastChild();
-                    _constraints.push(this.y == (lastChild.y + lastChild.height));
-                }
-            }
-            case HORIZONTAL: {
-                _constraints.push(this.y == parent.y);
-
-                if((parent.firstChild == null)) {
-                    _constraints.push(this.x == parent.x);
-                }
-                else {
-                    var lastChild = parent.lastChild();
-                    _constraints.push(this.x == (lastChild.x + lastChild.width));
-                }
-            }
-        }
-
-        switch this.style.width {
-            case INHERIT:
-            case PX(val): _constraints.push(this.width == val);
-            case FUNC(val):
-        }
-
-        switch this.style.height {
-            case INHERIT:
-            case PX(val): _constraints.push(this.height == val);
-            case FUNC(val):
-        }
-
-        for(c in _constraints) {
-            solver.addConstraint(c);
-        }
-
-        solver.updateVariables();
-    }
-
-    private function lastChild() : Element
+    public function lastChild() : Element
     {
         if(this.firstChild != null) {
             var p = this.firstChild;
@@ -182,6 +137,15 @@ class Element
             return cur;
         }
         return null;
+    }
+
+    private function add(constraints :Array<Constraint>) : Void
+    {
+        for(c in constraints) {
+            solver.addConstraint(c);
+        }
+        solver.updateVariables();
+        _constraints = constraints;
     }
 
     private function clean() : Void

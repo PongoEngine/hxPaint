@@ -15,6 +15,8 @@ class Program<Model, Msg>
 
         _oldView = null;
         _root = new Element(new Style());
+        Element.solver.addConstraint(_root.x == 0);
+        Element.solver.addConstraint(_root.y == 0);
         processView(_model);
     }
 

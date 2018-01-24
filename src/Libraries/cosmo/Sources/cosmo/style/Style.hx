@@ -2,10 +2,10 @@ package cosmo.style;
 
 class Style
 {
-    public var x :Constraint;
-    public var y :Constraint;
-    public var width :Constraint;
-    public var height :Constraint;
+    public var x :Value;
+    public var y :Value;
+    public var width :Value;
+    public var height :Value;
     public var direction :Direction;
     public var color :Int;
 
@@ -15,7 +15,7 @@ class Style
         this.y = INHERIT;
         this.width = INHERIT;
         this.height = INHERIT;
-        this.direction = VERTICAL;
+        this.direction = HORIZONTAL;
         this.color = 0;
     }
 }

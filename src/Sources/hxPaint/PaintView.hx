@@ -9,10 +9,7 @@ class PaintView
     public static function view(model :PaintModel) : VElement
     {
         var containerStyle1 = new Style();
-        containerStyle1.direction = HORIZONTAL;
         containerStyle1.color = 0xffff0000;
-        containerStyle1.width = PX(400);
-        containerStyle1.height = PX(400);
 
         var buttonStyle1 = new Style();
         buttonStyle1.color = 0xffff00ff;
@@ -29,23 +26,28 @@ class PaintView
         buttonStyle3.width = PX(100);
         buttonStyle3.height = PX(100);
 
+        var buttonStyle4 = new Style();
+        buttonStyle4.color = 0xaa2233ff;
+        buttonStyle4.width = PX(400);
+        buttonStyle4.height = PX(100);
+
+        var buttonStyle5 = new Style();
+        buttonStyle5.color = 0x99556633;
+        // buttonStyle5.width = PX(10);
+        buttonStyle5.x = PX(200);
+        buttonStyle5.height = PX(400);
+
         var containerStyle2 = new Style();
         containerStyle2.direction = VERTICAL;
-        containerStyle2.color = 0xff343ff0;
-        containerStyle2.width = PX(200);
-        containerStyle2.height = PX(500);
+        containerStyle2.color = 0xaa343ff0;
 
         return container(containerStyle1,
             [ button(buttonStyle1, [])
             , button(buttonStyle2, [])
             , button(buttonStyle3, [])
-            , button(buttonStyle2, [])
-            , button(buttonStyle1, [])
-            , button(buttonStyle2, [])
             , container(containerStyle2, 
-                [ button(buttonStyle1, [])
-                , button(buttonStyle3, [])
-                , button(buttonStyle1, [])
+                [ button(buttonStyle4, [])
+                , button(buttonStyle5, [])
                 ])
             ]);
     }
