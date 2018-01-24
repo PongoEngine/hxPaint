@@ -41,6 +41,7 @@ class Layout
             }
             case PX(val): constraints.push((element.width == val ) | Strength.REQUIRED);
             case PERCENT(val): constraints.push((element.width == parent.width * val ) | Strength.REQUIRED);
+            case CALC(fn):
         }
         constraints.push((parent.width + parent.x >= element.width + element.x) | Strength.MEDIUM);
     }
@@ -61,6 +62,7 @@ class Layout
             }
             case PX(val): constraints.push((element.height == val ) | Strength.REQUIRED);
             case PERCENT(val): constraints.push((element.height == parent.height * val ) | Strength.REQUIRED);
+            case CALC(fn):
         }
         constraints.push((parent.height + parent.y >= element.height + element.y) | Strength.MEDIUM);
     }
@@ -78,6 +80,7 @@ class Layout
             case [VERTICAL, INHERIT]: constraints.push(element.x == parent.x);
             case [VERTICAL, PX(val)]: constraints.push(element.x == parent.x + val);
             case [VERTICAL, PERCENT(val)]: constraints.push(element.x == parent.x + (val * parent.width));
+            case [VERTICAL, CALC(fn)]:
             case [HORIZONTAL, INHERIT]:
                 layoutRelative(parent, function(parent) {
                     return element.x == parent.x;
@@ -98,6 +101,9 @@ class Layout
                 }, function(sibling) {
                     return element.x == sibling.x + sibling.width + (val * parent.width);
                 }, constraints);
+
+            case [HORIZONTAL, CALC(fn)]:
+            
         }
     }
 
@@ -114,6 +120,7 @@ class Layout
             case [HORIZONTAL, INHERIT]: constraints.push(element.y == parent.y);
             case [HORIZONTAL, PX(val)]: constraints.push(element.y == parent.y + val);
             case [HORIZONTAL, PERCENT(val)]: constraints.push(element.y == parent.y + (val * parent.height));
+            case [HORIZONTAL, CALC(fn)]:
             case [VERTICAL, INHERIT]: 
                 layoutRelative(parent, function(parent) {
                     return element.y == parent.y;
@@ -134,6 +141,8 @@ class Layout
                 }, function(sibling) {
                     return element.y == sibling.y + sibling.height + (val * parent.height);
                 }, constraints);
+
+            case [VERTICAL, CALC(fn)]:
         }
     }
 
