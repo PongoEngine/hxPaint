@@ -40,6 +40,7 @@ class Layout
                 case HORIZONTAL: constraints.push((element.width == 0) | Strength.WEAK);
             }
             case PX(val): constraints.push((element.width == val ) | Strength.REQUIRED);
+            case PERCENT(val): constraints.push((element.width == parent.width * val ) | Strength.REQUIRED);
         }
         constraints.push((parent.width + parent.x >= element.width + element.x) | Strength.MEDIUM);
     }
@@ -59,6 +60,7 @@ class Layout
                 case HORIZONTAL: constraints.push((element.height == parent.height) | Strength.WEAK);
             }
             case PX(val): constraints.push((element.height == val ) | Strength.REQUIRED);
+            case PERCENT(val): constraints.push((element.height == parent.height * val ) | Strength.REQUIRED);
         }
         constraints.push((parent.height + parent.y >= element.height + element.y) | Strength.MEDIUM);
     }
@@ -75,30 +77,27 @@ class Layout
         switch [direction, element.style.x] {
             case [VERTICAL, INHERIT]: constraints.push(element.x == parent.x);
             case [VERTICAL, PX(val)]: constraints.push(element.x == parent.x + val);
-            case [HORIZONTAL, INHERIT]: {
-                layoutX_Relative(element, parent, 0, constraints);
-            }
-            case [HORIZONTAL, PX(val)]: {
-                layoutX_Relative(element, parent, val, constraints);
-            }
-        }
-    }
+            case [VERTICAL, PERCENT(val)]: constraints.push(element.x == parent.x + (val * parent.width));
+            case [HORIZONTAL, INHERIT]:
+                layoutRelative(parent, function(parent) {
+                    return element.x == parent.x;
+                }, function(sibling) {
+                    return element.x == sibling.x + sibling.width;
+                }, constraints);
 
-    /**
-     *  [Description]
-     *  @param element - 
-     *  @param parent - 
-     *  @param val - 
-     *  @param constraints - 
-     */
-    public static function layoutX_Relative(element :Element, parent :Element, val :Float, constraints :Array<Constraint>) : Void
-    {
-        if((parent.firstChild == null)) {
-            constraints.push(element.x == parent.x + val);
-        }
-        else {
-            var lastChild = parent.lastChild();
-            constraints.push(element.x == lastChild.x + lastChild.width + val);
+            case [HORIZONTAL, PX(val)]:
+                layoutRelative(parent, function(parent) {
+                    return element.x == parent.x + val;
+                }, function(sibling) {
+                    return element.x == sibling.x + sibling.width + val;
+                }, constraints);
+
+            case [HORIZONTAL, PERCENT(val)]:
+                layoutRelative(parent, function(parent) {
+                    return element.x == parent.x + (val * parent.width);
+                }, function(sibling) {
+                    return element.x == sibling.x + sibling.width + (val * parent.width);
+                }, constraints);
         }
     }
 
@@ -114,30 +113,44 @@ class Layout
         switch [direction, element.style.y] {
             case [HORIZONTAL, INHERIT]: constraints.push(element.y == parent.y);
             case [HORIZONTAL, PX(val)]: constraints.push(element.y == parent.y + val);
-            case [VERTICAL, INHERIT]: {
-                layoutY_Relative(element, parent, 0, constraints);
-            }
-            case [VERTICAL, PX(val)]: {
-                layoutY_Relative(element, parent, val, constraints);
-            }
+            case [HORIZONTAL, PERCENT(val)]: constraints.push(element.y == parent.y + (val * parent.height));
+            case [VERTICAL, INHERIT]: 
+                layoutRelative(parent, function(parent) {
+                    return element.y == parent.y;
+                }, function(sibling) {
+                    return element.y == sibling.y + sibling.height;
+                }, constraints);
+
+            case [VERTICAL, PX(val)]:
+                layoutRelative(parent, function(parent) {
+                    return element.y == parent.y + val;
+                }, function(sibling) {
+                    return element.y == sibling.y + sibling.height + val;
+                }, constraints);
+
+            case [VERTICAL, PERCENT(val)]:
+                layoutRelative(parent, function(parent) {
+                    return element.y == parent.y + (val * parent.height);
+                }, function(sibling) {
+                    return element.y == sibling.y + sibling.height + (val * parent.height);
+                }, constraints);
         }
     }
 
     /**
      *  [Description]
-     *  @param element - 
      *  @param parent - 
-     *  @param val - 
+     *  @param fn1 - 
+     *  @param fn2 - 
      *  @param constraints - 
      */
-    public static function layoutY_Relative(element :Element, parent :Element, val :Float, constraints :Array<Constraint>) : Void
+    public static function layoutRelative(parent :Element, fn1 : Element -> Constraint, fn2 : Element -> Constraint, constraints :Array<Constraint>) : Void
     {
         if((parent.firstChild == null)) {
-            constraints.push(element.y == parent.y + val);
+            constraints.push(fn1(parent));
         }
         else {
-            var lastChild = parent.lastChild();
-            constraints.push(element.y == lastChild.y + lastChild.height + val);
+            constraints.push(fn2(parent.lastChild()));
         }
     }
 }
