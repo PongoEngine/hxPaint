@@ -11,7 +11,8 @@ class PaintView
     {
         var mainContainerStyle = new Style();
         mainContainerStyle.direction = VERTICAL;
-        mainContainerStyle.width = PERCENT(1, Strength.MEDIUM);
+        mainContainerStyle.width = PERCENT(0.9, Strength.WEAK);
+        mainContainerStyle.height = PERCENT(1, Strength.WEAK);
         mainContainerStyle.color = 0xffaaaaaa;
 
         var toolbar = new Style();
