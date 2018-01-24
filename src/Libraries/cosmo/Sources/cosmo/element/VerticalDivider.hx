@@ -20,7 +20,7 @@ class VerticalDivider extends Element
 
     override public function onAdded() : Void
     {
-        Cosmo.solver.addEditVariable(this.x, Strength.STRONG);
+        Cosmo.solver.addEditVariable(this.x, Strength.MEDIUM);
         Cosmo.pointerUp.connect(function(_,_) {
             _isDown = false;
         });
