@@ -30,6 +30,7 @@ class Cosmo
 
     public function render(framebuffer :kha.Framebuffer) : Void
     {
+        framebuffer.g2.scissor(0, 0, kha.System.windowWidth(), kha.System.windowHeight());
         render_impl(root, framebuffer);
     }
 
