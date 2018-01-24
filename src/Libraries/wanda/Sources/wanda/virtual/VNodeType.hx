@@ -6,5 +6,5 @@ abstract VNodeType(String)
     var ELEMENT = "element";
     var CONTAINER = "container";
     var BUTTON = "button";
-    var HORIZONTAL_DIVIDER = "horizontalDivider";
+    var VERTICAL_DIVIDER = "verticalDivider";
 }

@@ -2,6 +2,7 @@ package cosmo;
 
 import cosmo.element.Element;
 import cosmo.style.Style;
+import cosmo.util.Signal2;
 import jasper.Solver;
 import jasper.Strength;
 
@@ -9,6 +10,9 @@ class Cosmo
 {
     public var root (default, null) :Element;
     public static var solver (default, null) = new Solver();
+    public static var pointerDown (default, null) = new Signal2<Float, Float>();
+    public static var pointerUp (default, null) = new Signal2<Float, Float>();
+    public static var pointerMove (default, null) = new Signal2<Float, Float>();
 
     public function new() : Void
     {
@@ -33,10 +37,13 @@ class Cosmo
     {
         kha.input.Mouse.get().notify(function(button,x,y) {
             hitTest_impl(root, x, y, DOWN);
+            pointerDown.emit(x,y);
         }, function(button,x,y) {
             hitTest_impl(root, x, y, UP);
+            pointerUp.emit(x,y);
         }, function(x, y, cX, cY) {
             hitTest_impl(root, x, y, MOVE);
+            pointerMove.emit(x,y);
         }, function(w) {
 
         });

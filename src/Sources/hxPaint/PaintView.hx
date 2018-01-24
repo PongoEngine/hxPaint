@@ -67,7 +67,7 @@ class PaintView
                 [ container(leftColumn, 
                     [
                     ])
-                , horizontalDivider(hDivider, 
+                , verticalDivider(hDivider, 
                     [
                     ])
                 , container(centerColumn, 
