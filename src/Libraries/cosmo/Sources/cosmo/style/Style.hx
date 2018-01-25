@@ -8,6 +8,7 @@ class Style
     public var width :Value;
     public var height :Value;
 
+    public var align :Alignment;
     public var direction :Direction;
     public var color :Int;
 
@@ -17,6 +18,7 @@ class Style
         this.y = INHERIT;
         this.width = INHERIT;
         this.height = INHERIT;
+        this.align = LEFT_ALIGN;
 
         this.direction = HORIZONTAL;
         this.color = 0;

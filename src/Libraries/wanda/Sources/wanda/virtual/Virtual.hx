@@ -44,12 +44,12 @@ class Virtual
 
     inline static function changed<Msg>(node1 :VElement, node2 :VElement) : Bool
     {
-        return !(node1.nodeType == node2.nodeType);
+        return !(node1.elementType == node2.elementType);
     }
 
     private static function createElement<Msg>(updateFn :Msg -> Void, dElem :VElement) : Element
     {
-        var element :Element = Cosmo.createElement(dElem.style, dElem.nodeType);
+        var element :Element = Cosmo.createElement(dElem.style, dElem.elementType);
 
         for(c in dElem.children) {
             element.appendChild(createElement(updateFn, c));

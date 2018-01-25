@@ -9,7 +9,7 @@ class PaintView
     public static function view(model :PaintModel) : VElement
     {
         var mainContainerStyle = new Style();
-        mainContainerStyle.direction = HORIZONTAL;
+        mainContainerStyle.direction = VERTICAL;
         mainContainerStyle.width = PX(600);
         mainContainerStyle.height = PX(400);
         mainContainerStyle.color = 0xffaaaaaa;
