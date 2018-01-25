@@ -7,7 +7,7 @@ class Layout
     public static function layout(element :Element) : Void
     {
         switch element.parentElement.style.direction {
-            case VERTICAL: LayoutVertical.layout(element);
+            case VERTICAL:
             case HORIZONTAL: LayoutHorizontal.layout(element);
         }
 

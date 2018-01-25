@@ -9,7 +9,7 @@ class PaintView
     public static function view(model :PaintModel) : VElement
     {
         var mainContainerStyle = new Style();
-        mainContainerStyle.direction = VERTICAL;
+        mainContainerStyle.direction = HORIZONTAL;
         mainContainerStyle.width = PX(600);
         mainContainerStyle.height = PX(400);
         mainContainerStyle.color = 0xffaaaaaa;
@@ -39,7 +39,7 @@ class PaintView
             [ container(leftColumn, 
                 [
                 ])
-            // , verticalDivider(vDivider)
+            , verticalDivider(vDivider)
             , container(centerColumn, 
                 [
                 ])
