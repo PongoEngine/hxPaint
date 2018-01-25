@@ -15,6 +15,7 @@ class PaintView
         mainContainerStyle.color = 0xffaaaaaa;
 
         var leftColumn = new Style();
+        leftColumn.x = PX(80);
         leftColumn.height = PX(100);
         leftColumn.width = PX(200);
         leftColumn.color = 0xff444444;
