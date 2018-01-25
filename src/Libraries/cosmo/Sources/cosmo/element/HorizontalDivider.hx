@@ -7,7 +7,7 @@ class HorizontalDivider extends Element
 {
     public function new(style :Style) : Void
     {
-        super(style);
+        super(style, HORIZONTAL_DIVIDER);
         _isDown = false;
         _yVal = 0;
     }

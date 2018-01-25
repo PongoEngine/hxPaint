@@ -1,6 +1,6 @@
 package cosmo;
 
-import cosmo.element.Element;
+import cosmo.element.*;
 import cosmo.style.Style;
 import cosmo.util.Signal2;
 import jasper.Solver;
@@ -18,7 +18,7 @@ class Cosmo
     {
         var mainStyle = new Style();
         mainStyle.color = 0xffeeeeee;
-        this.root = new Element(mainStyle);
+        this.root = new Element(mainStyle, ELEMENT);
 
         Cosmo.solver.addConstraint(this.root.x == 0);
         Cosmo.solver.addConstraint(this.root.y == 0);
@@ -31,6 +31,17 @@ class Cosmo
     public function render(framebuffer :kha.Framebuffer) : Void
     {
         render_impl(root, framebuffer);
+    }
+
+    public static function createElement(style :Style, elementType :ElementType) : Element
+    {
+        return switch elementType {
+            case ELEMENT: new Element(style, ELEMENT);
+            case CONTAINER: new Container(style);
+            case BUTTON: new Button(style);
+            case VERTICAL_DIVIDER: new VerticalDivider(style);
+            case HORIZONTAL_DIVIDER: new HorizontalDivider(style);
+        }
     }
 
     private function initMouse() : Void
@@ -49,7 +60,7 @@ class Cosmo
         });
     }
 
-    public static function hitTest_impl(box :Element, x :Int, y :Int, type :HitType)
+    private static function hitTest_impl(box :Element, x :Int, y :Int, type :HitType)
     {
         var minX = box.x.m_value;
         var maxX = box.width.m_value + minX;
@@ -73,7 +84,7 @@ class Cosmo
         }
     }
 
-    public static function render_impl(box :Element, framebuffer :kha.Framebuffer)
+    private static function render_impl(box :Element, framebuffer :kha.Framebuffer)
     {
         box.draw(framebuffer);
 

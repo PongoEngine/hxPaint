@@ -1,7 +1,7 @@
-package wanda.virtual;
+package cosmo.element;
 
 @:enum
-abstract VNodeType(String)
+abstract ElementType(String)
 {
     var ELEMENT = "element";
     var CONTAINER = "container";

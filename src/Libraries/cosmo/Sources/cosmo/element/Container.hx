@@ -6,6 +6,6 @@ class Container extends Element
 {
     public function new(style :Style) : Void
     {
-        super(style);
+        super(style, CONTAINER);
     }
 }

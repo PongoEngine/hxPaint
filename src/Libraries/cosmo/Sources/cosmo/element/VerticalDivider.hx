@@ -7,7 +7,7 @@ class VerticalDivider extends Element
 {
     public function new(style :Style) : Void
     {
-        super(style);
+        super(style, VERTICAL_DIVIDER);
         _isDown = false;
         _xVal = 0;
     }

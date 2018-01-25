@@ -1,6 +1,7 @@
 package wanda.virtual;
 
 import cosmo.element.*;
+import cosmo.Cosmo;
 
 class Virtual
 {
@@ -48,13 +49,7 @@ class Virtual
 
     private static function createElement<Msg>(updateFn :Msg -> Void, dElem :VElement) : Element
     {
-        var element :Element = switch dElem.nodeType {
-            case ELEMENT: new Element(dElem.style);
-            case CONTAINER: new Container(dElem.style);
-            case BUTTON: new Button(dElem.style);
-            case VERTICAL_DIVIDER: new VerticalDivider(dElem.style);
-            case HORIZONTAL_DIVIDER: new HorizontalDivider(dElem.style);
-        }
+        var element :Element = Cosmo.createElement(dElem.style, dElem.nodeType);
 
         for(c in dElem.children) {
             element.appendChild(createElement(updateFn, c));

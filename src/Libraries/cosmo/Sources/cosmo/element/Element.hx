@@ -10,6 +10,7 @@ class Element
     public var firstChild (default, null) : Element;
     public var nextSibling (default, null) : Element;
     public var parentElement (default, null) : Element;
+    public var elementType (default, null) : ElementType;
 
     public var x :Variable;
     public var y :Variable;
@@ -17,13 +18,14 @@ class Element
     public var height :Variable;
     public var style :Style;
 
-    public function new(style :Style) : Void
+    public function new(style :Style, elementType :ElementType) : Void
     {
         x = new Variable();
         y = new Variable();
         width = new Variable();
         height = new Variable();
         this.style = style;
+        this.elementType = elementType;
     }
 
     public function draw(framebuffer :kha.Framebuffer) : Void
