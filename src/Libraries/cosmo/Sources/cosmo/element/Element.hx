@@ -64,7 +64,7 @@ class Element
             child.parentElement.removeChild(child);
         }
         child.parentElement = this;
-        add(Layout.layout(child));
+        Layout.layout(child);
 
         var tail = null, p = firstChild;
         while (p != null) {
@@ -150,15 +150,6 @@ class Element
         return null;
     }
 
-    private function add(constraints :Array<Constraint>) : Void
-    {
-        for(c in constraints) {
-            Cosmo.solver.addConstraint(c);
-        }
-        Cosmo.solver.updateVariables();
-        _constraints = constraints;
-    }
-
     private function clean() : Void
     {
         for(c in _constraints) {
@@ -185,5 +176,6 @@ class Element
         oldChild.height = newChildHeight;
     }
 
-    private var _constraints :Array<Constraint>;
+    @:allow(cosmo.layout)
+    private var _constraints :Array<Constraint> = [];
 }

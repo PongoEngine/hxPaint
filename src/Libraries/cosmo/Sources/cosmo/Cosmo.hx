@@ -17,7 +17,7 @@ class Cosmo
     public function new() : Void
     {
         var mainStyle = new Style();
-        mainStyle.color = 0xff333333;
+        mainStyle.color = 0xffeeeeee;
         this.root = new Element(mainStyle);
 
         Cosmo.solver.addConstraint(this.root.x == 0);

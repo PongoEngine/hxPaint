@@ -3,94 +3,49 @@ package hxPaint;
 import wanda.element.Element.*;
 import wanda.virtual.VElement;
 import cosmo.style.Style;
-import jasper.Strength;
 
 class PaintView
 {
     public static function view(model :PaintModel) : VElement
     {
         var mainContainerStyle = new Style();
-        mainContainerStyle.direction = VERTICAL;
-        mainContainerStyle.width = PERCENT(0.9, Strength.WEAK);
-        mainContainerStyle.height = PERCENT(1, Strength.WEAK);
+        mainContainerStyle.direction = HORIZONTAL;
+        mainContainerStyle.width = PX(600);
+        mainContainerStyle.height = PX(400);
         mainContainerStyle.color = 0xffaaaaaa;
 
-        var toolbar = new Style();
-        toolbar.direction = HORIZONTAL;
-        toolbar.height = PX(60, Strength.MEDIUM);
-        toolbar.color = 0xff444444;
-
-        var toolbarItem = new Style();
-        toolbarItem.height = PERCENT(1, Strength.MEDIUM);
-        toolbarItem.width = PX(170, Strength.MEDIUM);
-        toolbarItem.color = 0xff888888;
-
-        var toolbar = new Style();
-        toolbar.direction = HORIZONTAL;
-        toolbar.minHeight = PX(60, Strength.REQUIRED);
-        toolbar.maxHeight = PX(80, Strength.REQUIRED);
-        toolbar.height = PX(60, Strength.WEAK);
-        toolbar.color = 0xff444444;
-
-        var hDivider = new Style();
-        hDivider.width = PERCENT(1, Strength.MEDIUM);
-        hDivider.height = PX(20, Strength.MEDIUM);
-        hDivider.color = 0xffaaaaaa;
-
-        var mainContent = new Style();
-        mainContent.direction = HORIZONTAL;
-        mainContent.height = CALC(function(p) {
-            return p - 60;
-        }, Strength.MEDIUM);
-        mainContent.width = PERCENT(1, Strength.MEDIUM);
-        mainContent.color = 0xffddffee;
 
         var leftColumn = new Style();
-        leftColumn.direction = VERTICAL;
-        leftColumn.height = PERCENT(1, Strength.MEDIUM);
-        leftColumn.width = PX(200, Strength.WEAK);
-        leftColumn.minWidth = PX(200, Strength.REQUIRED);
-        leftColumn.maxWidth = PX(300, Strength.REQUIRED);
+        leftColumn.height = PX(100);
+        leftColumn.width = PX(200);
         leftColumn.color = 0xff444444;
 
         var vDivider = new Style();
-        vDivider.height = PERCENT(1, Strength.MEDIUM);
-        vDivider.width = PX(20, Strength.MEDIUM);
+        vDivider.height = PX(400);
+        vDivider.width = PX(20);
         vDivider.color = 0xffaaaaaa;
 
         var centerColumn = new Style();
-        centerColumn.direction = VERTICAL;
-        centerColumn.height = PERCENT(1, Strength.MEDIUM);
-        centerColumn.width = CALC(function(p) {
-            return p - 420;
-        }, Strength.MEDIUM);
-        centerColumn.color = 0xff777777;
+        centerColumn.height = PX(100);
+        centerColumn.width = PX(100);
+        centerColumn.color = 0xff77ff77;
 
         var rightColumn = new Style();
-        rightColumn.direction = VERTICAL;
-        rightColumn.height = PERCENT(1, Strength.MEDIUM);
-        rightColumn.width = PX(200, Strength.MEDIUM);
-        rightColumn.color = 0xff444444;
+        rightColumn.height = PX(100);
+        rightColumn.width = PX(200);
+        rightColumn.color = 0xff4444ff;
 
         return container(mainContainerStyle,
-            [ container(toolbar, 
-                [ container(toolbarItem, [])
-                , container(toolbarItem, [])
-                , container(toolbarItem, [])
-                , container(toolbarItem, [])
+            [ container(leftColumn, 
+                [
                 ])
-            , horizontalDivider(hDivider)
-            , container(mainContent,
-                [ container(leftColumn, 
-                    [
-                    ])
-                , verticalDivider(vDivider)
-                , container(centerColumn, 
-                    [
-                    ])
-                , container(rightColumn, 
-                    [
-                    ])
+            // , verticalDivider(vDivider)
+            , container(centerColumn, 
+                [
+                ])
+            // , verticalDivider(vDivider)
+            , container(rightColumn, 
+                [
                 ])
             ]);
     }
