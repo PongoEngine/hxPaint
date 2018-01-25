@@ -10,9 +10,9 @@ class Cosmo
 {
     public var root (default, null) :Element;
     public static var solver (default, null) = new Solver();
-    public static var pointerDown (default, null) = new Signal2<Float, Float>();
-    public static var pointerUp (default, null) = new Signal2<Float, Float>();
-    public static var pointerMove (default, null) = new Signal2<Float, Float>();
+    public static var pointerDown (default, null) = new Signal2<Int, Int>();
+    public static var pointerUp (default, null) = new Signal2<Int, Int>();
+    public static var pointerMove (default, null) = new Signal2<Int, Int>();
 
     public function new() : Void
     {
@@ -62,14 +62,7 @@ class Cosmo
 
     private static function hitTest_impl(box :Element, x :Int, y :Int, type :HitType)
     {
-        var minX = box.x.m_value;
-        var maxX = box.width.m_value + minX;
-        var minY = box.y.m_value;
-        var maxY = box.height.m_value + minY;
-        if(
-            minX <= x && maxX >= x &&
-            minY <= y && maxY >= y
-        ) {
+        if(isHit(box,x,y)) {
             switch type {
                 case DOWN: box.onDown(x,y);
                 case UP: box.onUp(x,y);
@@ -82,6 +75,18 @@ class Cosmo
                 p = next;
             }
         }
+    }
+
+    public static inline function isHit(box :Element, x :Int, y :Int) : Bool
+    {
+        var minX = box.x.m_value;
+        var maxX = box.width.m_value + minX;
+        var minY = box.y.m_value;
+        var maxY = box.height.m_value + minY;
+        
+        return
+            minX <= x && maxX >= x &&
+            minY <= y && maxY >= y;
     }
 
     private static function render_impl(box :Element, framebuffer :kha.Framebuffer)

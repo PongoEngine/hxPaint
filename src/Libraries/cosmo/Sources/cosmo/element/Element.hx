@@ -7,9 +7,10 @@ import cosmo.layout.Layout;
 
 class Element
 {
-    public var firstChild (default, null) : Element;
-    public var nextSibling (default, null) : Element;
-    public var parentElement (default, null) : Element;
+    public var firstChild (default, null) : Element = null;
+    public var prevSibling (default, null) : Element = null;
+    public var nextSibling (default, null) : Element = null;
+    public var parentElement (default, null) : Element = null;
     public var elementType (default, null) : ElementType;
 
     public var x :Variable;
@@ -62,7 +63,6 @@ class Element
             child.parentElement.removeChild(child);
         }
         child.parentElement = this;
-        Layout.layout(child);
 
         var tail = null, p = firstChild;
         while (p != null) {
@@ -71,81 +71,69 @@ class Element
         }
         if (tail != null) {
             tail.nextSibling = child;
+            child.prevSibling = tail;
         } else {
             firstChild = child;
         }
 
         child.onAdded();
+        Layout.layout(child);
         return this;
     }
 
     public function removeChild(child :Element) : Void
     {
-        var prev :Element = null, p = firstChild;
-        while (p != null) {
-            var nextSibling = p.nextSibling;
-            if (p == child) {
-                // Splice out the entity
-                if (prev == null) {
-                    firstChild = nextSibling;
-                } else {
-                    prev.nextSibling = nextSibling;
-                }
-                p.parentElement = null;
-                p.nextSibling = null;
-                child.clean();
-                child.onRemoved();
-                return;
-            }
-            prev = p;
-            p = nextSibling;
-        }
+        // var prev :Element = null, p = firstChild;
+        // while (p != null) {
+        //     var nextSibling = p.nextSibling;
+        //     if (p == child) {
+        //         // Splice out the entity
+        //         if (prev == null) {
+        //             firstChild = nextSibling;
+        //         } else {
+        //             prev.nextSibling = nextSibling;
+        //         }
+        //         p.parentElement = null;
+        //         p.nextSibling = null;
+        //         child.clean();
+        //         child.onRemoved();
+        //         return;
+        //     }
+        //     prev = p;
+        //     p = nextSibling;
+        // }
     }
 
     public function replaceChild(newChild :Element, oldChild :Element) : Void
     {
-        if (newChild.parentElement != null) {
-            newChild.parentElement.removeChild(newChild);
-        }
-        newChild.parentElement = this;
+        // if (newChild.parentElement != null) {
+        //     newChild.parentElement.removeChild(newChild);
+        // }
+        // newChild.parentElement = this;
 
-        var prev :Element = null, p = firstChild;
-        while (p != null) {
-            var nextSibling = p.nextSibling;
-            if (p == oldChild) {
-                // Splice out the entity
-                if (prev == null) {
-                    firstChild = newChild;
-                } else {
-                    prev.nextSibling = newChild;
-                }
-                newChild.nextSibling = nextSibling;
-                newChild.parentElement = this;
+        // var prev :Element = null, p = firstChild;
+        // while (p != null) {
+        //     var nextSibling = p.nextSibling;
+        //     if (p == oldChild) {
+        //         // Splice out the entity
+        //         if (prev == null) {
+        //             firstChild = newChild;
+        //         } else {
+        //             prev.nextSibling = newChild;
+        //         }
+        //         newChild.nextSibling = nextSibling;
+        //         newChild.parentElement = this;
 
-                p.parentElement = null;
-                p.nextSibling = null;
+        //         p.parentElement = null;
+        //         p.nextSibling = null;
  
-                swapVars(newChild, oldChild);
-                return;
-            }
+        //         swapVars(newChild, oldChild);
+        //         return;
+        //     }
 
-            prev = p;
-            p = nextSibling;
-        }
-    }
-
-    public function lastChild() : Element
-    {
-        if(this.firstChild != null) {
-            var p = this.firstChild;
-            var cur = p;
-            while(p != null) {
-                cur = p;
-                p = p.nextSibling;
-            }
-            return cur;
-        }
-        return null;
+        //     prev = p;
+        //     p = nextSibling;
+        // }
     }
 
     private function clean() : Void

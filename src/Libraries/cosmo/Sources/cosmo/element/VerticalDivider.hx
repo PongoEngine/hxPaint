@@ -12,15 +12,17 @@ class VerticalDivider extends Element
         _xVal = 0;
     }
 
-    override public function onDown(x :Int, y :Int) : Void
-    {
-        _isDown = true;
-        _xVal = x;
-    }
-
     override public function onAdded() : Void
     {
-        Cosmo.solver.addEditVariable(this.x, Strength.MEDIUM);
+        Cosmo.solver.addEditVariable(this.x, Strength.STRONG);
+
+        Cosmo.pointerDown.connect(function(x,y) {
+            if(Cosmo.isHit(this,x,y)) {
+                _isDown = true;
+                _xVal = x;
+            }
+        });
+
         Cosmo.pointerUp.connect(function(_,_) {
             _isDown = false;
         });

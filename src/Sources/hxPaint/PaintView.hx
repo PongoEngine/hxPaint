@@ -10,13 +10,12 @@ class PaintView
     {
         var mainContainerStyle = new Style();
         mainContainerStyle.direction = HORIZONTAL;
-        mainContainerStyle.width = PX(600);
+        mainContainerStyle.width = PX(400);
         mainContainerStyle.height = PX(400);
         mainContainerStyle.color = 0xffaaaaaa;
 
         var leftColumn = new Style();
-        leftColumn.x = PX(80);
-        leftColumn.height = PX(100);
+        leftColumn.height = PX(200);
         leftColumn.width = PX(200);
         leftColumn.color = 0xff444444;
 
@@ -43,7 +42,7 @@ class PaintView
             , container(centerColumn, 
                 [
                 ])
-            // , verticalDivider(vDivider)
+            , verticalDivider(vDivider)
             , container(rightColumn, 
                 [
                 ])
