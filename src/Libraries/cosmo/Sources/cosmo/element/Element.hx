@@ -28,10 +28,6 @@ class Element
 
     public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        // framebuffer.g2.scissor(0,0,0,0);
-        if(this.parentElement != null) {
-            framebuffer.g2.scissor(Std.int(this.parentElement.x), Std.int(this.parentElement.y), Std.int(this.parentElement.width), Std.int(this.parentElement.height));
-        }
         framebuffer.g2.color = style.color;
         framebuffer.g2.fillRect(x, y, width, height);
         framebuffer.g2.color = 0xff000000;
