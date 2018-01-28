@@ -24,9 +24,4 @@ class Element
     {
         return new VElement(VERTICAL_DIVIDER, style, []);
     }
-
-    public static function horizontalDivider(style :Style) : VElement
-    {
-        return new VElement(HORIZONTAL_DIVIDER, style, []);
-    }
 }

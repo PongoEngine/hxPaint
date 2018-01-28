@@ -9,4 +9,5 @@ class LayoutDefs
     public static inline var STRONG_STRENGTH :Strength = Strength.STRONG;
     public static inline var MEDIUM_STRENGTH :Strength = Strength.STRONG;
     public static inline var PX_STRENGTH :Strength = Strength.MEDIUM;
+    public static inline var EDIT_STRENGTH :Strength = Strength.STRONG;
 }

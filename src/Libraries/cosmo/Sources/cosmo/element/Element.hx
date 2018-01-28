@@ -45,18 +45,6 @@ class Element
     {
     }
 
-    public function onUp(x :Int, y :Int) : Void
-    {
-    }
-
-    public function onDown(x :Int, y :Int) : Void
-    {
-    }
-
-    public function onMove(x :Int, y :Int) : Void
-    {
-    }
-
     public function appendChild(child :Element) : Element
     {
         if (child.parentElement != null) {
@@ -83,25 +71,25 @@ class Element
 
     public function removeChild(child :Element) : Void
     {
-        // var prev :Element = null, p = firstChild;
-        // while (p != null) {
-        //     var nextSibling = p.nextSibling;
-        //     if (p == child) {
-        //         // Splice out the entity
-        //         if (prev == null) {
-        //             firstChild = nextSibling;
-        //         } else {
-        //             prev.nextSibling = nextSibling;
-        //         }
-        //         p.parentElement = null;
-        //         p.nextSibling = null;
-        //         child.clean();
-        //         child.onRemoved();
-        //         return;
-        //     }
-        //     prev = p;
-        //     p = nextSibling;
-        // }
+        var prev :Element = null, p = firstChild;
+        while (p != null) {
+            var nextSibling = p.nextSibling;
+            if (p == child) {
+                // Splice out the entity
+                if (prev == null) {
+                    firstChild = nextSibling;
+                } else {
+                    prev.nextSibling = nextSibling;
+                }
+                p.parentElement = null;
+                p.nextSibling = null;
+                child.clean();
+                child.onRemoved();
+                return;
+            }
+            prev = p;
+            p = nextSibling;
+        }
     }
 
     public function replaceChild(newChild :Element, oldChild :Element) : Void

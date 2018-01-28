@@ -40,41 +40,20 @@ class Cosmo
             case CONTAINER: new Container(style);
             case BUTTON: new Button(style);
             case VERTICAL_DIVIDER: new VerticalDivider(style);
-            case HORIZONTAL_DIVIDER: new HorizontalDivider(style);
         }
     }
 
     private function initMouse() : Void
     {
         kha.input.Mouse.get().notify(function(button,x,y) {
-            hitTest_impl(root, x, y, DOWN);
             pointerDown.emit(x,y);
         }, function(button,x,y) {
-            hitTest_impl(root, x, y, UP);
             pointerUp.emit(x,y);
         }, function(x, y, cX, cY) {
-            hitTest_impl(root, x, y, MOVE);
             pointerMove.emit(x,y);
         }, function(w) {
 
         });
-    }
-
-    private static function hitTest_impl(box :Element, x :Int, y :Int, type :HitType)
-    {
-        if(isHit(box,x,y)) {
-            switch type {
-                case DOWN: box.onDown(x,y);
-                case UP: box.onUp(x,y);
-                case MOVE: box.onMove(x,y);
-            }
-            var p = box.firstChild;
-            while (p != null) {
-                var next = p.nextSibling;
-                hitTest_impl(p, x, y, type);
-                p = next;
-            }
-        }
     }
 
     public static inline function isHit(box :Element, x :Int, y :Int) : Bool

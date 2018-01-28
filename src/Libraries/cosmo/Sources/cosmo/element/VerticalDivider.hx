@@ -1,7 +1,7 @@
 package cosmo.element;
 
-import jasper.Strength;
 import cosmo.style.Style;
+import cosmo.layout.LayoutDefs.*;
 
 class VerticalDivider extends Element
 {
@@ -14,7 +14,7 @@ class VerticalDivider extends Element
 
     override public function onAdded() : Void
     {
-        Cosmo.solver.addEditVariable(this.x, Strength.STRONG);
+        Cosmo.solver.addEditVariable(this.x, EDIT_STRENGTH);
 
         Cosmo.pointerDown.connect(function(x,y) {
             if(Cosmo.isHit(this,x,y)) {
