@@ -1,31 +1,48 @@
+/*
+ * Copyright (c) 2018 Jeremy Meltingtallow
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
+ * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 package cosmo;
 
 import cosmo.element.*;
-import cosmo.style.Style;
-import cosmo.util.Signal2;
+import cosmo.input.Mouse;
 import jasper.Solver;
 import jasper.Strength;
 
 class Cosmo
 {
     public var root (default, null) :Element;
-    public static var solver (default, null) = new Solver();
-    public static var pointerDown (default, null) = new Signal2<Int, Int>();
-    public static var pointerUp (default, null) = new Signal2<Int, Int>();
-    public static var pointerMove (default, null) = new Signal2<Int, Int>();
+    public static var solver (default, null) :Solver;
+    public static var mouse (default, null) :Mouse;
 
     public function new() : Void
     {
-        var mainStyle = new Style();
-        mainStyle.color = 0xffeeeeee;
-        this.root = new Element(mainStyle, ELEMENT);
+        this.root = new Element(ELEMENT);
 
+        Cosmo.solver = new Solver();
         Cosmo.solver.addConstraint(this.root.x == 0);
         Cosmo.solver.addConstraint(this.root.y == 0);
         Cosmo.solver.addConstraint((this.root.width == kha.System.windowWidth()) | Strength.WEAK);
         Cosmo.solver.addConstraint((this.root.height == kha.System.windowHeight()) | Strength.WEAK);
 
-        initMouse();
+        Cosmo.mouse = new Mouse();
     }
 
     public function render(framebuffer :kha.Framebuffer) : Void
@@ -33,39 +50,14 @@ class Cosmo
         render_impl(root, framebuffer);
     }
 
-    public static function createElement(style :Style, elementType :ElementType) : Element
+    public static function createElement(elementType :ElementType) : Element
     {
         return switch elementType {
-            case ELEMENT: new Element(style, ELEMENT);
-            case CONTAINER: new Container(style);
-            case BUTTON: new Button(style);
-            case VERTICAL_DIVIDER: new VerticalDivider(style);
+            case ELEMENT: new Element(ELEMENT);
+            case CONTAINER: new Container();
+            case BUTTON: new Button();
+            case VERTICAL_DIVIDER: new VerticalDivider();
         }
-    }
-
-    private function initMouse() : Void
-    {
-        kha.input.Mouse.get().notify(function(button,x,y) {
-            pointerDown.emit(x,y);
-        }, function(button,x,y) {
-            pointerUp.emit(x,y);
-        }, function(x, y, cX, cY) {
-            pointerMove.emit(x,y);
-        }, function(w) {
-
-        });
-    }
-
-    public static inline function isHit(box :Element, x :Int, y :Int) : Bool
-    {
-        var minX = box.x.m_value;
-        var maxX = box.width.m_value + minX;
-        var minY = box.y.m_value;
-        var maxY = box.height.m_value + minY;
-        
-        return
-            minX <= x && maxX >= x &&
-            minY <= y && maxY >= y;
     }
 
     private static function render_impl(box :Element, framebuffer :kha.Framebuffer)
@@ -79,12 +71,4 @@ class Cosmo
             p = next;
         }
     }
-}
-
-@:enum
-abstract HitType(Int)
-{
-    var DOWN = 0;
-    var UP = 1;
-    var MOVE = 2;
 }

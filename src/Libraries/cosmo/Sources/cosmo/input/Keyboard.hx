@@ -19,15 +19,5 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package cosmo.style;
+package cosmo.input;
 
-// import jasper.Variable;
-// import jasper.Expression;
-
-enum Value
-{
-    INHERIT;
-    PX(val :Float);
-    // PERCENT(val :Float);
-    // CALC(fn :Variable -> Expression);
-}

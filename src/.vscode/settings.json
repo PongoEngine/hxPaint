@@ -3,7 +3,7 @@
         "fileheader": {
             "templates": {
                 "*": [
-                    "${license_gpl_3_0}"
+                    "${license_mit}"
                 ]
             },
             "params": {

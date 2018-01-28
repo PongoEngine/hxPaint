@@ -19,15 +19,47 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package cosmo.style;
+package cosmo.input;
 
-// import jasper.Variable;
-// import jasper.Expression;
+import cosmo.util.Signal2;
+import cosmo.element.Element;
 
-enum Value
+class Mouse
 {
-    INHERIT;
-    PX(val :Float);
-    // PERCENT(val :Float);
-    // CALC(fn :Variable -> Expression);
+    public var pointerDown (default, null) :Signal2<Int, Int>;
+    public var pointerUp (default, null) :Signal2<Int, Int>;
+    public var pointerMove (default, null) :Signal2<Int, Int>;
+
+    public function new() : Void
+    {
+        pointerDown = new Signal2();
+        pointerUp = new Signal2();
+        pointerMove = new Signal2();
+        init();
+    }
+
+    public function isHit(box :Element, x :Int, y :Int) : Bool
+    {
+        var minX = box.x.m_value;
+        var maxX = box.width.m_value + minX;
+        var minY = box.y.m_value;
+        var maxY = box.height.m_value + minY;
+        
+        return
+            minX <= x && maxX >= x &&
+            minY <= y && maxY >= y;
+    }
+
+    private inline function init() : Void
+    {
+        kha.input.Mouse.get().notify(function(button,x,y) {
+            pointerDown.emit(x,y);
+        }, function(button,x,y) {
+            pointerUp.emit(x,y);
+        }, function(x, y, cX, cY) {
+            pointerMove.emit(x,y);
+        }, function(w) {
+
+        });
+    }
 }

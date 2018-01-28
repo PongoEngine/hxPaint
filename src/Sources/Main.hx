@@ -17,22 +17,18 @@
 package;
 
 import kha.System;
-
-import wanda.program.Program;
-import hxPaint.PaintModel;
-import hxPaint.PaintUpdate;
-import hxPaint.PaintView;
+import cosmo.Cosmo;
 
 class Main 
 {
     public static function main() : Void
     {
         System.init({title: "hxPaint", width: 1366, height: 768}, function() {
-            var program = new Program(new PaintModel(), PaintUpdate.update, PaintView.view);
+            var cosmo = new Cosmo();
 
             System.notifyOnRender(function(framebuffer) {
                 framebuffer.g2.begin(0xffffffff);
-                program.render(framebuffer);
+                cosmo.render(framebuffer);
                 framebuffer.g2.end();
             });
         });
