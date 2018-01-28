@@ -19,16 +19,12 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package cosmo.layout;
+package cosmo.element;
 
-import jasper.Strength;
-
-class LayoutDefs
+class Window extends Element
 {
-    public static inline var INHERIT_STRENGTH :Strength = Strength.WEAK;
-    public static inline var REQUIRED_STRENGTH :Strength = Strength.REQUIRED;
-    public static inline var STRONG_STRENGTH :Strength = Strength.STRONG;
-    public static inline var MEDIUM_STRENGTH :Strength = Strength.STRONG;
-    public static inline var PX_STRENGTH :Strength = Strength.MEDIUM;
-    public static inline var EDIT_STRENGTH :Strength = Strength.STRONG;
+    public function new() : Void
+    {
+        super(WINDOW);
+    }
 }

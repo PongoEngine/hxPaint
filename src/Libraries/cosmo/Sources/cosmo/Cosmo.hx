@@ -23,52 +23,40 @@ package cosmo;
 
 import cosmo.element.*;
 import cosmo.input.Mouse;
+import cosmo.renderer.Renderer;
+import cosmo.layout.Layout;
 import jasper.Solver;
-import jasper.Strength;
+
+import cosmo.style.DefaultStyler;
 
 class Cosmo
 {
-    public var root (default, null) :Element;
-    public static var solver (default, null) :Solver;
-    public static var mouse (default, null) :Mouse;
+    public var window (default, null) :Window;
+    public var solver (default, null) :Solver;
+    public var mouse (default, null) :Mouse;
+    public var layout (default, null) :Layout;
 
     public function new() : Void
     {
-        this.root = new Element(ELEMENT);
-
-        Cosmo.solver = new Solver();
-        Cosmo.solver.addConstraint(this.root.x == 0);
-        Cosmo.solver.addConstraint(this.root.y == 0);
-        Cosmo.solver.addConstraint((this.root.width == kha.System.windowWidth()) | Strength.WEAK);
-        Cosmo.solver.addConstraint((this.root.height == kha.System.windowHeight()) | Strength.WEAK);
-
-        Cosmo.mouse = new Mouse();
+        this.window = new Window();
+        this.solver = new Solver();
+        this.mouse = new Mouse();
+        this.layout = new Layout();
     }
 
     public function render(framebuffer :kha.Framebuffer) : Void
     {
-        render_impl(root, framebuffer);
+        Renderer.render(window, framebuffer);
     }
 
     public static function createElement(elementType :ElementType) : Element
     {
-        return switch elementType {
+        return DefaultStyler.setStyle(switch elementType {
             case ELEMENT: new Element(ELEMENT);
             case CONTAINER: new Container();
             case BUTTON: new Button();
             case VERTICAL_DIVIDER: new VerticalDivider();
-        }
-    }
-
-    private static function render_impl(box :Element, framebuffer :kha.Framebuffer)
-    {
-        box.draw(framebuffer);
-
-        var p = box.firstChild;
-        while (p != null) {
-            var next = p.nextSibling;
-            render_impl(p, framebuffer);
-            p = next;
-        }
+            case WINDOW: new Window();
+        });
     }
 }

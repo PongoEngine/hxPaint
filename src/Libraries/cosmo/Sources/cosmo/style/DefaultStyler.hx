@@ -19,14 +19,37 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package cosmo.element;
+package cosmo.style;
 
-@:enum
-abstract ElementType(String)
+import cosmo.element.Element;
+
+class DefaultStyler
 {
-    var ELEMENT = "element";
-    var CONTAINER = "container";
-    var BUTTON = "button";
-    var WINDOW = "window";
-    var VERTICAL_DIVIDER = "verticalDivider";
+
+    public static function setStyle(element :Element) : Element
+    {
+        switch element.elementType {
+            case BUTTON: {
+                
+            }
+            case CONTAINER: {
+
+            }
+            case ELEMENT: {
+
+            }
+            case VERTICAL_DIVIDER: {
+
+            }
+            case WINDOW: {
+                element.style.x = PX(0);
+                element.style.y = PX(0);
+                element.style.width = PX(kha.System.windowWidth());
+                element.style.height = PX(kha.System.windowHeight());
+            }
+        }
+
+        return element;
+    }
+
 }

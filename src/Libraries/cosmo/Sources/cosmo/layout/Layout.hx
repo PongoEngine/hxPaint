@@ -22,22 +22,18 @@
 package cosmo.layout;
 
 import cosmo.element.Element;
+import jasper.Solver;
 
 class Layout
 {
-    public static function layout(element :Element) : Void
+    public function new() : Void
     {
-        switch element.parentElement.style.direction {
-            case VERTICAL:
-            case HORIZONTAL: LayoutHorizontal.layout(element);
-        }
-
-        for(constraint in element._constraints) {
-            Cosmo.solver.addConstraint(constraint);
-        }
-
-        Cosmo.solver.updateVariables();
+        _solver = new Solver();
     }
 
+    public function layout(element :Element) : Void
+    {
+    }
 
+    private var _solver :Solver;
 }

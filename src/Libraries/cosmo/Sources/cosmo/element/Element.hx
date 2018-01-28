@@ -22,7 +22,7 @@
 package cosmo.element;
 
 import jasper.Variable;
-import jasper.Constraint;
+import cosmo.style.Style;
 
 class Element
 {
@@ -35,6 +35,7 @@ class Element
     public var y :Variable;
     public var width :Variable;
     public var height :Variable;
+    public var style :Style;
 
     public function new(elementType :ElementType) : Void
     {
@@ -42,6 +43,7 @@ class Element
         y = new Variable();
         width = new Variable();
         height = new Variable();
+        style = new Style();
         this.elementType = elementType;
     }
 
@@ -51,14 +53,6 @@ class Element
         framebuffer.g2.fillRect(x, y, width, height);
         framebuffer.g2.color = 0xff000000;
         framebuffer.g2.drawRect(x, y, width, height, 2);
-    }
-
-    public function onAdded() : Void
-    {
-    }
-
-    public function onRemoved() : Void
-    {
     }
 
     public function appendChild(child :Element) : Element
@@ -79,7 +73,6 @@ class Element
             firstChild = child;
         }
 
-        child.onAdded();
         return this;
     }
 
@@ -97,8 +90,6 @@ class Element
                 }
                 p.parentElement = null;
                 p.nextSibling = null;
-                child.clean();
-                child.onRemoved();
                 return;
             }
             prev = p;
@@ -129,7 +120,6 @@ class Element
                 p.parentElement = null;
                 p.nextSibling = null;
  
-                swapVars(newChild, oldChild);
                 return;
             }
 
@@ -137,33 +127,4 @@ class Element
             p = nextSibling;
         }
     }
-
-    private function clean() : Void
-    {
-        for(c in _constraints) {
-            Cosmo.solver.removeConstraint(c);
-        }
-        _constraints = [];
-    }
-
-    private function swapVars(newChild :Element, oldChild :Element) : Void
-    {
-        var newChildX = newChild.x;
-        var newChildY = newChild.y;
-        var newChildWidth = newChild.width;
-        var newChildHeight = newChild.height;
-
-        newChild.x = oldChild.x;
-        newChild.y = oldChild.y;
-        newChild.width = oldChild.width;
-        newChild.height = oldChild.height;
-
-        oldChild.x = newChildX;
-        oldChild.y = newChildY;
-        oldChild.width = newChildWidth;
-        oldChild.height = newChildHeight;
-    }
-
-    @:allow(cosmo.layout)
-    private var _constraints :Array<Constraint> = [];
 }

@@ -19,14 +19,9 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package cosmo.element;
+package cosmo.layout.diff;
 
-@:enum
-abstract ElementType(String)
+class Diff
 {
-    var ELEMENT = "element";
-    var CONTAINER = "container";
-    var BUTTON = "button";
-    var WINDOW = "window";
-    var VERTICAL_DIVIDER = "verticalDivider";
+
 }

@@ -19,14 +19,21 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package cosmo.element;
+package cosmo.renderer;
 
-@:enum
-abstract ElementType(String)
+import cosmo.element.Element;
+
+class Renderer
 {
-    var ELEMENT = "element";
-    var CONTAINER = "container";
-    var BUTTON = "button";
-    var WINDOW = "window";
-    var VERTICAL_DIVIDER = "verticalDivider";
+    public static inline function render(element :Element, framebuffer :kha.Framebuffer)
+    {
+        element.draw(framebuffer);
+
+        var p = element.firstChild;
+        while (p != null) {
+            var next = p.nextSibling;
+            render(p, framebuffer);
+            p = next;
+        }
+    }
 }
