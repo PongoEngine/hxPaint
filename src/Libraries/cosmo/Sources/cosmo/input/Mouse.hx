@@ -22,16 +22,19 @@
 package cosmo.input;
 
 import cosmo.util.Signal2;
+import cosmo.util.Disposable;
 import cosmo.element.Element;
 
-class Mouse
+class Mouse implements Disposable
 {
     public var pointerDown (default, null) :Signal2<Int, Int>;
     public var pointerUp (default, null) :Signal2<Int, Int>;
     public var pointerMove (default, null) :Signal2<Int, Int>;
 
-    public function new() : Void
+    public function new(id :Int = 0) : Void
     {
+        _id = id;
+
         pointerDown = new Signal2();
         pointerUp = new Signal2();
         pointerMove = new Signal2();
@@ -50,16 +53,35 @@ class Mouse
             minY <= y && maxY >= y;
     }
 
+    public function dispose() : Void
+    {
+        kha.input.Mouse.get(_id).remove(onDown, onUp, onMove, onWheel);
+    }
+
     private inline function init() : Void
     {
-        kha.input.Mouse.get().notify(function(button,x,y) {
-            pointerDown.emit(x,y);
-        }, function(button,x,y) {
-            pointerUp.emit(x,y);
-        }, function(x, y, cX, cY) {
-            pointerMove.emit(x,y);
-        }, function(w) {
-
-        });
+        kha.input.Mouse.get(_id).notify(onDown, onUp, onMove, onWheel);
     }
+
+    private function onDown(button :Int, x :Int, y :Int) : Void
+    {
+        pointerDown.emit(x,y);
+    }
+
+    private function onUp(button :Int, x :Int, y :Int) : Void
+    {
+        pointerUp.emit(x,y);
+    }
+
+    private function onMove(x :Int, y :Int, cx :Int, cy :Int) : Void
+    {
+        pointerMove.emit(x,y);
+    }
+
+    private function onWheel(w :Int) : Void
+    {
+        
+    }
+
+    private var _id :Int;
 }
