@@ -33,7 +33,8 @@ class DefaultStyler
                 
             }
             case CONTAINER: {
-
+                element.style.width = PX(50);
+                element.style.height = PX(80);
             }
             case ELEMENT: {
 
@@ -42,8 +43,6 @@ class DefaultStyler
 
             }
             case WINDOW: {
-                element.style.x = PX(0);
-                element.style.y = PX(0);
                 element.style.width = PX(kha.System.windowWidth());
                 element.style.height = PX(kha.System.windowHeight());
             }

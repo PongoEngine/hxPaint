@@ -23,17 +23,48 @@ package cosmo.layout;
 
 import cosmo.element.Element;
 import jasper.Solver;
+import cosmo.layout.LayoutElement;
 
 class Layout
 {
     public function new() : Void
     {
         _solver = new Solver();
+        _layoutElements = new Map<Element, LayoutElement>();
     }
 
     public function layout(element :Element) : Void
     {
+        var lElement = getLayoutElement(element);
+        lElement.setStyledConstraints();
+
+        if(element.parentElement != null) {
+            var lParent = getLayoutElement(element.parentElement);
+
+            if(element.parentElement.firstChild != null) {
+                lElement.setXConstraintFromSibling(element.parentElement.firstChild);
+            }
+            else {
+                lElement.setXConstraintFromParent(element.parentElement);
+            }
+
+            lElement.setYConstraint(element.parentElement);
+            lParent.setWidthConstraint(element);
+            lParent.addHeightConstraint(element);
+        }
+
+        _solver.updateVariables();
+    }
+
+    private inline function getLayoutElement(element :Element) : LayoutElement
+    {
+        if(!_layoutElements.exists(element)) {
+            _layoutElements.set(element, new LayoutElement(_solver, element));
+        }
+
+        return _layoutElements.get(element);
     }
 
     private var _solver :Solver;
+    private var _layoutElements :Map<Element, LayoutElement>;
 }

@@ -38,10 +38,12 @@ class Cosmo
 
     public function new() : Void
     {
-        this.window = new Window();
+        this.window = cast createElement(WINDOW);
         this.solver = new Solver();
         this.mouse = new Mouse();
         this.layout = new Layout();
+
+        this.layout.layout(this.window);
     }
 
     public function render(framebuffer :kha.Framebuffer) : Void

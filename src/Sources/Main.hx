@@ -18,6 +18,7 @@ package;
 
 import kha.System;
 import cosmo.Cosmo;
+import cosmo.element.Container;
 
 class Main 
 {
@@ -25,6 +26,12 @@ class Main
     {
         System.init({title: "hxPaint", width: 1366, height: 768}, function() {
             var cosmo = new Cosmo();
+
+            cosmo.window
+                .appendChild(new Container())
+                .appendChild(new Container());
+
+            // cosmo.layout.
 
             System.notifyOnRender(function(framebuffer) {
                 framebuffer.g2.begin(0xffffffff);
