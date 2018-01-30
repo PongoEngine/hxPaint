@@ -21,10 +21,13 @@
 
 package cosmo.element;
 
+import cosmo.Cosmo;
+
+@:allow(cosmo.Cosmo)
 class Container extends Element
 {
-    public function new() : Void
+    private function new(cosmo :Cosmo) : Void
     {
-        super(CONTAINER);
+        super(CONTAINER, cosmo);
     }
 }

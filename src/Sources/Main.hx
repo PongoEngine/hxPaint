@@ -18,7 +18,6 @@ package;
 
 import kha.System;
 import cosmo.Cosmo;
-import cosmo.element.Container;
 
 class Main 
 {
@@ -28,10 +27,23 @@ class Main
             var cosmo = new Cosmo();
 
             cosmo.window
-                .appendChild(new Container())
-                .appendChild(new Container());
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(VERTICAL_DIVIDER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER))
+                .appendChild(cosmo.createElement(CONTAINER));
 
-            // cosmo.layout.
+            cosmo.runLayout();
 
             System.notifyOnRender(function(framebuffer) {
                 framebuffer.g2.begin(0xffffffff);

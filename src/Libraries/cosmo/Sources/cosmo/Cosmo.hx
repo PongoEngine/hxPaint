@@ -25,25 +25,20 @@ import cosmo.element.*;
 import cosmo.input.Mouse;
 import cosmo.renderer.Renderer;
 import cosmo.layout.Layout;
-import jasper.Solver;
 
 import cosmo.style.DefaultStyler;
 
 class Cosmo
 {
     public var window (default, null) :Window;
-    public var solver (default, null) :Solver;
     public var mouse (default, null) :Mouse;
-    public var layout (default, null) :Layout;
+    public var layout :Layout;
 
     public function new() : Void
     {
         this.window = cast createElement(WINDOW);
-        this.solver = new Solver();
         this.mouse = new Mouse();
         this.layout = new Layout();
-
-        this.layout.layout(this.window);
     }
 
     public function render(framebuffer :kha.Framebuffer) : Void
@@ -51,14 +46,20 @@ class Cosmo
         Renderer.render(window, framebuffer);
     }
 
-    public static function createElement(elementType :ElementType) : Element
+    public function runLayout() : Void
+    {
+        layout.layout(window);
+    }
+
+    public function createElement(elementType :ElementType) : Element
     {
         return DefaultStyler.setStyle(switch elementType {
-            case ELEMENT: new Element(ELEMENT);
-            case CONTAINER: new Container();
-            case BUTTON: new Button();
-            case VERTICAL_DIVIDER: new VerticalDivider();
-            case WINDOW: new Window();
+            case ELEMENT: new Element(ELEMENT, this);
+            case CONTAINER: new Container(this);
+            case BUTTON: new Button(this);
+            case VERTICAL_DIVIDER: new VerticalDivider(this);
+            case WINDOW: new Window(this);
         });
     }
+
 }

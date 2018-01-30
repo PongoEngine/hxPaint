@@ -23,48 +23,115 @@ package cosmo.layout;
 
 import cosmo.element.Element;
 import jasper.Solver;
-import cosmo.layout.LayoutElement;
+import jasper.Strength;
+import jasper.Variable;
+
+using cosmo.layout.LayoutTools;
 
 class Layout
 {
     public function new() : Void
     {
         _solver = new Solver();
-        _layoutElements = new Map<Element, LayoutElement>();
     }
 
     public function layout(element :Element) : Void
     {
-        var lElement = getLayoutElement(element);
-        lElement.setStyledConstraints();
-
-        if(element.parentElement != null) {
-            var lParent = getLayoutElement(element.parentElement);
-
-            if(element.parentElement.firstChild != null) {
-                lElement.setXConstraintFromSibling(element.parentElement.firstChild);
-            }
-            else {
-                lElement.setXConstraintFromParent(element.parentElement);
-            }
-
-            lElement.setYConstraint(element.parentElement);
-            lParent.setWidthConstraint(element);
-            lParent.addHeightConstraint(element);
-        }
-
+        layout_impl(element);
         _solver.updateVariables();
     }
 
-    private inline function getLayoutElement(element :Element) : LayoutElement
+    public function suggest(variable :Variable, value :Float) : Void
     {
-        if(!_layoutElements.exists(element)) {
-            _layoutElements.set(element, new LayoutElement(_solver, element));
+        _solver.suggestValue(variable, value);
+        _solver.updateVariables();
+    }
+
+    private function layout_impl(element :Element) : Void
+    {
+        constraintStyle(element);
+        constraintDef(element);
+        special(element);
+
+        var p = element.firstChild;
+        if(p != null) {
+            constraintFirstChild(p);
+            layout_impl(p);
+            p = p.nextSibling;
+        }
+        while (p != null) {
+            var next = p.nextSibling;
+            layout_impl(p);
+            if(next == null) {
+                constraintLast(p);
+            }
+            else {
+                constraintMiddle(p);
+            }
+            p = next;
+        }
+    }
+
+    private function special(element :Element) : Void
+    {
+        switch element.elementType {
+            case VERTICAL_DIVIDER: {
+                _solver.addEditVariable(element.x, Strength.MEDIUM);
+            }
+            case _:
+        }
+    }
+
+    private function constraintFirstChild(element :Element) : Void
+    {
+        trace("constraintFirstChild");
+        _solver.medium(element.left() == element.parentElement.left());
+    }
+
+    private function constraintLast(element :Element) : Void
+    {
+        trace("constraintLast");
+        _solver.medium(element.left() == element.prevSibling.right());
+        _solver.required(element.parentElement.right() >= element.right());
+    }
+
+    private function constraintMiddle(element :Element) : Void
+    {
+        trace("constraintMiddle");
+        _solver.medium(element.left() == element.prevSibling.right());
+    }
+
+    private function constraintStyle(element :Element) : Void
+    {
+        switch element.style.width {
+            case PX(val): {
+                switch element.elementType {
+                    case VERTICAL_DIVIDER: _solver.required(element.width == val);
+                    case _: _solver.medium(element.width == val);
+                }
+            }
+            case INHERIT: {
+                _solver.weak(element.width == 0);
+            }
         }
 
-        return _layoutElements.get(element);
+        switch element.style.height {
+            case PX(val): {
+                _solver.medium(element.height == val);
+            }
+            case INHERIT: {
+                _solver.weak(element.height == 0);
+            }
+        }
+    }
+
+    private function constraintDef(element :Element) : Void
+    {
+        _solver.required(element.left() >= 0);
+        if(element.prevSibling != null) {
+            _solver.required(element.left() >= element.right());
+        }
     }
 
     private var _solver :Solver;
-    private var _layoutElements :Map<Element, LayoutElement>;
 }

@@ -23,15 +23,58 @@ package cosmo.layout;
 
 import cosmo.element.Element;
 import jasper.Expression;
+import jasper.Constraint;
+import jasper.Solver;
+import jasper.Strength;
 
 class LayoutTools
 {
     /**
      *  [Description]
+     *  @param solver - 
+     *  @param constraint - 
+     */
+    @:extern public static inline function weak(solver :Solver, constraint :Constraint) : Void
+    {
+        solver.addConstraint(constraint | Strength.WEAK);
+    }
+
+    /**
+     *  [Description]
+     *  @param solver - 
+     *  @param constraint - 
+     */
+    @:extern public static inline function medium(solver :Solver, constraint :Constraint) : Void
+    {
+        solver.addConstraint(constraint | Strength.MEDIUM);
+    }
+
+    /**
+     *  [Description]
+     *  @param solver - 
+     *  @param constraint - 
+     */
+    @:extern public static inline function strong(solver :Solver, constraint :Constraint) : Void
+    {
+        solver.addConstraint(constraint | Strength.STRONG);
+    }
+
+    /**
+     *  [Description]
+     *  @param solver - 
+     *  @param constraint - 
+     */
+    @:extern public static inline function required(solver :Solver, constraint :Constraint) : Void
+    {
+        solver.addConstraint(constraint | Strength.REQUIRED);
+    }
+
+    /**
+     *  [Description]
      *  @param element - 
      *  @return Expression
      */
-    public static function left(element :Element) : Expression
+    @:extern public static inline function left(element :Element) : Expression
     {
         return element.x + 0;
     }
@@ -41,7 +84,7 @@ class LayoutTools
      *  @param element - 
      *  @return Expression
      */
-    public static function right(element :Element) : Expression
+    @:extern public static inline function right(element :Element) : Expression
     {
         return element.x + element.width;
     }
@@ -51,7 +94,7 @@ class LayoutTools
      *  @param element - 
      *  @return Expression
      */
-    public static function top(element :Element) : Expression
+    @:extern public static inline function top(element :Element) : Expression
     {
         return element.y + 0;
     }
@@ -61,7 +104,7 @@ class LayoutTools
      *  @param element - 
      *  @return Expression
      */
-    public static function bottom(element :Element) : Expression
+    @:extern public static inline function bottom(element :Element) : Expression
     {
         return element.y + element.height;
     }
@@ -71,7 +114,7 @@ class LayoutTools
      *  @param element - 
      *  @return Expression
      */
-    public static function centerX(element :Element) : Expression
+    @:extern public static inline function centerX(element :Element) : Expression
     {
         return element.x + element.width/2;
     }
@@ -81,7 +124,7 @@ class LayoutTools
      *  @param element - 
      *  @return Expression
      */
-    public static function centerY(element :Element) : Expression
+    @:extern public static inline function centerY(element :Element) : Expression
     {
         return element.y + element.height/2;
     }

@@ -40,10 +40,11 @@ class DefaultStyler
 
             }
             case VERTICAL_DIVIDER: {
-
+                element.style.width = PX(20);
+                element.style.height = PX(290);
             }
             case WINDOW: {
-                element.style.width = PX(kha.System.windowWidth());
+                element.style.width = PX(kha.System.windowWidth()/2);
                 element.style.height = PX(kha.System.windowHeight());
             }
         }

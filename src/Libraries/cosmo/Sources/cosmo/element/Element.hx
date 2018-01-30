@@ -23,13 +23,17 @@ package cosmo.element;
 
 import jasper.Variable;
 import cosmo.style.Style;
+import cosmo.Cosmo;
 
+@:allow(cosmo.Cosmo)
 class Element
 {
     public var firstChild (default, null) : Element = null;
+    public var prevSibling (default, null) : Element = null;
     public var nextSibling (default, null) : Element = null;
     public var parentElement (default, null) : Element = null;
     public var elementType (default, null) : ElementType;
+    public var cosmo (default, null) : Cosmo;
 
     public var x :Variable;
     public var y :Variable;
@@ -37,7 +41,7 @@ class Element
     public var height :Variable;
     public var style :Style;
 
-    public function new(elementType :ElementType) : Void
+    private function new(elementType :ElementType, cosmo :Cosmo) : Void
     {
         x = new Variable();
         y = new Variable();
@@ -45,6 +49,7 @@ class Element
         height = new Variable();
         style = new Style();
         this.elementType = elementType;
+        this.cosmo = cosmo;
     }
 
     public function draw(framebuffer :kha.Framebuffer) : Void
@@ -69,6 +74,7 @@ class Element
         }
         if (tail != null) {
             tail.nextSibling = child;
+            child.prevSibling = tail;
         } else {
             firstChild = child;
         }
@@ -78,6 +84,7 @@ class Element
 
     public function removeChild(child :Element) : Void
     {
+        throw "add prevSibling";
         var prev :Element = null, p = firstChild;
         while (p != null) {
             var nextSibling = p.nextSibling;
@@ -99,6 +106,7 @@ class Element
 
     public function replaceChild(newChild :Element, oldChild :Element) : Void
     {
+        throw "add prevSibling";
         if (newChild.parentElement != null) {
             newChild.parentElement.removeChild(newChild);
         }

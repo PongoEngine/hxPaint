@@ -29,6 +29,8 @@ class Renderer
     {
         element.draw(framebuffer);
 
+        trace(element.x.m_value);
+
         var p = element.firstChild;
         while (p != null) {
             var next = p.nextSibling;
