@@ -94,5 +94,6 @@ class Layout
         }
     }
 
+    @:allow(cosmo.Cosmo)
     private var _solver :Solver;
 }

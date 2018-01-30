@@ -2,11 +2,14 @@ package cosmo.debug;
 
 import cosmo.element.Element;
 
+
 class DebugDraw
 {
     public static function debugDraw(element :Element, framebuffer :kha.Framebuffer)
     {
         element.draw(framebuffer);
+
+        // element.x.
 
         var p = element.firstChild;
         while (p != null) {
