@@ -23,8 +23,6 @@ package cosmo.layout;
 
 import cosmo.element.Element;
 import jasper.Solver;
-import jasper.Strength;
-import jasper.Variable;
 
 using cosmo.layout.LayoutTools;
 
@@ -41,17 +39,9 @@ class Layout
         _solver.updateVariables();
     }
 
-    public function suggest(variable :Variable, value :Float) : Void
-    {
-        _solver.suggestValue(variable, value);
-        _solver.updateVariables();
-    }
-
     private function layout_impl(element :Element) : Void
     {
         constraintStyle(element);
-        constraintDef(element);
-        special(element);
 
         var p = element.firstChild;
         if(p != null) {
@@ -69,16 +59,6 @@ class Layout
                 constraintMiddle(p);
             }
             p = next;
-        }
-    }
-
-    private function special(element :Element) : Void
-    {
-        switch element.elementType {
-            case VERTICAL_DIVIDER: {
-                _solver.addEditVariable(element.x, Strength.MEDIUM);
-            }
-            case _:
         }
     }
 
@@ -104,32 +84,13 @@ class Layout
     private function constraintStyle(element :Element) : Void
     {
         switch element.style.width {
-            case PX(val): {
-                switch element.elementType {
-                    case VERTICAL_DIVIDER: _solver.required(element.width == val);
-                    case _: _solver.medium(element.width == val);
-                }
-            }
-            case INHERIT: {
-                _solver.weak(element.width == 0);
-            }
+            case PX(val): _solver.medium(element.width == val);
+            case INHERIT: _solver.weak(element.width == 0);
         }
 
         switch element.style.height {
-            case PX(val): {
-                _solver.medium(element.height == val);
-            }
-            case INHERIT: {
-                _solver.weak(element.height == 0);
-            }
-        }
-    }
-
-    private function constraintDef(element :Element) : Void
-    {
-        _solver.required(element.left() >= 0);
-        if(element.prevSibling != null) {
-            _solver.required(element.left() >= element.right());
+            case PX(val): _solver.medium(element.height == val);
+            case INHERIT: _solver.weak(element.height == 0);
         }
     }
 

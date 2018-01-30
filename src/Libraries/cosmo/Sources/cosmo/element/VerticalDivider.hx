@@ -29,29 +29,5 @@ class VerticalDivider extends Element
     private function new(cosmo :Cosmo) : Void
     {
         super(VERTICAL_DIVIDER, cosmo);
-
-        _isDown = false;
-        this.cosmo.mouse.pointerMove.connect(function(x,y) {
-            if(_isDown) {
-                var cx = x - _lastX;
-                this.cosmo.layout.suggest(this.x, this.x.m_value + cx);
-                _lastX = x;
-            }
-        });
-
-        this.cosmo.mouse.pointerUp.connect(function(x,y) {
-            _isDown = false;
-        });
-
-        this.cosmo.mouse.pointerDown.connect(function(x,y) {
-            if(this.cosmo.mouse.isHit(this, x, y)) {
-                _isDown = true;
-                _lastX = x;
-            }
-        });
     }
-
-    private var _isDown :Bool;
-    private var _lastX :Int;
-
 }

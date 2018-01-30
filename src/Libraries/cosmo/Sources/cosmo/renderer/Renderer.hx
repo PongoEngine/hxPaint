@@ -25,11 +25,9 @@ import cosmo.element.Element;
 
 class Renderer
 {
-    public static inline function render(element :Element, framebuffer :kha.Framebuffer)
+    public static function render(element :Element, framebuffer :kha.Framebuffer)
     {
         element.draw(framebuffer);
-
-        trace(element.x.m_value);
 
         var p = element.firstChild;
         while (p != null) {

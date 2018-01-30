@@ -25,6 +25,7 @@ import cosmo.element.*;
 import cosmo.input.Mouse;
 import cosmo.renderer.Renderer;
 import cosmo.layout.Layout;
+import cosmo.debug.DebugDraw;
 
 import cosmo.style.DefaultStyler;
 
@@ -36,7 +37,7 @@ class Cosmo
 
     public function new() : Void
     {
-        this.window = cast createElement(WINDOW);
+        this.window = new Window(this);
         this.mouse = new Mouse();
         this.layout = new Layout();
     }
@@ -44,6 +45,7 @@ class Cosmo
     public function render(framebuffer :kha.Framebuffer) : Void
     {
         Renderer.render(window, framebuffer);
+        DebugDraw.debugDraw(window, framebuffer);
     }
 
     public function runLayout() : Void
@@ -58,7 +60,7 @@ class Cosmo
             case CONTAINER: new Container(this);
             case BUTTON: new Button(this);
             case VERTICAL_DIVIDER: new VerticalDivider(this);
-            case WINDOW: new Window(this);
+            case WINDOW: throw "cannot create window";
         });
     }
 
