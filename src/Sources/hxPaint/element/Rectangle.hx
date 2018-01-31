@@ -22,6 +22,7 @@
 package hxPaint.element;
 
 import jasper.Variable;
+import hxPaint.Paint;
 
 class Rectangle
 {
@@ -30,9 +31,11 @@ class Rectangle
     public var width :Variable;
     public var height :Variable;
     public var children :Array<Rectangle>;
+    public var paint :Paint;
 
-    public function new() : Void
+    public function new(paint :Paint) : Void
     {
+        this.paint = paint;
         this.x = new Variable();
         this.y = new Variable();
         this.width = new Variable();
@@ -47,6 +50,10 @@ class Rectangle
     }
 
     public function update(dt :Float) : Void
+    {
+    }
+
+    public function afterSolved() : Void
     {
     }
 

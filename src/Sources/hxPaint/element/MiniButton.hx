@@ -26,7 +26,7 @@ import hxPaint.Paint;
 
 using hxPaint.layout.LayoutTools;
 
-class PixelContainer extends Rectangle
+class MiniButton extends Rectangle
 {
     public function new(paint :Paint) : Void
     {
@@ -35,10 +35,16 @@ class PixelContainer extends Rectangle
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
-        solver.addConstraint(this.left() == prevSibling.right());
-        solver.addConstraint(this.top() == parent.top());
-        solver.addConstraint(this.width == parent.width - prevSibling.width);
-        solver.addConstraint(this.height == parent.height);
+        solver.addConstraint(this.bottom() == parent.bottom() - 5);
+        solver.addConstraint(this.width == (parent.width - 20) / 3);
+        solver.addConstraint(this.height == this.width);
+        
+        if(prevSibling == null) {
+            solver.addConstraint(this.left() == parent.left() + 5);
+        }
+        else {
+            solver.addConstraint(this.left() == prevSibling.right() + 5);
+        }
     }
 
     override public function onDown(x :Int, y :Int) : Void
@@ -48,7 +54,7 @@ class PixelContainer extends Rectangle
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xffccbbaa;
+        framebuffer.g2.color = 0xffbcbc11;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         framebuffer.g2.color = 0xff000000;
         framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);

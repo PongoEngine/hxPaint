@@ -22,26 +22,40 @@
 package hxPaint.element;
 
 import jasper.Solver;
+import jasper.Strength;
+import hxPaint.Paint;
+
 using hxPaint.layout.LayoutTools;
 
 class LeftColumn extends Rectangle
 {
-    public function new() : Void
+    public function new(paint :Paint) : Void
     {
-        super();
+        super(paint);
+        _isShrunk = false;
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
         solver.addConstraint(this.left() == parent.left());
         solver.addConstraint(this.top() == parent.top());
-        solver.addConstraint(this.width == 100);
-        solver.addConstraint(this.height == parent.height);
+        solver.addConstraint(this.height == parent.height - 50);
+        solver.addEditVariable(this.width, Strength.STRONG);
+        solver.suggestValue(this.width, 90);
     }
 
     override public function onDown(x :Int, y :Int) : Void
     {
         trace(x,y);
+
+        if(_isShrunk) {
+            paint.suggest(this.width, 90);
+        }
+        else {
+            paint.suggest(this.width, 40);
+        }
+
+        _isShrunk = !_isShrunk;
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
@@ -51,4 +65,6 @@ class LeftColumn extends Rectangle
         framebuffer.g2.color = 0xff000000;
         framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
     }
+
+    private var _isShrunk : Bool;
 }

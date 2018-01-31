@@ -22,13 +22,15 @@
 package hxPaint.element;
 
 import jasper.Solver;
+import hxPaint.Paint;
+
 using hxPaint.layout.LayoutTools;
 
 class Button extends Rectangle
 {
-    public function new() : Void
+    public function new(paint :Paint) : Void
     {
-        super();
+        super(paint);
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void

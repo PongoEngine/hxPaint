@@ -22,6 +22,7 @@
 package hxPaint.layout;
 
 import jasper.Solver;
+import jasper.Variable;
 import hxPaint.element.Window;
 import hxPaint.element.Rectangle;
 
@@ -38,11 +39,20 @@ class Layout
         _solver.reset();
         solve_impl(_window, null, null, _solver);
         _solver.updateVariables();
+        afterSolved_impl(_window);
     }
 
     public function updateLayout() : Void
     {
         _solver.updateVariables();
+        afterSolved_impl(_window);
+    }
+
+    public function suggest(variable :Variable, value :Float) : Void
+    {
+        _solver.suggestValue(variable, value);
+        _solver.updateVariables();
+        afterSolved_impl(_window);
     }
 
     public static function solve_impl(rectangle :Rectangle, parent :Rectangle, prevSibling :Rectangle, solver :Solver)
@@ -53,6 +63,15 @@ class Layout
         for(child in rectangle.children) {
             solve_impl(child, rectangle, prevSibling, solver);
             prevSibling = child;
+        }
+    }
+
+     public static function afterSolved_impl(rectangle :Rectangle)
+    {
+        rectangle.afterSolved();
+
+        for(child in rectangle.children) {
+            afterSolved_impl(child);
         }
     }
 

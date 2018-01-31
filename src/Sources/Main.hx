@@ -27,6 +27,7 @@ import hxPaint.Paint;
 import hxPaint.element.LeftColumn;
 import hxPaint.element.PixelContainer;
 import hxPaint.element.Button;
+import hxPaint.element.MiniButton;
 
 class Main 
 {
@@ -36,11 +37,19 @@ class Main
 
             var paint = new Paint();
             paint.window
-                .addChild(new LeftColumn()
-                    .addChild(new Button())
-                    .addChild(new Button())
-                    .addChild(new Button()))
-                .addChild(new PixelContainer());
+                .addChild(new LeftColumn(paint)
+                    .addChild(new Button(paint) //FILL
+                        .addChild(new MiniButton(paint))
+                        .addChild(new MiniButton(paint))
+                        .addChild(new MiniButton(paint)))
+                    .addChild(new Button(paint) //PENCIL
+                        .addChild(new MiniButton(paint))
+                        .addChild(new MiniButton(paint))
+                        .addChild(new MiniButton(paint)))
+                    .addChild(new Button(paint)) //ERASER
+                    .addChild(new Button(paint)) //CIRCLE
+                    .addChild(new Button(paint))) //LINE
+                .addChild(new PixelContainer(paint));
 
             paint.initLayout();
 

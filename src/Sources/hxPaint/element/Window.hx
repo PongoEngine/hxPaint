@@ -22,12 +22,13 @@
 package hxPaint.element;
 
 import jasper.Solver;
+import hxPaint.Paint;
 
 class Window extends Rectangle
 {
-    public function new() : Void
+    public function new(paint :Paint) : Void
     {
-        super();
+        super(paint);
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
@@ -36,6 +37,11 @@ class Window extends Rectangle
         solver.addConstraint(this.y == 0);
         solver.addConstraint(this.width == kha.System.windowWidth());
         solver.addConstraint(this.height == kha.System.windowHeight());
+    }
+
+    override public function onDown(x :Int, y :Int) : Void
+    {
+        trace(x,y);
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void

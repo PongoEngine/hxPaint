@@ -25,6 +25,7 @@ import hxPaint.element.Rectangle;
 import hxPaint.element.Window;
 import hxPaint.input.Mouse;
 import hxPaint.layout.Layout;
+import jasper.Variable;
 
 class Paint
 {
@@ -32,7 +33,7 @@ class Paint
 
     public function new() : Void
     {
-        window = new Window();
+        window = new Window(this);
         new Mouse(window);
         _layout = new Layout(window);
     }
@@ -40,6 +41,11 @@ class Paint
     public function render(framebuffer :kha.Framebuffer) : Void
     {
         render_impl(window, framebuffer);
+    }
+
+    public inline function suggest(variable :Variable, value :Float) : Void
+    {
+        _layout.suggest(variable, value);
     }
 
     public inline function initLayout() : Void
