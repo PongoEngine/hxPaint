@@ -39,7 +39,7 @@ class LeftColumn extends Rectangle
     {
         solver.addConstraint(this.left() == parent.left());
         solver.addConstraint(this.top() == parent.top());
-        solver.addConstraint(this.height == parent.height - 50);
+        solver.addConstraint(this.height == parent.height);
         solver.addEditVariable(this.width, Strength.STRONG);
         solver.suggestValue(this.width, 90);
     }
@@ -63,7 +63,7 @@ class LeftColumn extends Rectangle
         framebuffer.g2.color = 0xffaaccbb;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         framebuffer.g2.color = 0xff000000;
-        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
+        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,1);
     }
 
     private var _isShrunk : Bool;

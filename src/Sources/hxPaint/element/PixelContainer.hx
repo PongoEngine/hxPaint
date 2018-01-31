@@ -51,6 +51,6 @@ class PixelContainer extends Rectangle
         framebuffer.g2.color = 0xffccbbaa;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         framebuffer.g2.color = 0xff000000;
-        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
+        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,1);
     }
 }
