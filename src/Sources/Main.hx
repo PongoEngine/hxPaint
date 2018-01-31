@@ -22,6 +22,7 @@
 package;
 
 import kha.System;
+import kha.Scheduler;
 
 import hxPaint.Paint;
 import hxPaint.element.LeftColumn;
@@ -58,10 +59,14 @@ class Main
                 paint.render(framebuffer);
                 framebuffer.g2.end();
             });
+
+            Scheduler.addTimeTask(function() {
+                paint.update(frameTime);
+            }, 0, 1 / 60);
         });
     }
 
-    
+    private static inline var frameTime = 1/60;
 
     
 }

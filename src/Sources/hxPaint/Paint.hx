@@ -43,6 +43,11 @@ class Paint
         render_impl(window, framebuffer);
     }
 
+    public function update(dt :Float) : Void
+    {
+        update_impl(window, dt);
+    }
+
     public inline function suggest(variable :Variable, value :Float) : Void
     {
         _layout.suggest(variable, value);
@@ -63,6 +68,14 @@ class Paint
         element.draw(framebuffer);
         for(child in element.children) {
             render_impl(child, framebuffer);
+        }
+    }
+
+    public static function update_impl(element :Rectangle, dt :Float)
+    {
+        element.update(dt);
+        for(child in element.children) {
+            update_impl(child, dt);
         }
     }
     

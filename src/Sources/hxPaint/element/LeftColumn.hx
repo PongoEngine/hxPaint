@@ -33,6 +33,35 @@ class LeftColumn extends Rectangle
     {
         super(paint);
         _isShrunk = false;
+
+        _isComplete = true;
+        _elapsed = 0;
+    }
+
+    override public function update(dt :Float) : Void
+    {
+        if(_isComplete)  return;
+
+        _elapsed += dt;
+
+        if(_elapsed >= DURATION) {
+            _isComplete = true;
+            handleSize(50);
+        }
+        else {
+            var size = elasticOut(_elapsed/DURATION) * 50;
+            handleSize(size);
+        }
+    }
+
+    private function handleSize(size :Float) : Void
+    {
+        if(_isShrunk) {
+            paint.suggest(this.width, 90 - size);
+        }
+        else {
+            paint.suggest(this.width, 40 + size);
+        }
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
@@ -48,13 +77,8 @@ class LeftColumn extends Rectangle
     {
         trace(x,y);
 
-        if(_isShrunk) {
-            paint.suggest(this.width, 90);
-        }
-        else {
-            paint.suggest(this.width, 40);
-        }
-
+        _isComplete = false;
+        _elapsed = 0;
         _isShrunk = !_isShrunk;
     }
 
@@ -66,5 +90,14 @@ class LeftColumn extends Rectangle
         framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,1);
     }
 
+    public static function elasticOut (t :Float) :Float
+    {
+        return (1 * Math.pow(2, -10 * t) * Math.sin((t - (0.4 / (3.141592653589793*2) * Math.asin(1 / 1))) * (3.141592653589793*2) / 0.4) + 1);
+    }
+
     private var _isShrunk : Bool;
+
+    private var _isComplete :Bool;
+    private var _elapsed :Float;
+    private static inline var DURATION = 1.5;
 }
