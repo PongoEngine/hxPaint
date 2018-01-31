@@ -18,8 +18,10 @@ package;
 
 import kha.System;
 
-import hxPaint.Rectangle;
-import jasper.Solver;
+import hxPaint.Paint;
+import hxPaint.LeftColumn;
+import hxPaint.PixelContainer;
+import hxPaint.Button;
 
 class Main 
 {
@@ -27,17 +29,20 @@ class Main
     {
         System.init({title: "hxPaint", width: 1366, height: 768}, function() {
 
-            var solver = new Solver();
-            var mainWindow = new Rectangle();
-            solver.addConstraint(mainWindow.x == 0);
-            solver.addConstraint(mainWindow.y == 0);
-            solver.addConstraint(mainWindow.width == kha.System.windowWidth());
-            solver.addConstraint(mainWindow.height == kha.System.windowHeight());
-            solver.updateVariables();            
+            var paint = new Paint();
+            paint.window
+                .addChild(new LeftColumn()
+                    .addChild(new Button())
+                    .addChild(new Button())
+                    .addChild(new Button()))
+                .addChild(new PixelContainer());
+
+            paint.solve();
+            trace(paint.window.x, paint.window.y, paint.window.width, paint.window.height);
 
             System.notifyOnRender(function(framebuffer) {
                 framebuffer.g2.begin(0xffffffff);
-                mainWindow.draw(framebuffer);
+                paint.render(framebuffer);
                 framebuffer.g2.end();
             });
         });

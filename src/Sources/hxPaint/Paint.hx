@@ -21,52 +21,53 @@
 
 package hxPaint;
 
-import jasper.Variable;
+import hxPaint.Rectangle;
+import hxPaint.Window;
+import hxPaint.input.Mouse;
+import jasper.Solver;
 
-class Rectangle
+class Paint
 {
-    public var x :Variable;
-    public var y :Variable;
-    public var width :Variable;
-    public var height :Variable;
-    public var children :Array<Rectangle>;
+    public var window :Window;
+    public var solver :Solver;
 
     public function new() : Void
     {
-        this.x = new Variable();
-        this.y = new Variable();
-        this.width = new Variable();
-        this.height = new Variable();
-        this.children = [];
+        window = new Window();
+        solver = new Solver();
+        new Mouse(window);
     }
 
-    public function addChild(child :Rectangle) : Rectangle
+    public function render(framebuffer :kha.Framebuffer) : Void
     {
-        children.push(child);
-        return this;
+        render_impl(window, framebuffer);
     }
 
-    public function update(dt :Float) : Void
+    public function solve() : Void
     {
+        solve_impl(window, null, null, solver);
+        solver.updateVariables();
     }
 
-    public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
+    public static function render_impl(element :Rectangle, framebuffer :kha.Framebuffer)
     {
+        element.draw(framebuffer);
+
+        for(child in element.children) {
+            render_impl(child, framebuffer);
+        }
     }
 
-    public function draw(framebuffer :kha.Framebuffer) : Void
+    public static function solve_impl(rectangle :Rectangle, parent :Rectangle, prevSibling :Rectangle, solver :Solver)
     {
+        rectangle.solve(solver, parent, prevSibling);
+
+        var prevSibling :Rectangle = null;
+        for(child in rectangle.children) {
+            solve_impl(child, rectangle, prevSibling, solver);
+            prevSibling = child;
+        }
     }
 
-    public function onDown(x :Int, y :Int) : Void
-    {
-    }
-
-    public function onMove(x :Int, y :Int) : Void
-    {
-    }
-
-    public function onUp(x :Int, y :Int) : Void
-    {
-    }
+    
 }

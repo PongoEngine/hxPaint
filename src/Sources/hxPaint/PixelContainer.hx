@@ -21,52 +21,29 @@
 
 package hxPaint;
 
-import jasper.Variable;
+import jasper.Solver;
+using hxPaint.LayoutTools;
 
-class Rectangle
+class PixelContainer extends Rectangle
 {
-    public var x :Variable;
-    public var y :Variable;
-    public var width :Variable;
-    public var height :Variable;
-    public var children :Array<Rectangle>;
-
     public function new() : Void
     {
-        this.x = new Variable();
-        this.y = new Variable();
-        this.width = new Variable();
-        this.height = new Variable();
-        this.children = [];
+        super();
     }
 
-    public function addChild(child :Rectangle) : Rectangle
+    override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
-        children.push(child);
-        return this;
+        solver.addConstraint(this.left() == prevSibling.right());
+        solver.addConstraint(this.top() == parent.top());
+        solver.addConstraint(this.width == parent.width - 100);
+        solver.addConstraint(this.height == parent.height);
     }
 
-    public function update(dt :Float) : Void
+    override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-    }
-
-    public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
-    {
-    }
-
-    public function draw(framebuffer :kha.Framebuffer) : Void
-    {
-    }
-
-    public function onDown(x :Int, y :Int) : Void
-    {
-    }
-
-    public function onMove(x :Int, y :Int) : Void
-    {
-    }
-
-    public function onUp(x :Int, y :Int) : Void
-    {
+        framebuffer.g2.color = 0xffccbbaa;
+        framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
+        framebuffer.g2.color = 0xff000000;
+        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
     }
 }
