@@ -19,15 +19,30 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package cosmo.style;
+package hxPaint;
 
-// import jasper.Variable;
-// import jasper.Expression;
+import jasper.Variable;
 
-enum Value
+class Rectangle
 {
-    INHERIT;
-    PX(val :Float);
-    // PERCENT(val :Float);
-    // CALC(fn :Variable -> Expression);
+    public var x :Variable;
+    public var y :Variable;
+    public var width :Variable;
+    public var height :Variable;
+
+    public function new() : Void
+    {
+        this.x = new Variable();
+        this.y = new Variable();
+        this.width = new Variable();
+        this.height = new Variable();
+    }
+
+    public function draw(framebuffer :kha.Framebuffer) : Void
+    {
+        framebuffer.g2.color = 0xffaabbcc;
+        framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
+        framebuffer.g2.color = 0xff000000;
+        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value);
+    }
 }

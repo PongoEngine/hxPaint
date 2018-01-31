@@ -17,39 +17,27 @@
 package;
 
 import kha.System;
-import cosmo.Cosmo;
+
+import hxPaint.Rectangle;
+import jasper.Solver;
 
 class Main 
 {
     public static function main() : Void
     {
         System.init({title: "hxPaint", width: 1366, height: 768}, function() {
-            var cosmo = new Cosmo();
 
-            cosmo.window
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER)
-                    .appendChild(cosmo.createElement(VERTICAL_DIVIDER))
-                    .appendChild(cosmo.createElement(VERTICAL_DIVIDER)))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(VERTICAL_DIVIDER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER))
-                .appendChild(cosmo.createElement(CONTAINER));
-
-            cosmo.runLayout();
+            var solver = new Solver();
+            var mainWindow = new Rectangle();
+            solver.addConstraint(mainWindow.x == 0);
+            solver.addConstraint(mainWindow.y == 0);
+            solver.addConstraint(mainWindow.width == kha.System.windowWidth());
+            solver.addConstraint(mainWindow.height == kha.System.windowHeight());
+            solver.updateVariables();            
 
             System.notifyOnRender(function(framebuffer) {
                 framebuffer.g2.begin(0xffffffff);
-                cosmo.render(framebuffer);
+                mainWindow.draw(framebuffer);
                 framebuffer.g2.end();
             });
         });
