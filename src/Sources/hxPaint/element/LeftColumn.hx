@@ -19,46 +19,36 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package hxPaint;
+package hxPaint.element;
 
-import hxPaint.element.Rectangle;
-import hxPaint.element.Window;
-import hxPaint.input.Mouse;
-import hxPaint.layout.Layout;
+import jasper.Solver;
+using hxPaint.layout.LayoutTools;
 
-class Paint
+class LeftColumn extends Rectangle
 {
-    public var window :Window;
-
     public function new() : Void
     {
-        window = new Window();
-        new Mouse(window);
-        _layout = new Layout(window);
+        super();
     }
 
-    public function render(framebuffer :kha.Framebuffer) : Void
+    override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
-        render_impl(window, framebuffer);
+        solver.addConstraint(this.left() == parent.left());
+        solver.addConstraint(this.top() == parent.top());
+        solver.addConstraint(this.width == 100);
+        solver.addConstraint(this.height == parent.height);
     }
 
-    public inline function initLayout() : Void
+    override public function onDown(x :Int, y :Int) : Void
     {
-        _layout.initLayout();
+        trace(x,y);
     }
 
-    public inline function updateLayout() : Void
+    override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        _layout.updateLayout();
+        framebuffer.g2.color = 0xffaaccbb;
+        framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
+        framebuffer.g2.color = 0xff000000;
+        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
     }
-
-    public static function render_impl(element :Rectangle, framebuffer :kha.Framebuffer)
-    {
-        element.draw(framebuffer);
-        for(child in element.children) {
-            render_impl(child, framebuffer);
-        }
-    }
-    
-    private var _layout :Layout;
 }

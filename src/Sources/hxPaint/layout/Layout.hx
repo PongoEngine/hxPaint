@@ -19,54 +19,43 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package hxPaint;
+package hxPaint.layout;
 
-import jasper.Variable;
+import jasper.Solver;
+import hxPaint.element.Window;
+import hxPaint.element.Rectangle;
 
-class Rectangle
+class Layout
 {
-    public var x :Variable;
-    public var y :Variable;
-    public var width :Variable;
-    public var height :Variable;
-    public var children :Array<Rectangle>;
-
-    public function new() : Void
+    public function new(window :Window) : Void
     {
-        this.x = new Variable();
-        this.y = new Variable();
-        this.width = new Variable();
-        this.height = new Variable();
-        this.children = [];
+        _solver = new Solver();
+        _window = window;
     }
 
-    public function addChild(child :Rectangle) : Rectangle
+    public function initLayout() : Void
     {
-        children.push(child);
-        return this;
+        _solver.reset();
+        solve_impl(_window, null, null, _solver);
+        _solver.updateVariables();
     }
 
-    public function update(dt :Float) : Void
+    public function updateLayout() : Void
     {
+        _solver.updateVariables();
     }
 
-    public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
+    public static function solve_impl(rectangle :Rectangle, parent :Rectangle, prevSibling :Rectangle, solver :Solver)
     {
+        rectangle.solve(solver, parent, prevSibling);
+
+        var prevSibling :Rectangle = null;
+        for(child in rectangle.children) {
+            solve_impl(child, rectangle, prevSibling, solver);
+            prevSibling = child;
+        }
     }
 
-    public function draw(framebuffer :kha.Framebuffer) : Void
-    {
-    }
-
-    public function onDown(x :Int, y :Int) : Void
-    {
-    }
-
-    public function onMove(x :Int, y :Int) : Void
-    {
-    }
-
-    public function onUp(x :Int, y :Int) : Void
-    {
-    }
+    private var _solver :Solver;
+    private var _window :Window;
 }

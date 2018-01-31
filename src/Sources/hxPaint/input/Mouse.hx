@@ -21,7 +21,8 @@
 
 package hxPaint.input;
 
-import hxPaint.Window;
+import hxPaint.element.Window;
+import hxPaint.element.Rectangle;
 
 class Mouse
 {
