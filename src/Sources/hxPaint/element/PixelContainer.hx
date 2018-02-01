@@ -23,6 +23,7 @@ package hxPaint.element;
 
 import jasper.Solver;
 import hxPaint.Paint;
+import hxPaint.canvas.Canvas;
 
 using hxPaint.layout.LayoutTools;
 
@@ -31,6 +32,7 @@ class PixelContainer extends Rectangle
     public function new(paint :Paint) : Void
     {
         super(paint);
+        _canvas = new Canvas();
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
@@ -45,7 +47,17 @@ class PixelContainer extends Rectangle
     {
         framebuffer.g2.color = 0xffeeeeee;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
+        
+        _canvas.draw(x.m_value + 2, y.m_value + 1, framebuffer);
+
         framebuffer.g2.color = 0xff484848;
         framebuffer.g2.drawRect(x.m_value + 2, y.m_value + 1, width.m_value - 2, height.m_value - 2);
     }
+
+    override public function afterSolved() : Void
+    {
+        _canvas.resize(this.width.m_value - 2, this.height.m_value - 2);
+    }
+
+    private var _canvas :Canvas;
 }

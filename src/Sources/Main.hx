@@ -55,18 +55,18 @@ class Main
                     .addChild(new Header(paint)
                         .addChild(new HeaderButton(paint, "File")
                             .addChild(new HeaderList(paint)
-                                .addChild(new HeaderListItem(paint, "New"))
-                                .addChild(new HeaderListItem(paint, "Save"))))
+                                .addChild(new HeaderListItem(paint, "NEW"))
+                                .addChild(new HeaderListItem(paint, "SAVE"))))
 
                         .addChild(new HeaderButton(paint, "Edit")
                             .addChild(new HeaderList(paint)
-                                .addChild(new HeaderListItem(paint, "Undo"))))
+                                .addChild(new HeaderListItem(paint, "UNDO - (cmd-z)"))))
 
                         .addChild(new HeaderButton(paint, "Help")
                             .addChild(new HeaderList(paint)
-                                .addChild(new HeaderListItem(paint, "Documentation"))
-                                .addChild(new HeaderListItem(paint, "MiniGame"))
-                                .addChild(new HeaderListItem(paint, "About khaPow")))));
+                                .addChild(new HeaderListItem(paint, "DOCUMENTS"))
+                                .addChild(new HeaderListItem(paint, "CYOA"))
+                                .addChild(new HeaderListItem(paint, "ABOUT khaPOW")))));
 
                 paint.initLayout();
 
