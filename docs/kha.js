@@ -162,88 +162,26 @@ var Main = function() { };
 $hxClasses["Main"] = Main;
 Main.__name__ = true;
 Main.main = function() {
-	kha_System.init({ title : "jasper-example", width : 1366, height : 768},function() {
-		kha_Assets.loadEverything(Main.onLoaded);
-	});
-};
-Main.onLoaded = function() {
-	Main.font = kha_Assets.fonts.Roboto_Black;
-	var width = kha_System.windowWidth();
-	var height = kha_System.windowHeight();
-	var this1 = new jasper_SolverImpl();
-	var solver = this1;
-	var rowLength = 32;
-	var mainPanel = new hxPaint_MainPanel(solver,-1);
-	var _g1 = 0;
-	var _g = rowLength * rowLength;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var x = i % rowLength;
-		var y = Math.floor(i / rowLength);
-		var pixel = new hxPaint_Pixel(solver,x,y,rowLength);
-		Main.pixels[y * rowLength + x] = pixel;
-		mainPanel.addChild(pixel);
-	}
-	var $window = new hxPaint_WindowBox(-12303292,width,height,solver);
-	$window.addChild(mainPanel);
-	var tmp = new hxPaint_LeftPanel(solver,-5592406).addChild(new hxPaint_button_ButtonPencil(solver,function() {
-		Main.operation = 0;
-	}).addChild(new hxPaint_button_ButtonColor(solver,0,function() {
-	})).addChild(new hxPaint_button_ButtonColor(solver,1,function() {
-	})).addChild(new hxPaint_button_ButtonColor(solver,2,function() {
-	}))).addChild(new hxPaint_button_ButtonFill(solver,function() {
-		Main.operation = 1;
-	}).addChild(new hxPaint_button_ButtonColor(solver,0,function() {
-	})).addChild(new hxPaint_button_ButtonColor(solver,1,function() {
-	})).addChild(new hxPaint_button_ButtonColor(solver,2,function() {
-	}))).addChild(new hxPaint_button_ButtonEraser(solver,function() {
-		Main.operation = 2;
-	}));
-	$window.addChild(tmp);
-	var tmp1 = new hxPaint_RightPanel(solver,-5592406).addChild(new hxPaint_Color(solver,-16777216)).addChild(new hxPaint_Color(solver,-8355712)).addChild(new hxPaint_Color(solver,-4144960)).addChild(new hxPaint_Color(solver,-1)).addChild(new hxPaint_Color(solver,-8388608)).addChild(new hxPaint_Color(solver,-65536)).addChild(new hxPaint_Color(solver,-8355840)).addChild(new hxPaint_Color(solver,-256)).addChild(new hxPaint_Color(solver,-16744448)).addChild(new hxPaint_Color(solver,-16711936)).addChild(new hxPaint_Color(solver,-16744320)).addChild(new hxPaint_Color(solver,-16711681)).addChild(new hxPaint_Color(solver,-16777088)).addChild(new hxPaint_Color(solver,-16776961)).addChild(new hxPaint_Color(solver,-8388480)).addChild(new hxPaint_Color(solver,-65281));
-	$window.addChild(tmp1);
-	$window.solver.updateVariables();
-	hxPaint_Box.solved($window);
-	var initialized = false;
-	kha_System.notifyOnRender(function(framebuffer) {
-		if(!initialized) {
-			framebuffer.get_g2().set_font(Main.font);
-			framebuffer.get_g2().set_fontSize(Main.fontSize);
-			initialized = true;
-		}
-		framebuffer.get_g2().begin(null,-1);
-		hxPaint_Box.render($window,framebuffer);
-		framebuffer.get_g2().end();
-	});
-	Main.initMouse($window,mainPanel);
-	kha_input_Keyboard.get().notify(function(downKey) {
-		if(downKey == 81) {
-			Main.operation = 0;
-		} else if(downKey == 87) {
-			Main.operation = 1;
-		} else if(downKey == 69) {
-			Main.operation = 2;
-		}
-	},function(upKey) {
-	},function(str) {
-	});
-};
-Main.initMouse = function(window,mainPanel) {
-	kha_input_Mouse.get().notify(function(b,x,y) {
-		if(b == 1) {
-			window.solver.suggestValue(window.width,x);
-			window.solver.suggestValue(window.height,y);
-			window.solver.updateVariables();
-			hxPaint_Box.solved(window);
-		} else {
-			hxPaint_Box.hitTest(window,x,y,0);
-		}
-	},function(b1,x1,y1) {
-		hxPaint_Box.hitTest(window,x1,y1,1);
-		mainPanel.onUp(-1,-1);
-	},function(x2,y2,cX,cY) {
-		hxPaint_Box.hitTest(window,x2,y2,2);
-	},function(c) {
+	kha_System.init({ title : "hxPaint", width : 1366, height : 768},function() {
+		kha_Assets.loadEverything(function() {
+			var paint = new hxPaint_Paint();
+			paint.window.addChild(new hxPaint_element_Body(paint).addChild(new hxPaint_element_LeftColumn(paint).addChild(new hxPaint_element_Button(paint)).addChild(new hxPaint_element_Button(paint)).addChild(new hxPaint_element_Button(paint)).addChild(new hxPaint_element_Button(paint)).addChild(new hxPaint_element_Button(paint))).addChild(new hxPaint_element_PixelContainer(paint))).addChild(new hxPaint_element_header_Header(paint).addChild(new hxPaint_element_header_HeaderButton(paint,"File").addChild(new hxPaint_element_header_HeaderList(paint).addChild(new hxPaint_element_header_HeaderListItem(paint,"New")).addChild(new hxPaint_element_header_HeaderListItem(paint,"Save")))).addChild(new hxPaint_element_header_HeaderButton(paint,"Edit").addChild(new hxPaint_element_header_HeaderList(paint).addChild(new hxPaint_element_header_HeaderListItem(paint,"Undo")))).addChild(new hxPaint_element_header_HeaderButton(paint,"Help").addChild(new hxPaint_element_header_HeaderList(paint).addChild(new hxPaint_element_header_HeaderListItem(paint,"Documentation")).addChild(new hxPaint_element_header_HeaderListItem(paint,"MiniGame")).addChild(new hxPaint_element_header_HeaderListItem(paint,"About khaPow")))));
+			paint._layout.initLayout();
+			var hasInit = false;
+			kha_System.notifyOnRender(function(framebuffer) {
+				if(!hasInit) {
+					framebuffer.get_g2().set_font(kha_Assets.fonts.Roboto_Black);
+					framebuffer.get_g2().set_fontSize(18);
+					hasInit = true;
+				}
+				framebuffer.get_g2().begin(null,-1);
+				paint.render(framebuffer);
+				framebuffer.get_g2().end();
+			});
+			kha_Scheduler.addTimeTask(function() {
+				paint.update(0.0166666666666666664);
+			},0,0.0166666666666666664);
+		});
 	});
 };
 Math.__name__ = true;
@@ -372,7 +310,6 @@ haxe_IMap.prototype = {
 	get: null
 	,set: null
 	,exists: null
-	,remove: null
 	,iterator: null
 	,__class__: haxe_IMap
 };
@@ -967,13 +904,6 @@ haxe_ds_IntMap.prototype = {
 	,exists: function(key) {
 		return this.h.hasOwnProperty(key);
 	}
-	,remove: function(key) {
-		if(!this.h.hasOwnProperty(key)) {
-			return false;
-		}
-		delete(this.h[key]);
-		return true;
-	}
 	,keys: function() {
 		var a = [];
 		for( var key in this.h ) if(this.h.hasOwnProperty(key)) {
@@ -1128,22 +1058,6 @@ haxe_ds_StringMap.prototype = {
 			return false;
 		}
 		return this.rh.hasOwnProperty("$" + key);
-	}
-	,remove: function(key) {
-		if(__map_reserved[key] != null) {
-			key = "$" + key;
-			if(this.rh == null || !this.rh.hasOwnProperty(key)) {
-				return false;
-			}
-			delete(this.rh[key]);
-			return true;
-		} else {
-			if(!this.h.hasOwnProperty(key)) {
-				return false;
-			}
-			delete(this.h[key]);
-			return true;
-		}
 	}
 	,arrayKeys: function() {
 		var out = [];
@@ -1489,11 +1403,56 @@ haxe_io__$UInt8Array_UInt8Array_$Impl_$.fromBytes = function(bytes,bytePos,lengt
 	}
 	return new Uint8Array(bytes.b.bufferValue,bytePos,length);
 };
-var hxPaint_Box = function() {
-	this.prev = null;
-	this.next = null;
-	this.firstChild = null;
-	this.parent = null;
+var hxPaint_Paint = function() {
+	this.window = new hxPaint_element_Window(this);
+	new hxPaint_input_Mouse(this.window);
+	this._layout = new hxPaint_layout_Layout(this.window);
+};
+$hxClasses["hxPaint.Paint"] = hxPaint_Paint;
+hxPaint_Paint.__name__ = true;
+hxPaint_Paint.render_impl = function(element,framebuffer) {
+	framebuffer.get_g2().scissor(Math.round(element.x.m_value),Math.round(element.y.m_value),Math.round(element.width.m_value),Math.round(element.height.m_value));
+	element.draw(framebuffer);
+	var _g = 0;
+	var _g1 = element.children;
+	while(_g < _g1.length) {
+		var child = _g1[_g];
+		++_g;
+		hxPaint_Paint.render_impl(child,framebuffer);
+	}
+};
+hxPaint_Paint.update_impl = function(element,dt) {
+	element.update(dt);
+	var _g = 0;
+	var _g1 = element.children;
+	while(_g < _g1.length) {
+		var child = _g1[_g];
+		++_g;
+		hxPaint_Paint.update_impl(child,dt);
+	}
+};
+hxPaint_Paint.prototype = {
+	window: null
+	,render: function(framebuffer) {
+		hxPaint_Paint.render_impl(this.window,framebuffer);
+	}
+	,update: function(dt) {
+		hxPaint_Paint.update_impl(this.window,dt);
+	}
+	,suggest: function(variable,value) {
+		this._layout.suggest(variable,value);
+	}
+	,initLayout: function() {
+		this._layout.initLayout();
+	}
+	,updateLayout: function() {
+		this._layout.updateLayout();
+	}
+	,_layout: null
+	,__class__: hxPaint_Paint
+};
+var hxPaint_element_Rectangle = function(paint) {
+	this.paint = paint;
 	var this1 = new jasper__$Variable_$("");
 	this.x = this1;
 	var this2 = new jasper__$Variable_$("");
@@ -1502,558 +1461,465 @@ var hxPaint_Box = function() {
 	this.width = this3;
 	var this4 = new jasper__$Variable_$("");
 	this.height = this4;
-	var this5 = new jasper__$Variable_$("");
-	this.boundsWidth = this5;
-	var this6 = new jasper__$Variable_$("");
-	this.boundsHeight = this6;
+	this.children = [];
 };
-$hxClasses["hxPaint.Box"] = hxPaint_Box;
-hxPaint_Box.__name__ = true;
-hxPaint_Box.render = function(box,framebuffer) {
-	box.draw(framebuffer);
-	var p = box.firstChild;
-	while(p != null) {
-		var next = p.next;
-		hxPaint_Box.render(p,framebuffer);
-		p = next;
-	}
-};
-hxPaint_Box.solved = function(box) {
-	box.onSolved();
-	var p = box.firstChild;
-	while(p != null) {
-		var next = p.next;
-		hxPaint_Box.solved(p);
-		p = next;
-	}
-};
-hxPaint_Box.hitTest = function(box,x,y,type) {
-	var minX = box.x.m_value;
-	var maxX = box.width.m_value + minX;
-	var minY = box.y.m_value;
-	var maxY = box.height.m_value + minY;
-	if(minX <= x && maxX >= x && minY <= y && maxY >= y) {
-		switch(type) {
-		case 0:
-			box.onDown(x,y);
-			break;
-		case 1:
-			box.onUp(x,y);
-			break;
-		case 2:
-			box.onMove(x,y);
-			break;
-		}
-		var p = box.firstChild;
-		while(p != null) {
-			var next = p.next;
-			hxPaint_Box.hitTest(p,x,y,type);
-			p = next;
+$hxClasses["hxPaint.element.Rectangle"] = hxPaint_element_Rectangle;
+hxPaint_element_Rectangle.__name__ = true;
+hxPaint_element_Rectangle.getAll_impl = function(rectangle,classType,rectangles) {
+	var _g = 0;
+	var _g1 = rectangle.children;
+	while(_g < _g1.length) {
+		var c = _g1[_g];
+		++_g;
+		if((c == null ? null : js_Boot.getClass(c)) == classType) {
+			rectangles.push(c);
 		}
 	}
+	var _g2 = 0;
+	var _g11 = rectangle.children;
+	while(_g2 < _g11.length) {
+		var child = _g11[_g2];
+		++_g2;
+		hxPaint_element_Rectangle.getAll_impl(child,classType,rectangles);
+	}
 };
-hxPaint_Box.prototype = {
-	parent: null
-	,firstChild: null
-	,next: null
-	,prev: null
-	,x: null
+hxPaint_element_Rectangle.prototype = {
+	x: null
 	,y: null
 	,width: null
 	,height: null
-	,boundsWidth: null
-	,boundsHeight: null
-	,onAdded: function() {
-	}
-	,draw: function(framebuffer) {
-	}
-	,onUp: function(x,y) {
-	}
-	,onDown: function(x,y) {
-	}
-	,onMove: function(x,y) {
-	}
-	,onSolved: function() {
-	}
+	,children: null
+	,paint: null
 	,addChild: function(child) {
-		child.parent = this;
-		var tail = null;
-		var p = this.firstChild;
-		while(p != null) {
-			tail = p;
-			p = p.next;
-		}
-		if(tail != null) {
-			tail.next = child;
-			child.prev = tail;
-		} else {
-			this.firstChild = child;
-		}
-		child.onAdded();
+		this.children.push(child);
 		return this;
 	}
-	,__class__: hxPaint_Box
-};
-var hxPaint_Color = function(solver,color) {
-	hxPaint_Box.call(this);
-	this.color = color;
-	this.solver = solver;
-};
-$hxClasses["hxPaint.Color"] = hxPaint_Color;
-hxPaint_Color.__name__ = true;
-hxPaint_Color.__super__ = hxPaint_Box;
-hxPaint_Color.prototype = $extend(hxPaint_Box.prototype,{
-	color: null
-	,solver: null
-	,onDown: function(x,y) {
-		Main.color = this.color;
+	,update: function(dt) {
 	}
-	,onAdded: function() {
-		var this1 = this.solver;
-		var _g = this.x;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,5);
-		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		if(this.prev == null) {
-			var this2 = this.solver;
-			var _g2 = this.y;
-			var _g3 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,5);
-			this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
+	,afterSolved: function() {
+	}
+	,solve: function(solver,parent,prevSibling) {
+	}
+	,draw: function(framebuffer) {
+	}
+	,onDown: function(x,y) {
+	}
+	,onMove: function(x,y) {
+	}
+	,onUp: function(x,y) {
+	}
+	,getAll: function(classType) {
+		var rectangles = [];
+		hxPaint_element_Rectangle.getAll_impl(this,classType,rectangles);
+		return rectangles;
+	}
+	,__class__: hxPaint_element_Rectangle
+};
+var hxPaint_element_Body = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
+};
+$hxClasses["hxPaint.element.Body"] = hxPaint_element_Body;
+hxPaint_element_Body.__name__ = true;
+hxPaint_element_Body.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_Body.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0)));
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addVariable(this.y,this.height),jasper__$Variable_Variable_$Impl_$.addVariable(parent.y,parent.height)));
+		var _g = this.height;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractValue(parent.height,35);
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.width,parent.width));
+	}
+	,__class__: hxPaint_element_Body
+});
+var hxPaint_element_Button = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
+};
+$hxClasses["hxPaint.element.Button"] = hxPaint_element_Button;
+hxPaint_element_Button.__name__ = true;
+hxPaint_element_Button.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_Button.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0),5)));
+		var _g = this.width;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractValue(parent.width,10);
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,this.width));
+		if(prevSibling == null) {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0),5)));
 		} else {
-			var this3 = this.solver;
-			var _g21 = this.y;
-			var _g31 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.prev.y,this.prev.height),2);
-			this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g31,_g21));
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.y,prevSibling.height),5)));
 		}
-		var this4 = this.solver;
-		var _g22 = this.width;
-		var _g32 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this4.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g32,_g22));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.height,30));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Expression_Expression_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.height,this.y),5)));
 	}
 	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(this.color);
+		framebuffer.get_g2().set_color(-14606047);
 		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		framebuffer.get_g2().set_color(-587202560);
-		framebuffer.get_g2().drawRect(this.x.m_value,this.y.m_value,this.width.m_value - 0.5,this.height.m_value - 0.5,1);
-	}
-	,__class__: hxPaint_Color
-});
-var hxPaint_LeftPanel = function(solver,color) {
-	hxPaint_Box.call(this);
-	this.color = color;
-	this.solver = solver;
-};
-$hxClasses["hxPaint.LeftPanel"] = hxPaint_LeftPanel;
-hxPaint_LeftPanel.__name__ = true;
-hxPaint_LeftPanel.__super__ = hxPaint_Box;
-hxPaint_LeftPanel.prototype = $extend(hxPaint_Box.prototype,{
-	color: null
-	,solver: null
-	,onAdded: function() {
-		var this1 = this.solver;
-		var _g = this.x;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,10);
-		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		var this2 = this.solver;
-		var _g2 = this.y;
-		var _g3 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,10);
-		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,100));
-		var this3 = this.solver;
-		var _g4 = this.height;
-		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.height,20);
-		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Variable_Variable_$Impl_$.addValue(this.height,20)));
-	}
-	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(this.color);
-		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-	}
-	,__class__: hxPaint_LeftPanel
-});
-var hxPaint_MainPanel = function(solver,color) {
-	hxPaint_Box.call(this);
-	this.color = color;
-	this.solver = solver;
-};
-$hxClasses["hxPaint.MainPanel"] = hxPaint_MainPanel;
-hxPaint_MainPanel.__name__ = true;
-hxPaint_MainPanel.__super__ = hxPaint_Box;
-hxPaint_MainPanel.prototype = $extend(hxPaint_Box.prototype,{
-	color: null
-	,solver: null
-	,onAdded: function() {
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.x,120));
-		var this1 = this.solver;
-		var _g = this.y;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,10);
-		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		var this2 = this.solver;
-		var _g2 = this.width;
-		var _g3 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,240);
-		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
-		var this3 = this.solver;
-		var _g4 = this.height;
-		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.height,20);
-		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
-	}
-	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(this.color);
-		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-	}
-	,__class__: hxPaint_MainPanel
-});
-var hxPaint__$Operation_Operation_$Impl_$ = {};
-$hxClasses["hxPaint._Operation.Operation_Impl_"] = hxPaint__$Operation_Operation_$Impl_$;
-hxPaint__$Operation_Operation_$Impl_$.__name__ = true;
-hxPaint__$Operation_Operation_$Impl_$.toString = function(this1) {
-	var _g = js_Boot.__cast(this1 , Int);
-	switch(_g) {
-	case 0:
-		return "Pencil";
-	case 1:
-		return "Fill";
-	case 2:
-		return "Eraser";
-	}
-};
-var hxPaint_Pixel = function(solver,xIndex,yIndex,rowLength) {
-	hxPaint_Box.call(this);
-	this.color = -1;
-	this.xIndex = xIndex;
-	this.yIndex = yIndex;
-	this.rowLength = rowLength;
-};
-$hxClasses["hxPaint.Pixel"] = hxPaint_Pixel;
-hxPaint_Pixel.__name__ = true;
-hxPaint_Pixel.fill = function(pixel,targetColor,replacementColor) {
-	if(targetColor == replacementColor) {
-		return;
-	}
-	if(pixel.color != targetColor) {
-		return;
-	}
-	pixel.color = replacementColor;
-	if(pixel.yIndex != pixel.rowLength - 1) {
-		var pixel1 = Main.pixels[(pixel.yIndex + 1) * pixel.rowLength + pixel.xIndex];
-		hxPaint_Pixel.fill(pixel1,targetColor,replacementColor);
-	}
-	if(pixel.yIndex != 0) {
-		var pixel2 = Main.pixels[(pixel.yIndex - 1) * pixel.rowLength + pixel.xIndex];
-		hxPaint_Pixel.fill(pixel2,targetColor,replacementColor);
-	}
-	if(pixel.xIndex != 0) {
-		var pixel3 = Main.pixels[pixel.yIndex * pixel.rowLength + pixel.xIndex - 1];
-		hxPaint_Pixel.fill(pixel3,targetColor,replacementColor);
-	}
-	if(pixel.xIndex != pixel.rowLength - 1) {
-		var pixel4 = Main.pixels[pixel.yIndex * pixel.rowLength + pixel.xIndex + 1];
-		hxPaint_Pixel.fill(pixel4,targetColor,replacementColor);
-	}
-	return;
-};
-hxPaint_Pixel.__super__ = hxPaint_Box;
-hxPaint_Pixel.prototype = $extend(hxPaint_Box.prototype,{
-	xIndex: null
-	,yIndex: null
-	,rowLength: null
-	,color: null
-	,onDown: function(x,y) {
-		var _g = Main.operation;
-		switch(_g) {
-		case 0:
-			hxPaint_Pixel.CAN_PENCIL = true;
-			this.pencil();
-			break;
-		case 1:
-			hxPaint_Pixel.fill(this,this.color,Main.color);
-			break;
-		case 2:
-			hxPaint_Pixel.CAN_ERASE = true;
-			this.erase();
-			break;
+		if(this._isOn) {
+			framebuffer.get_g2().set_color(-5054501);
+			framebuffer.get_g2().drawRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value,2);
 		}
 	}
 	,onUp: function(x,y) {
-		hxPaint_Pixel.CAN_PENCIL = false;
-		hxPaint_Pixel.CAN_ERASE = false;
-	}
-	,onMove: function(x,y) {
-		if(hxPaint_Pixel.CAN_PENCIL) {
-			this.pencil();
+		if(this._isOn) {
+			this.turnOff();
+		} else {
+			this.turnOn();
 		}
-		if(hxPaint_Pixel.CAN_ERASE) {
-			this.erase();
+		this.turnOffOthers();
+	}
+	,turnOn: function() {
+		this._isOn = true;
+	}
+	,turnOff: function() {
+		this._isOn = false;
+	}
+	,turnOffOthers: function() {
+		var buttons = this.paint.window.getAll(hxPaint_element_Button);
+		var _g = 0;
+		while(_g < buttons.length) {
+			var button = buttons[_g];
+			++_g;
+			if(button != this) {
+				button.turnOff();
+			}
 		}
 	}
-	,pencil: function() {
-		this.color = Main.color;
-	}
-	,erase: function() {
-		this.color = -1;
-	}
-	,isLeftWall: function() {
-		return this.xIndex == 0;
-	}
-	,isRightWall: function() {
-		return this.xIndex == this.rowLength - 1;
-	}
-	,isTopWall: function() {
-		return this.yIndex == 0;
-	}
-	,isBottomWall: function() {
-		return this.yIndex == this.rowLength - 1;
-	}
-	,onSolved: function() {
-		var pixelSize = this.parent.width.m_value / this.rowLength;
-		this.x.m_value = this.parent.x.m_value + this.xIndex * pixelSize;
-		this.y.m_value = this.parent.y.m_value + this.yIndex * pixelSize;
-		this.width.m_value = pixelSize;
-		this.height.m_value = pixelSize;
+	,_isOn: null
+	,__class__: hxPaint_element_Button
+});
+var hxPaint_element_LeftColumn = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
+};
+$hxClasses["hxPaint.element.LeftColumn"] = hxPaint_element_LeftColumn;
+hxPaint_element_LeftColumn.__name__ = true;
+hxPaint_element_LeftColumn.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_LeftColumn.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0)));
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0)));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,parent.height));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,60));
 	}
 	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(this.color);
+		framebuffer.get_g2().set_color(-12040120);
 		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		framebuffer.get_g2().set_color(-16777216);
-		framebuffer.get_g2().drawRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
 	}
-	,__class__: hxPaint_Pixel
+	,__class__: hxPaint_element_LeftColumn
 });
-var hxPaint_RightPanel = function(solver,color) {
-	hxPaint_Box.call(this);
-	this.color = color;
-	this.solver = solver;
+var hxPaint_element_PixelContainer = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
 };
-$hxClasses["hxPaint.RightPanel"] = hxPaint_RightPanel;
-hxPaint_RightPanel.__name__ = true;
-hxPaint_RightPanel.__super__ = hxPaint_Box;
-hxPaint_RightPanel.prototype = $extend(hxPaint_Box.prototype,{
-	color: null
-	,solver: null
-	,onAdded: function() {
-		var this1 = this.solver;
-		var _g = this.x;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractExpression(this.parent.width,jasper__$Variable_Variable_$Impl_$.addValue(this.width,10));
-		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		var this2 = this.solver;
-		var _g2 = this.y;
-		var _g3 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,10);
-		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,100));
-		var this3 = this.solver;
-		var _g4 = this.height;
-		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.height,20);
-		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
+$hxClasses["hxPaint.element.PixelContainer"] = hxPaint_element_PixelContainer;
+hxPaint_element_PixelContainer.__name__ = true;
+hxPaint_element_PixelContainer.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_PixelContainer.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.x,prevSibling.width)));
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0)));
+		var _g = this.width;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractVariable(parent.width,prevSibling.width);
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,parent.height));
 	}
 	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(this.color);
+		framebuffer.get_g2().set_color(-1118482);
 		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+		framebuffer.get_g2().set_color(-12040120);
+		framebuffer.get_g2().drawRect(this.x.m_value + 2,this.y.m_value + 1,this.width.m_value - 2,this.height.m_value - 2);
 	}
-	,__class__: hxPaint_RightPanel
+	,__class__: hxPaint_element_PixelContainer
 });
-var hxPaint_WindowBox = function(color,width,height,solver) {
-	hxPaint_Box.call(this);
-	this.color = color;
-	this.solver = solver;
-	this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.x,0));
-	this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.y,0));
-	this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,width),1));
-	this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.equalsValue(this.height,height),1));
-	this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.lteValue(this.width,width),1001001000));
-	this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.lteValue(this.height,height),1001001000));
-	this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.gteValue(this.width,400),1001001000));
-	this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.gteValue(this.height,300),1001001000));
-	this.solver.addEditVariable(this.width,1000);
-	this.solver.addEditVariable(this.height,1000);
-	this.solver.suggestValue(this.width,width);
-	this.solver.suggestValue(this.height,height);
+var hxPaint_element_Window = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
 };
-$hxClasses["hxPaint.WindowBox"] = hxPaint_WindowBox;
-hxPaint_WindowBox.__name__ = true;
-hxPaint_WindowBox.__super__ = hxPaint_Box;
-hxPaint_WindowBox.prototype = $extend(hxPaint_Box.prototype,{
-	color: null
-	,solver: null
-	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(this.color);
-		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+$hxClasses["hxPaint.element.Window"] = hxPaint_element_Window;
+hxPaint_element_Window.__name__ = true;
+hxPaint_element_Window.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_Window.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.x,0));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.y,0));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,kha_System.windowWidth()));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.height,kha_System.windowHeight()));
 	}
-	,init: function(width,height) {
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.x,0));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.y,0));
-		this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,width),1));
-		this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.equalsValue(this.height,height),1));
-		this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.lteValue(this.width,width),1001001000));
-		this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.lteValue(this.height,height),1001001000));
-		this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.gteValue(this.width,400),1001001000));
-		this.solver.addConstraint(jasper__$Constraint_Constraint_$Impl_$.modifyStrength(jasper__$Variable_Variable_$Impl_$.gteValue(this.height,300),1001001000));
-		this.solver.addEditVariable(this.width,1000);
-		this.solver.addEditVariable(this.height,1000);
-		this.solver.suggestValue(this.width,width);
-		this.solver.suggestValue(this.height,height);
-	}
-	,__class__: hxPaint_WindowBox
+	,__class__: hxPaint_element_Window
 });
-var hxPaint_button_Button = function(onClick) {
-	hxPaint_Box.call(this);
-	this._onClick = onClick;
+var hxPaint_element_header_Header = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
 };
-$hxClasses["hxPaint.button.Button"] = hxPaint_button_Button;
-hxPaint_button_Button.__name__ = true;
-hxPaint_button_Button.__super__ = hxPaint_Box;
-hxPaint_button_Button.prototype = $extend(hxPaint_Box.prototype,{
-	onDown: function(x,y) {
-		this._onClick();
-	}
-	,_onClick: null
-	,__class__: hxPaint_button_Button
-});
-var hxPaint_button_ButtonColor = function(solver,index,onClick) {
-	hxPaint_button_Button.call(this,onClick);
-	this.solver = solver;
-	this.index = index;
-};
-$hxClasses["hxPaint.button.ButtonColor"] = hxPaint_button_ButtonColor;
-hxPaint_button_ButtonColor.__name__ = true;
-hxPaint_button_ButtonColor.__super__ = hxPaint_button_Button;
-hxPaint_button_ButtonColor.prototype = $extend(hxPaint_button_Button.prototype,{
-	solver: null
-	,index: null
-	,onAdded: function() {
-		var this1 = this.solver;
-		var _g4 = this.x;
-		var _g2 = this.parent.x;
-		var _g = this.index;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.divideValue(this.parent.width,3);
-		var _g3 = jasper__$Term_Term_$Impl_$.multiplyValue(_g1,_g);
-		var _g5 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Term_Term_$Impl_$.addVariable(_g3,_g2),1);
-		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
-		var this2 = this.solver;
-		var _g6 = this.y;
-		var _g7 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.parent.y,this.parent.height),2);
-		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g7,_g6));
-		var this3 = this.solver;
-		var _g8 = this.width;
-		var _g9 = jasper__$Term_Term_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.divideValue(this.parent.width,3),2);
-		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g9,_g8));
-		var this4 = this.solver;
-		var _g10 = this.height;
-		var _g11 = jasper__$Variable_Variable_$Impl_$.divideValue(this.parent.width,3);
-		this4.addConstraint(jasper__$Term_Term_$Impl_$.equalsVariable(_g11,_g10));
+$hxClasses["hxPaint.element.header.Header"] = hxPaint_element_header_Header;
+hxPaint_element_header_Header.__name__ = true;
+hxPaint_element_header_Header.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_header_Header.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0)));
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0)));
+		var _g = this.height;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractVariable(parent.height,prevSibling.height);
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.width,parent.width));
 	}
 	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(-12303292);
+		framebuffer.get_g2().set_color(-14606047);
 		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		framebuffer.get_g2().set_color(-16777216);
 	}
-	,__class__: hxPaint_button_ButtonColor
+	,__class__: hxPaint_element_header_Header
 });
-var hxPaint_button_ButtonEraser = function(solver,onClick) {
-	hxPaint_button_Button.call(this,onClick);
-	this.solver = solver;
+var hxPaint_element_header_HeaderButton = function(paint,title) {
+	hxPaint_element_Rectangle.call(this,paint);
+	this._title = title;
+	this._isOpen = false;
+	this._width = kha_Assets.fonts.Roboto_Black.width(18,this._title);
+	this._height = kha_Assets.fonts.Roboto_Black.height(18);
 };
-$hxClasses["hxPaint.button.ButtonEraser"] = hxPaint_button_ButtonEraser;
-hxPaint_button_ButtonEraser.__name__ = true;
-hxPaint_button_ButtonEraser.__super__ = hxPaint_button_Button;
-hxPaint_button_ButtonEraser.prototype = $extend(hxPaint_button_Button.prototype,{
-	solver: null
-	,onAdded: function() {
-		var this1 = this.solver;
-		var _g = this.x;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,5);
-		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		var this2 = this.solver;
-		var _g2 = this.y;
-		var _g3 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.prev.y,this.prev.height),40);
-		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
-		var this3 = this.solver;
-		var _g4 = this.width;
-		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
-		var this4 = this.solver;
-		var _g6 = this.height;
-		var _g7 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this4.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g7,_g6));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Expression_Expression_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.height,this.y),5)));
+$hxClasses["hxPaint.element.header.HeaderButton"] = hxPaint_element_header_HeaderButton;
+hxPaint_element_header_HeaderButton.__name__ = true;
+hxPaint_element_header_HeaderButton.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_header_HeaderButton.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		if(prevSibling == null) {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0),2)));
+		} else {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.x,prevSibling.width)));
+		}
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0)));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,parent.height));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,this._width + 50));
+	}
+	,onUp: function(x,y) {
+		if(this._isOpen) {
+			this.close();
+		} else {
+			this.open();
+		}
+		this.closeOthers();
+	}
+	,open: function() {
+		this._isOpen = true;
+		(js_Boot.__cast(this.children[0] , hxPaint_element_header_HeaderList)).open();
+	}
+	,close: function() {
+		this._isOpen = false;
+		(js_Boot.__cast(this.children[0] , hxPaint_element_header_HeaderList)).close();
+	}
+	,closeOthers: function() {
+		var buttons = this.paint.window.getAll(hxPaint_element_header_HeaderButton);
+		var _g = 0;
+		while(_g < buttons.length) {
+			var button = buttons[_g];
+			++_g;
+			if(button != this) {
+				button.close();
+			}
+		}
 	}
 	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(-12303292);
+		var tmp = this._isOpen ? -16777216 : -14606047;
+		framebuffer.get_g2().set_color(tmp);
 		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		framebuffer.get_g2().set_color(-16777216);
+		framebuffer.get_g2().set_color(-1);
+		var centerX = this.x.m_value - this._width / 2 + this.width.m_value / 2;
+		var centerY = this.y.m_value - this._height / 2 + this.height.m_value / 2;
+		framebuffer.get_g2().drawString(this._title,centerX,centerY);
 	}
-	,__class__: hxPaint_button_ButtonEraser
+	,_isOpen: null
+	,_title: null
+	,_width: null
+	,_height: null
+	,__class__: hxPaint_element_header_HeaderButton
 });
-var hxPaint_button_ButtonFill = function(solver,onClick) {
-	hxPaint_button_Button.call(this,onClick);
-	this.solver = solver;
+var hxPaint_element_header_HeaderList = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
 };
-$hxClasses["hxPaint.button.ButtonFill"] = hxPaint_button_ButtonFill;
-hxPaint_button_ButtonFill.__name__ = true;
-hxPaint_button_ButtonFill.__super__ = hxPaint_button_Button;
-hxPaint_button_ButtonFill.prototype = $extend(hxPaint_button_Button.prototype,{
-	solver: null
-	,onAdded: function() {
-		var this1 = this.solver;
-		var _g = this.x;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,5);
-		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		var this2 = this.solver;
-		var _g2 = this.y;
-		var _g3 = jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.prev.y,this.prev.height),40);
-		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
-		var this3 = this.solver;
-		var _g4 = this.width;
-		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
-		var this4 = this.solver;
-		var _g6 = this.height;
-		var _g7 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this4.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g7,_g6));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Expression_Expression_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.height,this.y),5)));
+$hxClasses["hxPaint.element.header.HeaderList"] = hxPaint_element_header_HeaderList;
+hxPaint_element_header_HeaderList.__name__ = true;
+hxPaint_element_header_HeaderList.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_header_HeaderList.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0)));
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addVariable(parent.y,parent.height)));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,180));
+		var lastchild = this.children[this.children.length - 1];
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addVariable(this.y,this.height),jasper__$Variable_Variable_$Impl_$.addVariable(lastchild.y,lastchild.height)));
+	}
+	,open: function() {
+		var _g = 0;
+		var _g1 = this.children;
+		while(_g < _g1.length) {
+			var c = _g1[_g];
+			++_g;
+			(js_Boot.__cast(c , hxPaint_element_header_HeaderListItem)).open();
+		}
+	}
+	,close: function() {
+		var _g = 0;
+		var _g1 = this.children;
+		while(_g < _g1.length) {
+			var c = _g1[_g];
+			++_g;
+			(js_Boot.__cast(c , hxPaint_element_header_HeaderListItem)).close();
+		}
 	}
 	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(-12303292);
+		framebuffer.get_g2().set_color(-12040120);
 		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		framebuffer.get_g2().set_color(-16777216);
+		framebuffer.get_g2().set_color(-14606047);
+		framebuffer.get_g2().drawRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value,2);
 	}
-	,__class__: hxPaint_button_ButtonFill
+	,__class__: hxPaint_element_header_HeaderList
 });
-var hxPaint_button_ButtonPencil = function(solver,onClick) {
-	hxPaint_button_Button.call(this,onClick);
-	this.solver = solver;
+var hxPaint_element_header_HeaderListItem = function(paint,title) {
+	hxPaint_element_Rectangle.call(this,paint);
+	this._title = title;
+	this._height = kha_Assets.fonts.Roboto_Black.height(18);
 };
-$hxClasses["hxPaint.button.ButtonPencil"] = hxPaint_button_ButtonPencil;
-hxPaint_button_ButtonPencil.__name__ = true;
-hxPaint_button_ButtonPencil.__super__ = hxPaint_button_Button;
-hxPaint_button_ButtonPencil.prototype = $extend(hxPaint_button_Button.prototype,{
-	solver: null
-	,onAdded: function() {
-		var this1 = this.solver;
-		var _g = this.x;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.x,5);
-		this1.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		var this2 = this.solver;
-		var _g2 = this.y;
-		var _g3 = jasper__$Variable_Variable_$Impl_$.addValue(this.parent.y,5);
-		this2.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g3,_g2));
-		var this3 = this.solver;
-		var _g4 = this.width;
-		var _g5 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this3.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g5,_g4));
-		var this4 = this.solver;
-		var _g6 = this.height;
-		var _g7 = jasper__$Variable_Variable_$Impl_$.subtractValue(this.parent.width,10);
-		this4.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g7,_g6));
-		this.solver.addConstraint(jasper__$Variable_Variable_$Impl_$.gteExpression(this.parent.height,jasper__$Expression_Expression_$Impl_$.subtractValue(jasper__$Variable_Variable_$Impl_$.addVariable(this.height,this.y),5)));
+$hxClasses["hxPaint.element.header.HeaderListItem"] = hxPaint_element_header_HeaderListItem;
+hxPaint_element_header_HeaderListItem.__name__ = true;
+hxPaint_element_header_HeaderListItem.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_header_HeaderListItem.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		if(prevSibling == null) {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0)));
+		} else {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.y,prevSibling.height)));
+		}
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0)));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.width,parent.width));
+		solver.addEditVariable(this.height,1000);
+	}
+	,open: function() {
+		this.paint._layout.suggest(this.height,40);
+	}
+	,close: function() {
+		this.paint._layout.suggest(this.height,0);
 	}
 	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(-12303292);
-		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		framebuffer.get_g2().set_color(-16777216);
+		framebuffer.get_g2().set_color(-1);
+		var centerY = this.y.m_value - this._height / 2 + this.height.m_value / 2;
+		framebuffer.get_g2().drawString(this._title,this.x.m_value + 20,centerY);
+		framebuffer.get_g2().set_color(-14606047);
+		framebuffer.get_g2().drawLine(this.x.m_value,this.y.m_value,this.x.m_value + this.width.m_value,this.y.m_value,1);
 	}
-	,__class__: hxPaint_button_ButtonPencil
+	,_title: null
+	,_width: null
+	,_height: null
+	,__class__: hxPaint_element_header_HeaderListItem
 });
+var hxPaint_input_Mouse = function(window) {
+	this.initMouse(window);
+};
+$hxClasses["hxPaint.input.Mouse"] = hxPaint_input_Mouse;
+hxPaint_input_Mouse.__name__ = true;
+hxPaint_input_Mouse.hitTest_impl = function(rectangle,x,y,type) {
+	var minX = rectangle.x.m_value;
+	var maxX = rectangle.width.m_value + minX;
+	var minY = rectangle.y.m_value;
+	var maxY = rectangle.height.m_value + minY;
+	var wasHit = minX <= x && maxX >= x && minY <= y && maxY >= y;
+	var isChildHit = false;
+	var index = rectangle.children.length;
+	while(index-- > 0) {
+		var child = rectangle.children[index];
+		if(hxPaint_input_Mouse.hitTest_impl(child,x,y,type)) {
+			isChildHit = true;
+			break;
+		}
+	}
+	if(!isChildHit && wasHit) {
+		switch(type) {
+		case 0:
+			rectangle.onDown(x,y);
+			break;
+		case 1:
+			rectangle.onUp(x,y);
+			break;
+		case 2:
+			rectangle.onMove(x,y);
+			break;
+		}
+	}
+	if(!wasHit) {
+		return isChildHit;
+	} else {
+		return true;
+	}
+};
+hxPaint_input_Mouse.isHit = function(rectangle,x,y) {
+	var minX = rectangle.x.m_value;
+	var maxX = rectangle.width.m_value + minX;
+	var minY = rectangle.y.m_value;
+	var maxY = rectangle.height.m_value + minY;
+	if(minX <= x && maxX >= x && minY <= y) {
+		return maxY >= y;
+	} else {
+		return false;
+	}
+};
+hxPaint_input_Mouse.prototype = {
+	initMouse: function(window) {
+		kha_input_Mouse.get().notify(function(button,x,y) {
+			hxPaint_input_Mouse.hitTest_impl(window,x,y,0);
+		},function(button1,x1,y1) {
+			hxPaint_input_Mouse.hitTest_impl(window,x1,y1,1);
+		},function(x2,y2,cX,cY) {
+			hxPaint_input_Mouse.hitTest_impl(window,x2,y2,2);
+		},function(w) {
+		});
+	}
+	,__class__: hxPaint_input_Mouse
+};
+var hxPaint_layout_Layout = function(window) {
+	var this1 = new jasper_SolverImpl();
+	this._solver = this1;
+	this._window = window;
+};
+$hxClasses["hxPaint.layout.Layout"] = hxPaint_layout_Layout;
+hxPaint_layout_Layout.__name__ = true;
+hxPaint_layout_Layout.solve_impl = function(rectangle,parent,prevSibling,solver) {
+	rectangle.solve(solver,parent,prevSibling);
+	var prevSibling1 = null;
+	var _g = 0;
+	var _g1 = rectangle.children;
+	while(_g < _g1.length) {
+		var child = _g1[_g];
+		++_g;
+		hxPaint_layout_Layout.solve_impl(child,rectangle,prevSibling1,solver);
+		prevSibling1 = child;
+	}
+};
+hxPaint_layout_Layout.afterSolved_impl = function(rectangle) {
+	rectangle.afterSolved();
+	var _g = 0;
+	var _g1 = rectangle.children;
+	while(_g < _g1.length) {
+		var child = _g1[_g];
+		++_g;
+		hxPaint_layout_Layout.afterSolved_impl(child);
+	}
+};
+hxPaint_layout_Layout.prototype = {
+	initLayout: function() {
+		jasper__$Solver_Solver_$Impl_$.reset(this._solver);
+		hxPaint_layout_Layout.solve_impl(this._window,null,null,this._solver);
+		this._solver.updateVariables();
+		hxPaint_layout_Layout.afterSolved_impl(this._window);
+	}
+	,updateLayout: function() {
+		this._solver.updateVariables();
+		hxPaint_layout_Layout.afterSolved_impl(this._window);
+	}
+	,suggest: function(variable,value) {
+		this._solver.suggestValue(variable,value);
+		this._solver.updateVariables();
+		hxPaint_layout_Layout.afterSolved_impl(this._window);
+	}
+	,_solver: null
+	,_window: null
+	,__class__: hxPaint_layout_Layout
+};
+var hxPaint_layout_LayoutTools = function() { };
+$hxClasses["hxPaint.layout.LayoutTools"] = hxPaint_layout_LayoutTools;
+hxPaint_layout_LayoutTools.__name__ = true;
 var jasper__$Constraint_$ = function(expr,op,strength) {
 	this.m_expression = expr;
 	this.m_op = op;
@@ -2461,7 +2327,7 @@ jasper_Row.prototype = {
 		}
 	}
 	,substitute: function(symbol,row) {
-		if(this.m_cells._map.exists(symbol)) {
+		if(this.m_cells._map.h.__keys__[symbol.__id__] != null) {
 			var this1 = this.m_cells;
 			var coefficient = this1._map.exists(symbol) ? this1._map.get(symbol) : 0;
 			var _this = this.m_cells;
@@ -2559,13 +2425,13 @@ jasper_SolverImpl.prototype = {
 			rowptr.solveFor(subject);
 			this.substitute(subject,rowptr);
 			var this1 = this.m_rows;
-			if(!this1._map.exists(subject)) {
+			if(this1._map.h.__keys__[subject.__id__] == null) {
 				this1._keys.push(subject);
 			}
 			this1._map.set(subject,rowptr);
 		}
 		var this11 = this.m_cns;
-		if(!this11._map.exists(constraint)) {
+		if(this11._map.h.__keys__[constraint.__id__] == null) {
 			this11._keys.push(constraint);
 		}
 		this11._map.set(constraint,tag);
@@ -2575,7 +2441,7 @@ jasper_SolverImpl.prototype = {
 		if(this.m_cns._map.h.__keys__[constraint.__id__] == null) {
 			throw new js__$Boot_HaxeError(new jasper_UnknownConstraint(constraint));
 		}
-		var tag = this.m_cns._map.get(constraint);
+		var tag = this.m_cns._map.h[constraint.__id__];
 		var _this = this.m_cns;
 		if(_this._map.remove(constraint)) {
 			HxOverrides.remove(_this._keys,constraint);
@@ -2621,11 +2487,11 @@ jasper_SolverImpl.prototype = {
 		var cn = jasper__$Constraint_Constraint_$Impl_$._new(this2,jasper_RelationalOperator.OP_EQ,strength);
 		this.addConstraint(cn);
 		var info = { };
-		info.tag = this.m_cns._map.get(cn);
+		info.tag = this.m_cns._map.h[cn.__id__];
 		info.constraint = cn;
 		info.constant = 0.0;
 		var this11 = this.m_edits;
-		if(!this11._map.exists(variable)) {
+		if(this11._map.h.__keys__[variable.__id__] == null) {
 			this11._keys.push(variable);
 		}
 		this11._map.set(variable,info);
@@ -2634,7 +2500,7 @@ jasper_SolverImpl.prototype = {
 		if(this.m_edits._map.h.__keys__[variable.__id__] == null) {
 			throw new js__$Boot_HaxeError(new jasper_UnknownEditVariable(variable));
 		}
-		this.removeConstraint(this.m_edits._map.get(variable).constraint);
+		this.removeConstraint(this.m_edits._map.h[variable.__id__].constraint);
 		var _this = this.m_edits;
 		if(_this._map.remove(variable)) {
 			HxOverrides.remove(_this._keys,variable);
@@ -2647,18 +2513,18 @@ jasper_SolverImpl.prototype = {
 		if(this.m_edits._map.h.__keys__[variable.__id__] == null) {
 			throw new js__$Boot_HaxeError(new jasper_UnknownEditVariable(variable));
 		}
-		var info = this.m_edits._map.get(variable);
+		var info = this.m_edits._map.h[variable.__id__];
 		var delta = value - info.constant;
 		info.constant = value;
 		if(this.m_rows._map.h.__keys__[info.tag.marker.__id__] != null) {
-			if(this.m_rows._map.get(info.tag.marker).add(-delta) < 0.0) {
+			if(this.m_rows._map.h[info.tag.marker.__id__].add(-delta) < 0.0) {
 				this.m_infeasible_rows.push(info.tag.marker);
 			}
 			this.dualOptimize();
 			return;
 		}
 		if(this.m_rows._map.h.__keys__[info.tag.other.__id__] != null) {
-			if(this.m_rows._map.get(info.tag.other).add(delta) < 0.0) {
+			if(this.m_rows._map.h[info.tag.other.__id__].add(delta) < 0.0) {
 				this.m_infeasible_rows.push(info.tag.other);
 			}
 			this.dualOptimize();
@@ -2682,7 +2548,7 @@ jasper_SolverImpl.prototype = {
 			if(this.m_rows._map.h.__keys__[var_it1.second.__id__] == null) {
 				var_.m_value = 0.0;
 			} else {
-				var_.m_value = this.m_rows._map.get(var_it1.second).m_constant;
+				var_.m_value = this.m_rows._map.h[var_it1.second.__id__].m_constant;
 			}
 		}
 	}
@@ -2701,11 +2567,11 @@ jasper_SolverImpl.prototype = {
 	}
 	,getVarSymbol: function(variable) {
 		if(this.m_vars._map.h.__keys__[variable.__id__] != null) {
-			return this.m_vars._map.get(variable);
+			return this.m_vars._map.h[variable.__id__];
 		}
 		var symbol = new jasper_Symbol(1);
 		var this1 = this.m_vars;
-		if(!this1._map.exists(variable)) {
+		if(this1._map.h.__keys__[variable.__id__] == null) {
 			this1._keys.push(variable);
 		}
 		this1._map.set(variable,symbol);
@@ -2722,7 +2588,7 @@ jasper_SolverImpl.prototype = {
 			if(!jasper_Util.nearZero(term.m_coefficient)) {
 				var symbol = this.getVarSymbol(term.m_variable);
 				if(this.m_rows._map.h.__keys__[symbol.__id__] != null) {
-					row.insertRow(this.m_rows._map.get(symbol),term.m_coefficient);
+					row.insertRow(this.m_rows._map.h[symbol.__id__],term.m_coefficient);
 				} else {
 					row.insertSymbol(symbol,term.m_coefficient);
 				}
@@ -2812,7 +2678,7 @@ jasper_SolverImpl.prototype = {
 			this11._map.set(k,v);
 		}
 		var v1 = row1;
-		if(!this1._map.exists(art)) {
+		if(this1._map.h.__keys__[art.__id__] == null) {
 			this1._keys.push(art);
 		}
 		this1._map.set(art,v1);
@@ -2833,7 +2699,7 @@ jasper_SolverImpl.prototype = {
 		var success = jasper_Util.nearZero(this.m_artificial.m_constant);
 		this.m_artificial = null;
 		if(this.m_rows._map.h.__keys__[art.__id__] != null) {
-			var rowptr = this.m_rows._map.get(art);
+			var rowptr = this.m_rows._map.h[art.__id__];
 			var _this = this.m_rows;
 			if(_this._map.remove(art)) {
 				HxOverrides.remove(_this._keys,art);
@@ -2848,7 +2714,7 @@ jasper_SolverImpl.prototype = {
 			rowptr.solveForSymbols(art,entering);
 			this.substitute(entering,rowptr);
 			var this13 = this.m_rows;
-			if(!this13._map.exists(entering)) {
+			if(this13._map.h.__keys__[entering.__id__] == null) {
 				this13._keys.push(entering);
 			}
 			this13._map.set(entering,rowptr);
@@ -2894,7 +2760,7 @@ jasper_SolverImpl.prototype = {
 			this.substitute(entering,it.second);
 			var this1 = this.m_rows;
 			var v = it.second;
-			if(!this1._map.exists(entering)) {
+			if(this1._map.h.__keys__[entering.__id__] == null) {
 				this1._keys.push(entering);
 			}
 			this1._map.set(entering,v);
@@ -2903,7 +2769,7 @@ jasper_SolverImpl.prototype = {
 	,dualOptimize: function() {
 		while(this.m_infeasible_rows.length != 0) {
 			var leaving = this.m_infeasible_rows.pop();
-			var it = this.m_rows._map.get(leaving);
+			var it = this.m_rows._map.h[leaving.__id__];
 			if(it != null && it.m_constant < 0.0) {
 				var entering = this.getDualEnteringSymbol(it);
 				if(entering.m_type == 0) {
@@ -2917,7 +2783,7 @@ jasper_SolverImpl.prototype = {
 				row.solveForSymbols(leaving,entering);
 				this.substitute(entering,row);
 				var this1 = this.m_rows;
-				if(!this1._map.exists(entering)) {
+				if(this1._map.h.__keys__[entering.__id__] == null) {
 					this1._keys.push(entering);
 				}
 				this1._map.set(entering,row);
@@ -3030,7 +2896,7 @@ jasper_SolverImpl.prototype = {
 	}
 	,removeMarkerEffects: function(marker,strength) {
 		if(this.m_rows._map.h.__keys__[marker.__id__] != null) {
-			this.m_objective.insertRow(this.m_rows._map.get(marker),-strength);
+			this.m_objective.insertRow(this.m_rows._map.h[marker.__id__],-strength);
 		} else {
 			this.m_objective.insertSymbol(marker,-strength);
 		}
@@ -3257,6 +3123,9 @@ jasper__$Variable_Variable_$Impl_$._new = function(name) {
 	var this1 = new jasper__$Variable_$(name);
 	return this1;
 };
+jasper__$Variable_Variable_$Impl_$.toFloat = function(this1) {
+	return this1.m_value;
+};
 jasper__$Variable_Variable_$Impl_$.multiplyValue = function(variable,coefficient) {
 	var this1 = new jasper__$Term_$(variable,coefficient);
 	return this1;
@@ -3443,10 +3312,10 @@ jasper_ds__$SolverMap_SolverMap_$Impl_$._new = function() {
 	return this1;
 };
 jasper_ds__$SolverMap_SolverMap_$Impl_$.get = function(this1,key) {
-	return this1._map.get(key);
+	return this1._map.h[key.__id__];
 };
 jasper_ds__$SolverMap_SolverMap_$Impl_$.arrayWrite = function(this1,k,v) {
-	if(!this1._map.exists(k)) {
+	if(this1._map.h.__keys__[k.__id__] == null) {
 		this1._keys.push(k);
 	}
 	this1._map.set(k,v);
@@ -5828,20 +5697,20 @@ kha_Shaders.init = function() {
 	var _g5 = 0;
 	while(_g5 < 3) {
 		var i5 = _g5++;
-		var data5 = Reflect.field(kha_Shaders,"painter_text_vertData" + i5);
+		var data5 = Reflect.field(kha_Shaders,"painter_video_fragData" + i5);
 		var bytes5 = haxe_Unserializer.run(data5);
 		blobs5.push(kha_internal_BytesBlob.fromBytes(bytes5));
 	}
-	kha_Shaders.painter_text_vert = new kha_graphics4_VertexShader(blobs5,["painter-text.vert.essl","painter-text-relaxed.vert.essl","painter-text-webgl2.vert.essl"]);
+	kha_Shaders.painter_video_frag = new kha_graphics4_FragmentShader(blobs5,["painter-video.frag.essl","painter-video-relaxed.frag.essl","painter-video-webgl2.frag.essl"]);
 	var blobs6 = [];
 	var _g6 = 0;
 	while(_g6 < 3) {
 		var i6 = _g6++;
-		var data6 = Reflect.field(kha_Shaders,"painter_video_fragData" + i6);
+		var data6 = Reflect.field(kha_Shaders,"painter_text_vertData" + i6);
 		var bytes6 = haxe_Unserializer.run(data6);
 		blobs6.push(kha_internal_BytesBlob.fromBytes(bytes6));
 	}
-	kha_Shaders.painter_video_frag = new kha_graphics4_FragmentShader(blobs6,["painter-video.frag.essl","painter-video-relaxed.frag.essl","painter-video-webgl2.frag.essl"]);
+	kha_Shaders.painter_text_vert = new kha_graphics4_VertexShader(blobs6,["painter-text.vert.essl","painter-text-relaxed.vert.essl","painter-text-webgl2.vert.essl"]);
 	var blobs7 = [];
 	var _g7 = 0;
 	while(_g7 < 3) {
@@ -25202,10 +25071,7 @@ if(ArrayBuffer.prototype.slice == null) {
 var DataView = $global.DataView || js_html_compat_DataView;
 var Float32Array = $global.Float32Array || js_html_compat_Float32Array._new;
 var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
-Main.color = -16777216;
-Main.fontSize = 18;
-Main.operation = 0;
-Main.pixels = [];
+Main.frameTime = 0.0166666666666666664;
 haxe_Unserializer.DEFAULT_RESOLVER = new haxe__$Unserializer_DefaultResolver();
 haxe_Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -25217,11 +25083,7 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 	$r = this1;
 	return $r;
 }(this));
-hxPaint__$Operation_Operation_$Impl_$.PENCIL = 0;
-hxPaint__$Operation_Operation_$Impl_$.FILL = 1;
-hxPaint__$Operation_Operation_$Impl_$.ERASER = 2;
-hxPaint_Pixel.CAN_PENCIL = false;
-hxPaint_Pixel.CAN_ERASE = false;
+hxPaint_element_header_HeaderListItem.OPEN_HEIGHT = 40;
 jasper__$Strength_Strength_$Impl_$.REQUIRED = 1001001000;
 jasper__$Strength_Strength_$Impl_$.STRONG = 1000000;
 jasper__$Strength_Strength_$Impl_$.MEDIUM = 1000;
@@ -25303,12 +25165,12 @@ kha_Shaders.painter_image_vertData2 = "s444:I3ZlcnNpb24gMzAwIGVzCgp1bmlmb3JtIG1l
 kha_Shaders.painter_text_fragData0 = "s351:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4OwoKdmFyeWluZyBoaWdocCB2ZWM0IGZyYWdtZW50Q29sb3I7CnZhcnlpbmcgaGlnaHAgdmVjMiB0ZXhDb29yZDsKCnZvaWQgbWFpbigpCnsKICAgIGdsX0ZyYWdEYXRhWzBdID0gdmVjNChmcmFnbWVudENvbG9yLnh5eiwgdGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpLnggKiBmcmFnbWVudENvbG9yLncpOwp9Cgo";
 kha_Shaders.painter_text_fragData1 = "s340:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp1bmlmb3JtIG1lZGl1bXAgc2FtcGxlcjJEIHRleDsKCnZhcnlpbmcgdmVjNCBmcmFnbWVudENvbG9yOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9GcmFnRGF0YVswXSA9IHZlYzQoZnJhZ21lbnRDb2xvci54eXosIHRleHR1cmUyRCh0ZXgsIHRleENvb3JkKS54ICogZnJhZ21lbnRDb2xvci53KTsKfQoK";
 kha_Shaders.painter_text_fragData2 = "s348:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp1bmlmb3JtIG1lZGl1bXAgc2FtcGxlcjJEIHRleDsKCm91dCB2ZWM0IEZyYWdDb2xvcjsKaW4gdmVjNCBmcmFnbWVudENvbG9yOwppbiB2ZWMyIHRleENvb3JkOwoKdm9pZCBtYWluKCkKewogICAgRnJhZ0NvbG9yID0gdmVjNChmcmFnbWVudENvbG9yLnh5eiwgdGV4dHVyZSh0ZXgsIHRleENvb3JkKS54ICogZnJhZ21lbnRDb2xvci53KTsKfQoK";
-kha_Shaders.painter_text_vertData0 = "s436:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IHByb2plY3Rpb25NYXRyaXggKiB2ZWM0KHZlcnRleFBvc2l0aW9uLCAxLjApOwogICAgdGV4Q29vcmQgPSB0ZXhQb3NpdGlvbjsKICAgIGZyYWdtZW50Q29sb3IgPSB2ZXJ0ZXhDb2xvcjsKfQoK";
-kha_Shaders.painter_text_vertData1 = "s500:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKYXR0cmlidXRlIG1lZGl1bXAgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyBtZWRpdW1wIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247CnZhcnlpbmcgbWVkaXVtcCB2ZWM0IGZyYWdtZW50Q29sb3I7CmF0dHJpYnV0ZSBtZWRpdW1wIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IHByb2plY3Rpb25NYXRyaXggKiB2ZWM0KHZlcnRleFBvc2l0aW9uLCAxLjApOwogICAgdGV4Q29vcmQgPSB0ZXhQb3NpdGlvbjsKICAgIGZyYWdtZW50Q29sb3IgPSB2ZXJ0ZXhDb2xvcjsKfQoK";
-kha_Shaders.painter_text_vertData2 = "s466:I3ZlcnNpb24gMzAwIGVzCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKaW4gbWVkaXVtcCB2ZWMzIHZlcnRleFBvc2l0aW9uOwpvdXQgbWVkaXVtcCB2ZWMyIHRleENvb3JkOwppbiBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247Cm91dCBtZWRpdW1wIHZlYzQgZnJhZ21lbnRDb2xvcjsKaW4gbWVkaXVtcCB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSBwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKTsKICAgIHRleENvb3JkID0gdGV4UG9zaXRpb247CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
 kha_Shaders.painter_video_fragData0 = "s471:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4OwoKdmFyeWluZyBoaWdocCB2ZWMyIHRleENvb3JkOwp2YXJ5aW5nIGhpZ2hwIHZlYzQgY29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBoaWdocCB2ZWM0IHRleGNvbG9yID0gdGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpICogY29sb3I7CiAgICBoaWdocCB2ZWMzIF8zMiA9IHRleGNvbG9yLnh5eiAqIGNvbG9yLnc7CiAgICB0ZXhjb2xvciA9IHZlYzQoXzMyLngsIF8zMi55LCBfMzIueiwgdGV4Y29sb3Iudyk7CiAgICBnbF9GcmFnRGF0YVswXSA9IHRleGNvbG9yOwp9Cgo";
 kha_Shaders.painter_video_fragData1 = "s444:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp1bmlmb3JtIG1lZGl1bXAgc2FtcGxlcjJEIHRleDsKCnZhcnlpbmcgdmVjMiB0ZXhDb29yZDsKdmFyeWluZyB2ZWM0IGNvbG9yOwoKdm9pZCBtYWluKCkKewogICAgdmVjNCB0ZXhjb2xvciA9IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkKSAqIGNvbG9yOwogICAgdmVjMyBfMzIgPSB0ZXhjb2xvci54eXogKiBjb2xvci53OwogICAgdGV4Y29sb3IgPSB2ZWM0KF8zMi54LCBfMzIueSwgXzMyLnosIHRleGNvbG9yLncpOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB0ZXhjb2xvcjsKfQoK";
 kha_Shaders.painter_video_fragData2 = "s452:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp1bmlmb3JtIG1lZGl1bXAgc2FtcGxlcjJEIHRleDsKCmluIHZlYzIgdGV4Q29vcmQ7CmluIHZlYzQgY29sb3I7Cm91dCB2ZWM0IEZyYWdDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIHZlYzQgdGV4Y29sb3IgPSB0ZXh0dXJlKHRleCwgdGV4Q29vcmQpICogY29sb3I7CiAgICB2ZWMzIF8zMiA9IHRleGNvbG9yLnh5eiAqIGNvbG9yLnc7CiAgICB0ZXhjb2xvciA9IHZlYzQoXzMyLngsIF8zMi55LCBfMzIueiwgdGV4Y29sb3Iudyk7CiAgICBGcmFnQ29sb3IgPSB0ZXhjb2xvcjsKfQoK";
+kha_Shaders.painter_text_vertData0 = "s436:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IHByb2plY3Rpb25NYXRyaXggKiB2ZWM0KHZlcnRleFBvc2l0aW9uLCAxLjApOwogICAgdGV4Q29vcmQgPSB0ZXhQb3NpdGlvbjsKICAgIGZyYWdtZW50Q29sb3IgPSB2ZXJ0ZXhDb2xvcjsKfQoK";
+kha_Shaders.painter_text_vertData1 = "s500:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKYXR0cmlidXRlIG1lZGl1bXAgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyBtZWRpdW1wIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247CnZhcnlpbmcgbWVkaXVtcCB2ZWM0IGZyYWdtZW50Q29sb3I7CmF0dHJpYnV0ZSBtZWRpdW1wIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IHByb2plY3Rpb25NYXRyaXggKiB2ZWM0KHZlcnRleFBvc2l0aW9uLCAxLjApOwogICAgdGV4Q29vcmQgPSB0ZXhQb3NpdGlvbjsKICAgIGZyYWdtZW50Q29sb3IgPSB2ZXJ0ZXhDb2xvcjsKfQoK";
+kha_Shaders.painter_text_vertData2 = "s466:I3ZlcnNpb24gMzAwIGVzCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKaW4gbWVkaXVtcCB2ZWMzIHZlcnRleFBvc2l0aW9uOwpvdXQgbWVkaXVtcCB2ZWMyIHRleENvb3JkOwppbiBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247Cm91dCBtZWRpdW1wIHZlYzQgZnJhZ21lbnRDb2xvcjsKaW4gbWVkaXVtcCB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSBwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKTsKICAgIHRleENvb3JkID0gdGV4UG9zaXRpb247CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
 kha_Shaders.painter_video_vertData0 = "s415:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgY29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSBwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKTsKICAgIHRleENvb3JkID0gdGV4UG9zaXRpb247CiAgICBjb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
 kha_Shaders.painter_video_vertData1 = "s479:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKYXR0cmlidXRlIG1lZGl1bXAgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyBtZWRpdW1wIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247CnZhcnlpbmcgbWVkaXVtcCB2ZWM0IGNvbG9yOwphdHRyaWJ1dGUgbWVkaXVtcCB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSBwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKTsKICAgIHRleENvb3JkID0gdGV4UG9zaXRpb247CiAgICBjb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
 kha_Shaders.painter_video_vertData2 = "s444:I3ZlcnNpb24gMzAwIGVzCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKaW4gbWVkaXVtcCB2ZWMzIHZlcnRleFBvc2l0aW9uOwpvdXQgbWVkaXVtcCB2ZWMyIHRleENvb3JkOwppbiBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247Cm91dCBtZWRpdW1wIHZlYzQgY29sb3I7CmluIG1lZGl1bXAgdmVjNCB2ZXJ0ZXhDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX1Bvc2l0aW9uID0gcHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCk7CiAgICB0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwogICAgY29sb3IgPSB2ZXJ0ZXhDb2xvcjsKfQoK";
