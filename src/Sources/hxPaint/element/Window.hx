@@ -38,17 +38,4 @@ class Window extends Rectangle
         solver.addConstraint(this.width == kha.System.windowWidth());
         solver.addConstraint(this.height == kha.System.windowHeight());
     }
-
-    override public function onDown(x :Int, y :Int) : Void
-    {
-        trace(x,y);
-    }
-
-    override public function draw(framebuffer :kha.Framebuffer) : Void
-    {
-        framebuffer.g2.color = 0xffaabbcc;
-        framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
-        framebuffer.g2.color = 0xff000000;
-        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
-    }
 }

@@ -19,14 +19,14 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package hxPaint.element;
+package hxPaint.element.header;
 
 import jasper.Solver;
 import hxPaint.Paint;
 
 using hxPaint.layout.LayoutTools;
 
-class Header extends Rectangle
+class HeaderList extends Rectangle
 {
     public function new(paint :Paint) : Void
     {
@@ -36,21 +36,32 @@ class Header extends Rectangle
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
         solver.addConstraint(this.left() == parent.left());
-        solver.addConstraint(this.top() == parent.top());
-        solver.addConstraint(this.height == 40);
-        solver.addConstraint(this.width == parent.width);
+        solver.addConstraint(this.top() == parent.bottom());
+        solver.addConstraint(this.width == 180);
+
+        var lastchild = this.children[this.children.length -1];
+        solver.addConstraint(this.bottom() == lastchild.bottom());
     }
 
-    override public function onDown(x :Int, y :Int) : Void
+    public function open() : Void
     {
-        trace(x,y);
+        for(c in children) {
+            cast(c, HeaderListItem).open();
+        }
+    }
+
+    public function close() : Void
+    {
+        for(c in children) {
+            cast(c, HeaderListItem).close();
+        }
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xffaacc33;
+        framebuffer.g2.color = 0xff484848;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
-        framebuffer.g2.color = 0xff000000;
+        framebuffer.g2.color = 0xff212121;
         framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
     }
 }

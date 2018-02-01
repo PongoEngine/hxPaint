@@ -28,9 +28,10 @@ import hxPaint.Paint;
 import hxPaint.element.LeftColumn;
 import hxPaint.element.PixelContainer;
 import hxPaint.element.Button;
-import hxPaint.element.Header;
-import hxPaint.element.HeaderButton;
-import hxPaint.element.HeaderMenu;
+import hxPaint.element.header.Header;
+import hxPaint.element.header.HeaderButton;
+import hxPaint.element.header.HeaderList;
+import hxPaint.element.header.HeaderListItem;
 import hxPaint.element.Body;
 
 class Main 
@@ -38,35 +39,54 @@ class Main
     public static function main() : Void
     {
         System.init({title: "hxPaint", width: 1366, height: 768}, function() {
+            kha.Assets.loadEverything(function() {
+                var paint = new Paint();
 
-            var paint = new Paint();
+                paint.window
+                    .addChild(new Body(paint)
+                        .addChild(new LeftColumn(paint)
+                            .addChild(new Button(paint)) //pencil
+                            .addChild(new Button(paint)) //fill
+                            .addChild(new Button(paint)) //line
+                            .addChild(new Button(paint)) //circle
+                            .addChild(new Button(paint))) //eraser
+                        .addChild(new PixelContainer(paint)))
 
-            paint.window
-                .addChild(new Body(paint)
-                    .addChild(new LeftColumn(paint)
-                        .addChild(new Button(paint))
-                        .addChild(new Button(paint))
-                        .addChild(new Button(paint)))
-                    .addChild(new PixelContainer(paint)))
-                .addChild(new Header(paint)
-                    .addChild(new HeaderButton(paint)
-                        .addChild(new HeaderMenu(paint)))
-                    .addChild(new HeaderButton(paint)
-                        .addChild(new HeaderMenu(paint)))
-                    .addChild(new HeaderButton(paint)
-                        .addChild(new HeaderMenu(paint))));
+                    .addChild(new Header(paint)
+                        .addChild(new HeaderButton(paint, "File")
+                            .addChild(new HeaderList(paint)
+                                .addChild(new HeaderListItem(paint, "New"))
+                                .addChild(new HeaderListItem(paint, "Save"))))
 
-            paint.initLayout();
+                        .addChild(new HeaderButton(paint, "Edit")
+                            .addChild(new HeaderList(paint)
+                                .addChild(new HeaderListItem(paint, "Undo"))))
 
-            System.notifyOnRender(function(framebuffer) {
-                framebuffer.g2.begin(0xffffffff);
-                paint.render(framebuffer);
-                framebuffer.g2.end();
+                        .addChild(new HeaderButton(paint, "Help")
+                            .addChild(new HeaderList(paint)
+                                .addChild(new HeaderListItem(paint, "Documentation"))
+                                .addChild(new HeaderListItem(paint, "MiniGame"))
+                                .addChild(new HeaderListItem(paint, "About khaPow")))));
+
+                paint.initLayout();
+
+                var hasInit = false;
+                System.notifyOnRender(function(framebuffer) {
+                    if(!hasInit) {
+                        framebuffer.g2.font = kha.Assets.fonts.Roboto_Black;
+                        framebuffer.g2.fontSize = 18;
+                        hasInit = true;
+                    }
+
+                    framebuffer.g2.begin(0xffffffff);
+                    paint.render(framebuffer);
+                    framebuffer.g2.end();
+                });
+
+                Scheduler.addTimeTask(function() {
+                    paint.update(frameTime);
+                }, 0, 1 / 60);
             });
-
-            Scheduler.addTimeTask(function() {
-                paint.update(frameTime);
-            }, 0, 1 / 60);
         });
     }
 

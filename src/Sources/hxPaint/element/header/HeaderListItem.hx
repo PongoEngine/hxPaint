@@ -19,25 +19,59 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package hxPaint.element;
+package hxPaint.element.header;
 
 import jasper.Solver;
 import hxPaint.Paint;
 
 using hxPaint.layout.LayoutTools;
 
-class Body extends Rectangle
+class HeaderListItem extends Rectangle
 {
-    public function new(paint :Paint) : Void
+    public function new(paint :Paint, title :String) : Void
     {
         super(paint);
+
+        _title = title;
+        _height = kha.Assets.fonts.Roboto_Black.height(18);
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
+        if(prevSibling == null) {
+            solver.addConstraint(this.top() == parent.top());
+        }
+        else {
+            solver.addConstraint(this.top() == prevSibling.bottom());
+        }
+        
         solver.addConstraint(this.left() == parent.left());
-        solver.addConstraint(this.bottom() == parent.bottom());
-        solver.addConstraint(this.height == parent.height - 35);
         solver.addConstraint(this.width == parent.width);
+        solver.addEditVariable(this.height, jasper.Strength.MEDIUM);
     }
+
+    public function open() : Void
+    {
+        this.paint.suggest(this.height, OPEN_HEIGHT);
+    }
+
+    public function close() : Void
+    {
+        this.paint.suggest(this.height, 0);
+    }
+
+    override public function draw(framebuffer :kha.Framebuffer) : Void
+    {
+        framebuffer.g2.color = 0xffffffff;
+        var centerY = y.m_value - _height/2 + height.m_value/2;
+        framebuffer.g2.drawString(_title, x.m_value + 20, centerY);
+        
+        framebuffer.g2.color = 0xff212121;
+        framebuffer.g2.drawLine(x.m_value, y.m_value, x.m_value + width.m_value, y.m_value,1);
+    }
+
+    private static inline var OPEN_HEIGHT = 40;
+    private var _title :String;
+    private var _width :Float;
+    private var _height :Float;
 }

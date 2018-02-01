@@ -41,16 +41,9 @@ class PixelContainer extends Rectangle
         solver.addConstraint(this.height == parent.height);
     }
 
-    override public function onDown(x :Int, y :Int) : Void
-    {
-        trace(x,y);
-    }
-
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
         framebuffer.g2.color = 0xffccbbaa;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
-        framebuffer.g2.color = 0xff000000;
-        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
     }
 }

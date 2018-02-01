@@ -47,16 +47,48 @@ class Button extends Rectangle
         }
     }
 
-    override public function onDown(x :Int, y :Int) : Void
-    {
-        trace(x,y);
-    }
-
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xffbcbc11;
+        framebuffer.g2.color = 0xff212121;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
-        framebuffer.g2.color = 0xff000000;
-        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
+
+        if(_isOn) {
+            framebuffer.g2.color = 0xffb2dfdb;
+            framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value, 2);
+        }
     }
+
+    override public function onUp(x :Int, y :Int) : Void
+    {
+        if(_isOn) {
+            turnOff();
+        }
+        else {
+            turnOn();
+        }
+
+        turnOffOthers();
+    }
+
+    public function turnOn() : Void
+    {
+        _isOn = true;
+    }
+
+    public function turnOff() : Void
+    {
+        _isOn = false;
+    }
+
+    private function turnOffOthers() : Void
+    {
+        var buttons :Array<Button> = this.paint.window.getAll(Button);
+        for(button in buttons) {
+            if(button != this) {
+                button.turnOff();
+            }
+        }
+    }
+
+    private var _isOn :Bool;
 }

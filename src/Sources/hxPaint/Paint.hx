@@ -65,6 +65,7 @@ class Paint
 
     public static function render_impl(element :Rectangle, framebuffer :kha.Framebuffer)
     {
+        framebuffer.g2.scissor(Math.round(element.x.m_value), Math.round(element.y.m_value), Math.round(element.width.m_value), Math.round(element.height.m_value));
         element.draw(framebuffer);
         for(child in element.children) {
             render_impl(child, framebuffer);

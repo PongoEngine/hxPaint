@@ -19,59 +19,86 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package hxPaint.element;
+package hxPaint.element.header;
 
 import jasper.Solver;
 import hxPaint.Paint;
-import hxPaint.element.HeaderMenu;
 
 using hxPaint.layout.LayoutTools;
 
 class HeaderButton extends Rectangle
 {
-    public function new(paint :Paint) : Void
+    public function new(paint :Paint, title :String) : Void
     {
         super(paint);
+        _title = title;
         _isOpen = false;
+
+        _width = kha.Assets.fonts.Roboto_Black.width(18, _title);
+        _height = kha.Assets.fonts.Roboto_Black.height(18);
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
         if(prevSibling == null) {
-            solver.addConstraint(this.left() == parent.left());
+            solver.addConstraint(this.left() == parent.left() + 2);
         }
         else {
             solver.addConstraint(this.left() == prevSibling.right());
         }
-        
+
         solver.addConstraint(this.top() == parent.top());
         solver.addConstraint(this.height == parent.height);
-        solver.addConstraint(this.width == 120);
-    }
-
-    override public function onDown(x :Int, y :Int) : Void
-    {
-        trace(x,y);
+        solver.addConstraint(this.width == _width + 50);
     }
 
     override public function onUp(x :Int, y :Int) : Void
     {
         if(_isOpen) {
-            cast(this.children[0], HeaderMenu).close();
+            close();
         }
         else {
-            cast(this.children[0], HeaderMenu).open();
+            open();
         }
-        _isOpen = !_isOpen;
+
+        closeOthers();
+    }
+
+    public function open() : Void
+    {
+        _isOpen = true;
+        cast(this.children[0], HeaderList).open();
+    }
+
+    public function close() : Void
+    {
+        _isOpen = false;
+        cast(this.children[0], HeaderList).close();
+    }
+
+    private function closeOthers() : Void
+    {
+        var buttons :Array<HeaderButton> = this.paint.window.getAll(HeaderButton);
+        for(button in buttons) {
+            if(button != this) {
+                button.close();
+            }
+        }
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xff33cc33;
+        framebuffer.g2.color = _isOpen ? 0xff000000 : 0xff212121;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
-        framebuffer.g2.color = 0xff000000;
-        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
+        
+        framebuffer.g2.color = 0xffffffff;
+        var centerX = x.m_value - _width/2 + width.m_value/2;
+        var centerY = y.m_value - _height/2 + height.m_value/2;
+        framebuffer.g2.drawString(_title, centerX, centerY);
     }
 
     private var _isOpen :Bool;
+    private var _title :String;
+    private var _width :Float;
+    private var _height :Float;
 }
