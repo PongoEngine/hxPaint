@@ -43,7 +43,9 @@ class PixelContainer extends Rectangle
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xffccbbaa;
+        framebuffer.g2.color = 0xffeeeeee;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
+        framebuffer.g2.color = 0xff484848;
+        framebuffer.g2.drawRect(x.m_value + 2, y.m_value + 1, width.m_value - 2, height.m_value - 2);
     }
 }
