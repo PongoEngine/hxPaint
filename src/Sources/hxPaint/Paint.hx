@@ -31,15 +31,22 @@ class Paint
 {
     public var window :Window;
 
-    public function new() : Void
+    public function new(width :Int, height :Int) : Void
     {
-        window = new Window(this);
+        _width = width;
+        _height = height;
+        window = new Window(this, _width, _height);
         new Mouse(window);
         _layout = new Layout(window);
     }
 
-    public function render(framebuffer :kha.Framebuffer) : Void
+    public function render(width :Int, height :Int, framebuffer :kha.Framebuffer) : Void
     {
+        if(_width != width || _height != height) {
+            window.resize(width, height);
+            _width = width;
+            _height = height;   
+        }
         render_impl(window, framebuffer);
     }
 
@@ -81,4 +88,6 @@ class Paint
     }
     
     private var _layout :Layout;
+    private var _width :Int;
+    private var _height :Int;
 }

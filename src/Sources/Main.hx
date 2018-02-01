@@ -38,9 +38,9 @@ class Main
 {
     public static function main() : Void
     {
-        System.init({title: "hxPaint", width: 1366, height: 768}, function() {
+        System.init({title: "hxPaint", width: 1366, height: 768, resizable: true}, function() {
             kha.Assets.loadEverything(function() {
-                var paint = new Paint();
+                var paint = new Paint(kha.System.windowWidth(), kha.System.windowHeight());
 
                 paint.window
                     .addChild(new Body(paint)
@@ -79,7 +79,7 @@ class Main
                     }
 
                     framebuffer.g2.begin(0xffffffff);
-                    paint.render(framebuffer);
+                    paint.render(kha.System.windowWidth(), kha.System.windowHeight(), framebuffer);
                     framebuffer.g2.end();
                 });
 

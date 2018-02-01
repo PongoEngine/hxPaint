@@ -21,21 +21,35 @@
 
 package hxPaint.element;
 
+import jasper.Strength;
 import jasper.Solver;
 import hxPaint.Paint;
 
 class Window extends Rectangle
 {
-    public function new(paint :Paint) : Void
+    public function new(paint :Paint, width :Int, height :Int) : Void
     {
         super(paint);
+        _initialWidth = width;
+        _initialHeight = height;
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
         solver.addConstraint(this.x == 0);
         solver.addConstraint(this.y == 0);
-        solver.addConstraint(this.width == kha.System.windowWidth());
-        solver.addConstraint(this.height == kha.System.windowHeight());
+        solver.addEditVariable(this.width, Strength.STRONG);
+        solver.addEditVariable(this.height, Strength.STRONG);
+        solver.suggestValue(this.width, _initialWidth);
+        solver.suggestValue(this.height, _initialHeight);
     }
+
+    public function resize(width :Int, height :Int) : Void
+    {
+        this.paint.suggest(this.width, width);
+        this.paint.suggest(this.height, height);
+    }
+
+    private var _initialWidth :Int;
+    private var _initialHeight :Int;
 }
