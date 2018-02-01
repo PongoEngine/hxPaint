@@ -28,7 +28,10 @@ import hxPaint.Paint;
 import hxPaint.element.LeftColumn;
 import hxPaint.element.PixelContainer;
 import hxPaint.element.Button;
-import hxPaint.element.MiniButton;
+import hxPaint.element.Header;
+import hxPaint.element.HeaderButton;
+import hxPaint.element.HeaderMenu;
+import hxPaint.element.Body;
 
 class Main 
 {
@@ -37,20 +40,21 @@ class Main
         System.init({title: "hxPaint", width: 1366, height: 768}, function() {
 
             var paint = new Paint();
+
             paint.window
-                .addChild(new LeftColumn(paint)
-                    .addChild(new Button(paint) //FILL
-                        .addChild(new MiniButton(paint))
-                        .addChild(new MiniButton(paint))
-                        .addChild(new MiniButton(paint)))
-                    .addChild(new Button(paint) //PENCIL
-                        .addChild(new MiniButton(paint))
-                        .addChild(new MiniButton(paint))
-                        .addChild(new MiniButton(paint)))
-                    .addChild(new Button(paint)) //ERASER
-                    .addChild(new Button(paint)) //CIRCLE
-                    .addChild(new Button(paint))) //LINE
-                .addChild(new PixelContainer(paint));
+                .addChild(new Body(paint)
+                    .addChild(new LeftColumn(paint)
+                        .addChild(new Button(paint))
+                        .addChild(new Button(paint))
+                        .addChild(new Button(paint)))
+                    .addChild(new PixelContainer(paint)))
+                .addChild(new Header(paint)
+                    .addChild(new HeaderButton(paint)
+                        .addChild(new HeaderMenu(paint)))
+                    .addChild(new HeaderButton(paint)
+                        .addChild(new HeaderMenu(paint)))
+                    .addChild(new HeaderButton(paint)
+                        .addChild(new HeaderMenu(paint))));
 
             paint.initLayout();
 

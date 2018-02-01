@@ -23,22 +23,30 @@ package hxPaint.element;
 
 import jasper.Solver;
 import hxPaint.Paint;
+import hxPaint.element.HeaderMenu;
 
 using hxPaint.layout.LayoutTools;
 
-class PixelContainer extends Rectangle
+class HeaderButton extends Rectangle
 {
     public function new(paint :Paint) : Void
     {
         super(paint);
+        _isOpen = false;
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
-        solver.addConstraint(this.left() == prevSibling.right());
+        if(prevSibling == null) {
+            solver.addConstraint(this.left() == parent.left());
+        }
+        else {
+            solver.addConstraint(this.left() == prevSibling.right());
+        }
+        
         solver.addConstraint(this.top() == parent.top());
-        solver.addConstraint(this.width == parent.width - prevSibling.width);
         solver.addConstraint(this.height == parent.height);
+        solver.addConstraint(this.width == 120);
     }
 
     override public function onDown(x :Int, y :Int) : Void
@@ -46,11 +54,24 @@ class PixelContainer extends Rectangle
         trace(x,y);
     }
 
+    override public function onUp(x :Int, y :Int) : Void
+    {
+        if(_isOpen) {
+            cast(this.children[0], HeaderMenu).close();
+        }
+        else {
+            cast(this.children[0], HeaderMenu).open();
+        }
+        _isOpen = !_isOpen;
+    }
+
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xffccbbaa;
+        framebuffer.g2.color = 0xff33cc33;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         framebuffer.g2.color = 0xff000000;
         framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
     }
+
+    private var _isOpen :Bool;
 }

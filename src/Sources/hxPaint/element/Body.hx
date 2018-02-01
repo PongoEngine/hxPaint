@@ -26,7 +26,7 @@ import hxPaint.Paint;
 
 using hxPaint.layout.LayoutTools;
 
-class PixelContainer extends Rectangle
+class Body extends Rectangle
 {
     public function new(paint :Paint) : Void
     {
@@ -35,10 +35,10 @@ class PixelContainer extends Rectangle
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
-        solver.addConstraint(this.left() == prevSibling.right());
-        solver.addConstraint(this.top() == parent.top());
-        solver.addConstraint(this.width == parent.width - prevSibling.width);
-        solver.addConstraint(this.height == parent.height);
+        solver.addConstraint(this.left() == parent.left());
+        solver.addConstraint(this.bottom() == parent.bottom());
+        solver.addConstraint(this.height == parent.height - 40);
+        solver.addConstraint(this.width == parent.width);
     }
 
     override public function onDown(x :Int, y :Int) : Void
@@ -48,7 +48,7 @@ class PixelContainer extends Rectangle
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xffccbbaa;
+        framebuffer.g2.color = 0xffaaccbb;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         framebuffer.g2.color = 0xff000000;
         framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);

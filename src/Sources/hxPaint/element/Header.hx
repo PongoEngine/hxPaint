@@ -26,7 +26,7 @@ import hxPaint.Paint;
 
 using hxPaint.layout.LayoutTools;
 
-class MiniButton extends Rectangle
+class Header extends Rectangle
 {
     public function new(paint :Paint) : Void
     {
@@ -35,16 +35,10 @@ class MiniButton extends Rectangle
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
-        solver.addConstraint(this.bottom() == parent.bottom() - 5);
-        solver.addConstraint(this.width == (parent.width - 20) / 3);
-        solver.addConstraint(this.height == this.width);
-        
-        if(prevSibling == null) {
-            solver.addConstraint(this.left() == parent.left() + 5);
-        }
-        else {
-            solver.addConstraint(this.left() == prevSibling.right() + 5);
-        }
+        solver.addConstraint(this.left() == parent.left());
+        solver.addConstraint(this.top() == parent.top());
+        solver.addConstraint(this.height == 40);
+        solver.addConstraint(this.width == parent.width);
     }
 
     override public function onDown(x :Int, y :Int) : Void
@@ -54,9 +48,9 @@ class MiniButton extends Rectangle
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xffbcbc11;
+        framebuffer.g2.color = 0xffaacc33;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         framebuffer.g2.color = 0xff000000;
-        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,1);
+        framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value,2);
     }
 }

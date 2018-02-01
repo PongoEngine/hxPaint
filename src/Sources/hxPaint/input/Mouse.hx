@@ -33,26 +33,27 @@ class Mouse
 
     private static function hitTest_impl(rectangle :Rectangle, x :Int, y :Int, type :HitType) : Bool
     {
-        if(isHit(rectangle,x,y)) {
-            var isChildHit = false;
-            for(child in rectangle.children) {
-                if(hitTest_impl(child, x, y, type)) {
-                    isChildHit = true;
-                }
-            }
+        var wasHit = isHit(rectangle,x,y);
 
-            if(!isChildHit) {
-                switch type {
-                    case DOWN: rectangle.onDown(x,y);
-                    case UP: rectangle.onUp(x,y);
-                    case MOVE: rectangle.onMove(x,y);
-                }
+        var isChildHit = false;
+        var index = rectangle.children.length;
+        while(index --> 0) {
+            var child = rectangle.children[index];
+            if(hitTest_impl(child, x, y, type)) {
+                isChildHit = true;
+                break;
             }
-
-            return true;
         }
 
-        return false;
+        if(!isChildHit && wasHit) {
+            switch type {
+                case DOWN: rectangle.onDown(x,y);
+                case UP: rectangle.onUp(x,y);
+                case MOVE: rectangle.onMove(x,y);
+            }
+        }
+
+        return wasHit || isChildHit;
     }
 
     public static inline function isHit(rectangle :Rectangle, x :Int, y :Int) : Bool
