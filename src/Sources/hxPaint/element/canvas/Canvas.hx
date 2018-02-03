@@ -59,9 +59,9 @@ class Canvas extends Rectangle
         switch this.operation {
             case CIRCLE:
             case ERASER: _painter.erase(_downX, _downY);
-            case FILL: _painter.fill(_downX, _downY);
+            case FILL: _painter.fill(_downX, _downY, 0xffaaaaaa);
             case LINE:
-            case PENCIL: _painter.pencil(_downX, _downY);
+            case PENCIL: _painter.pencil(_downX, _downY, 0xff444444, true);
             case INVALID:
         }
         
@@ -76,11 +76,11 @@ class Canvas extends Rectangle
 
         if(_isDown) {
             switch this.operation {
-                case CIRCLE: _painter.drawEllipse(moveX, moveY, _downX, _downY, true);
+                case CIRCLE: _painter.drawEllipse(moveX, moveY, _downX, _downY, 0xff444444, true);
                 case ERASER: _painter.erase(moveX, moveY);
                 case FILL:
-                case LINE: _painter.drawLine(moveX, moveY, _downX, _downY, true);
-                case PENCIL: _painter.pencil(moveX, moveY);
+                case LINE: _painter.drawLine(moveX, moveY, _downX, _downY, 0xff444444, true);
+                case PENCIL: _painter.pencil(moveX, moveY, 0xff444444, false);
                 case INVALID:
             }
         }
@@ -92,10 +92,10 @@ class Canvas extends Rectangle
         var upY = Std.int(y - this.y.m_value);
 
         switch this.operation {
-            case CIRCLE: _painter.drawEllipse(upX, upY, _downX, _downY, false);
+            case CIRCLE: _painter.drawEllipse(upX, upY, _downX, _downY, 0xff444444, false);
             case ERASER:
             case FILL:
-            case LINE: _painter.drawLine(upX, upY, _downX, _downY, false);
+            case LINE: _painter.drawLine(upX, upY, _downX, _downY, 0xff444444, false);
             case PENCIL:
             case INVALID:
         }

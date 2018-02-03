@@ -38,7 +38,7 @@ class Main
 {
     public static function main() : Void
     {
-        System.init({title: "hxPaint", width: 1366, height: 768, resizable: true}, function() {
+        System.init({title: "hxPaint", width: 1366, height: 768}, function() {
             kha.Assets.loadEverything(function() {
                 var paint = new Paint(kha.System.windowWidth(), kha.System.windowHeight());
                 var canvas = new Canvas(paint);

@@ -23,7 +23,7 @@ package hxPaint.element.canvas;
 
 abstract Pixels(Array<Int>)
 {
-    public static inline var SIZE :Int = 16;
+    public static inline var SIZE :Int = 64;
 
     public inline function new() : Void
     {

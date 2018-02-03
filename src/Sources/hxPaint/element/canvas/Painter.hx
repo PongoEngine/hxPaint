@@ -27,6 +27,9 @@ using Math;
 
 class Painter
 {
+
+    public var showEdges :Bool;
+
     public function new() : Void
     {
         _cellSquare = 0;
@@ -34,12 +37,21 @@ class Painter
         _centerY = 0;
         _pixels = new Pixels();
         _tempPixels = new Pixels();
+
+        _lastPencilX = 0;
+        _lastPencilY = 0;
+
+        showEdges = false;
     }
 
+    /**
+     *  [Description]
+     *  @param framebuffer - 
+     */
     public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        for(xCell in 0...X_CELLS) {
-            for(yCell in 0...Y_CELLS) {
+        for(xCell in 0...Pixels.SIZE) {
+            for(yCell in 0...Pixels.SIZE) {
                 var xPos = _centerX + xCell*_cellSquare;
                 var yPos = _centerY + yCell*_cellSquare;
                 
@@ -49,38 +61,81 @@ class Painter
                 framebuffer.g2.color = _tempPixels.getPixel(xCell,yCell);
                 framebuffer.g2.fillRect(xPos,yPos,_cellSquare, _cellSquare);
 
-                framebuffer.g2.color = 0xff484848;
-                framebuffer.g2.drawRect(xPos,yPos,_cellSquare, _cellSquare);
+                if(showEdges) {
+                    framebuffer.g2.color = 0xff484848;
+                    framebuffer.g2.drawRect(xPos,yPos,_cellSquare, _cellSquare);
+                }
             }
         }
+
+        framebuffer.g2.color = 0xff484848;
+        framebuffer.g2.drawRect(_centerX, _centerY, _cellSquare*Pixels.SIZE - 1, _cellSquare*Pixels.SIZE - 1);
     }
 
-    public function pencil(x :Int, y :Int) : Void
+    /**
+     *  [Description]
+     *  @param x - 
+     *  @param y - 
+     *  @param color - 
+     *  @param isFresh - 
+     */
+    public function pencil(x :Int, y :Int, color :Int, isFresh :Bool) : Void
     {
-        var xCell = xCell(x);
-        var yCell = yCell(y);
-
-        _pixels.setPixel(xCell, yCell, 0xffff0000);
+        if(isFresh) {
+            var xCell = xCell(x);
+            var yCell = yCell(y);
+            _pixels.setPixel(xCell, yCell, color);
+        }
+        else {
+            drawLine(x, y, _lastPencilX, _lastPencilY, color, false);
+        }
+        
+        _lastPencilX = x;
+        _lastPencilY = y;
     }
 
-    public function fill(x :Int, y :Int) : Void
+    /**
+     *  [Description]
+     *  @param x - 
+     *  @param y - 
+     *  @param color - 
+     */
+    public function fill(x :Int, y :Int, color :Int) : Void
     {
         var xCell = xCell(x);
         var yCell = yCell(y);
 
         var cellColor = _pixels.getPixel(xCell, yCell);
-        _pixels.fill(xCell,yCell, cellColor, 0xff330055);
+        _pixels.fill(xCell,yCell, cellColor, color);
     }
 
+    /**
+     *  [Description]
+     *  @param x - 
+     *  @param y - 
+     */
     public function erase(x :Int, y :Int) : Void
     {
         var xCell = xCell(x);
         var yCell = yCell(y);
 
-        _pixels.setPixel(xCell, yCell, 0);
+        for(eX in -2...3) {
+            for(eY in -2...3) {
+                _pixels.setPixel(xCell + eX, yCell + eY, 0);
+            }
+        }
     }
 
-    public function drawLine(x0 :Int, y0 :Int, x1 :Int, y1 :Int, isTemp :Bool) : Void
+    /**
+     *  [Description]
+     *  @param x0 - 
+     *  @param y0 - 
+     *  @param x1 - 
+     *  @param y1 - 
+     *  @param color - 
+     *  @param isTemp - 
+     */
+    public function drawLine(x0 :Int, y0 :Int, x1 :Int, y1 :Int, color :Int, isTemp :Bool) : Void
     {
         var xCell0 = xCell(x0);
         var yCell0 = yCell(y0);
@@ -89,14 +144,23 @@ class Painter
 
         _tempPixels.clear();
         if(isTemp) {
-            _tempPixels.drawLine(xCell0, yCell0, xCell1, yCell1, 0xff00ff0f);
+            _tempPixels.drawLine(xCell0, yCell0, xCell1, yCell1, color);
         }
         else {
-            _pixels.drawLine(xCell0, yCell0, xCell1, yCell1, 0xff00ff0f);
+            _pixels.drawLine(xCell0, yCell0, xCell1, yCell1, color);
         }
     }
 
-    public function drawEllipse(x0 :Int, y0 :Int, x1 :Int, y1 :Int, isTemp :Bool) : Void
+    /**
+     *  [Description]
+     *  @param x0 - 
+     *  @param y0 - 
+     *  @param x1 - 
+     *  @param y1 - 
+     *  @param color - 
+     *  @param isTemp - 
+     */
+    public function drawEllipse(x0 :Int, y0 :Int, x1 :Int, y1 :Int, color :Int, isTemp :Bool) : Void
     {
         var xCell0 = xCell(x0);
         var yCell0 = yCell(y0);
@@ -105,27 +169,42 @@ class Painter
 
         _tempPixels.clear();
         if(isTemp) {
-            _tempPixels.drawEllipse(xCell0, yCell0, xCell1, yCell1, 0xff00f0f0);
+            _tempPixels.drawEllipse(xCell0, yCell0, xCell1, yCell1, color);
         }
         else {
-            _pixels.drawEllipse(xCell0, yCell0, xCell1, yCell1, 0xff00f0f0);
+            _pixels.drawEllipse(xCell0, yCell0, xCell1, yCell1, color);
         }
     }
 
+    /**
+     *  [Description]
+     *  @param width - 
+     *  @param height - 
+     */
     public function resize(width :Float, height :Float) : Void
     {
         var square = (width > height) ? height : width;
 
-        _cellSquare = square/X_CELLS;
-        _centerX = (width - _cellSquare*X_CELLS) / 2;
-        _centerY = (height - _cellSquare*Y_CELLS) / 2;
+        _cellSquare = square/Pixels.SIZE;
+        _centerX = (width - _cellSquare*Pixels.SIZE) / 2;
+        _centerY = (height - _cellSquare*Pixels.SIZE) / 2;
     }
 
+    /**
+     *  [Description]
+     *  @param x - 
+     *  @return Int
+     */
     private inline function xCell(x :Float) : Int
     {
         return Math.floor((x-_centerX) / _cellSquare);
     }
 
+    /**
+     *  [Description]
+     *  @param y - 
+     *  @return Int
+     */
     private inline function yCell(y :Float) : Int
     {
         return Math.floor((y-_centerY) / _cellSquare);
@@ -137,6 +216,6 @@ class Painter
     private var _pixels :Pixels;
     private var _tempPixels :Pixels;
 
-    private static inline var X_CELLS = 16;
-    private static inline var Y_CELLS = 16;
+    private var _lastPencilX :Int;
+    private var _lastPencilY :Int;
 }
