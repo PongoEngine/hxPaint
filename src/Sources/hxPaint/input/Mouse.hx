@@ -29,6 +29,12 @@ class Mouse
     public function new(window :Window) : Void
     {
         initMouse(window);
+        _upConnections = [];
+    }
+
+    public function connectUp(fn :Int -> Int -> Void) : Void
+    {
+        _upConnections.push(fn);
     }
 
     private static function hitTest_impl(rectangle :Rectangle, x :Int, y :Int, type :HitType) : Bool
@@ -74,12 +80,17 @@ class Mouse
             hitTest_impl(window, x, y, DOWN);
         }, function(button,x,y) {
             hitTest_impl(window, x, y, UP);
+            for(c in _upConnections) {
+                c(x,y);
+            }
         }, function(x, y, cX, cY) {
             hitTest_impl(window, x, y, MOVE);
         }, function(w) {
 
         });
     }
+
+    private var _upConnections :Array<Int -> Int -> Void>;
 }
 
 @:enum

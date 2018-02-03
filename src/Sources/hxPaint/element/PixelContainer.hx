@@ -33,6 +33,21 @@ class PixelContainer extends Rectangle
     {
         super(paint);
         _canvas = new Canvas();
+        _isDown = false;
+        _downX = -1;
+        _downY = -1;
+
+        paint.mouse.connectUp(function(x,y) {
+            switch this.paint.operation {
+                case CIRCLE: _canvas.drawEllipse(this.x.m_value, this.y.m_value, _downX, _downY, x, y, false);
+                case ERASER:
+                case FILL:
+                case LINE: _canvas.drawLine(this.x.m_value, this.y.m_value, _downX, _downY, x, y, false);
+                case PENCIL:
+                case INVALID:
+            }
+            _isDown = false;
+        });
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
@@ -41,6 +56,36 @@ class PixelContainer extends Rectangle
         solver.addConstraint(this.top() == parent.top());
         solver.addConstraint(this.width == parent.width - prevSibling.width);
         solver.addConstraint(this.height == parent.height);
+    }
+
+    override public function onDown(x :Int, y :Int) : Void
+    {
+        switch this.paint.operation {
+            case CIRCLE:
+            case ERASER: _canvas.erase(this.x.m_value, this.y.m_value, x, y);
+            case FILL: _canvas.fill(this.x.m_value, this.y.m_value, x, y);
+            case LINE:
+            case PENCIL: _canvas.pencil(this.x.m_value, this.y.m_value, x, y);
+            case INVALID:
+        }
+        
+        _downX = x;
+        _downY = y;
+        _isDown = true;
+    }
+
+    override public function onMove(x :Int, y :Int) : Void
+    {
+        if(_isDown) {
+            switch this.paint.operation {
+                case CIRCLE: _canvas.drawEllipse(this.x.m_value, this.y.m_value, _downX, _downY, x, y, true);
+                case ERASER: _canvas.erase(this.x.m_value, this.y.m_value, x, y);
+                case FILL:
+                case LINE: _canvas.drawLine(this.x.m_value, this.y.m_value, _downX, _downY, x, y, true);
+                case PENCIL: _canvas.pencil(this.x.m_value, this.y.m_value, x, y);
+                case INVALID:
+            }
+        }
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
@@ -60,4 +105,7 @@ class PixelContainer extends Rectangle
     }
 
     private var _canvas :Canvas;
+    private var _isDown :Bool;
+    private var _downX :Int;
+    private var _downY :Int;
 }

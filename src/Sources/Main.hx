@@ -42,14 +42,18 @@ class Main
             kha.Assets.loadEverything(function() {
                 var paint = new Paint(kha.System.windowWidth(), kha.System.windowHeight());
 
+                var fnButtonOff = function() {
+                    paint.operation = INVALID;
+                }
+
                 paint.window
                     .addChild(new Body(paint)
                         .addChild(new LeftColumn(paint)
-                            .addChild(new Button(paint)) //pencil
-                            .addChild(new Button(paint)) //fill
-                            .addChild(new Button(paint)) //line
-                            .addChild(new Button(paint)) //circle
-                            .addChild(new Button(paint))) //eraser
+                            .addChild(new Button(paint, function() {paint.operation = PENCIL;}, fnButtonOff)) //pencil
+                            .addChild(new Button(paint, function() {paint.operation = FILL;}, fnButtonOff)) //fill
+                            .addChild(new Button(paint, function() {paint.operation = LINE;}, fnButtonOff)) //line
+                            .addChild(new Button(paint, function() {paint.operation = CIRCLE;}, fnButtonOff)) //circle
+                            .addChild(new Button(paint, function() {paint.operation = ERASER;}, fnButtonOff))) //eraser
                         .addChild(new PixelContainer(paint)))
 
                     .addChild(new Header(paint)

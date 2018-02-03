@@ -30,13 +30,16 @@ import jasper.Variable;
 class Paint
 {
     public var window :Window;
+    public var mouse :Mouse;
+    public var operation :PaintOperation;
 
     public function new(width :Int, height :Int) : Void
     {
         _width = width;
         _height = height;
-        window = new Window(this, _width, _height);
-        new Mouse(window);
+        this.window = new Window(this, _width, _height);
+        this.mouse = new Mouse(window);
+        this.operation = INVALID;
         _layout = new Layout(window);
     }
 

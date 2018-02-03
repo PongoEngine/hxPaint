@@ -28,9 +28,11 @@ using hxPaint.layout.LayoutTools;
 
 class Button extends Rectangle
 {
-    public function new(paint :Paint) : Void
+    public function new(paint :Paint, ?fnOn : Void -> Void, ?fnOff : Void -> Void) : Void
     {
         super(paint);
+        _fnOn = fnOn;
+        _fnOff = fnOff;
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
@@ -60,24 +62,30 @@ class Button extends Rectangle
 
     override public function onUp(x :Int, y :Int) : Void
     {
+        turnOffOthers();
+        
         if(_isOn) {
             turnOff();
         }
         else {
             turnOn();
         }
-
-        turnOffOthers();
     }
 
     public function turnOn() : Void
     {
         _isOn = true;
+        if(_fnOn != null) {
+            _fnOn();
+        }
     }
 
     public function turnOff() : Void
     {
         _isOn = false;
+        if(_fnOff != null) {
+            _fnOff();
+        }
     }
 
     private function turnOffOthers() : Void
@@ -91,4 +99,6 @@ class Button extends Rectangle
     }
 
     private var _isOn :Bool;
+    private var _fnOn :Void -> Void;
+    private var _fnOff :Void -> Void;
 }
