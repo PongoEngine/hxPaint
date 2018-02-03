@@ -19,23 +19,26 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package hxPaint.element;
+package hxPaint.element.canvas;
 
 import jasper.Solver;
 import hxPaint.Paint;
-import hxPaint.canvas.Canvas;
+import hxPaint.element.canvas.Painter;
 
 using hxPaint.layout.LayoutTools;
 
-class PixelContainer extends Rectangle
+class Canvas extends Rectangle
 {
+    public var operation :PaintOperation;
+
     public function new(paint :Paint) : Void
     {
         super(paint);
-        _canvas = new Canvas();
+        _painter = new Painter();
         _isDown = false;
         _downX = -1;
         _downY = -1;
+        this.operation = INVALID;
 
         paint.mouse.connectUp(onSystemUp);
     }
@@ -50,29 +53,34 @@ class PixelContainer extends Rectangle
 
     override public function onDown(x :Int, y :Int) : Void
     {
-        switch this.paint.operation {
+        _downX = Std.int(x - this.x.m_value);
+        _downY = Std.int(y - this.y.m_value);
+
+        switch this.operation {
             case CIRCLE:
-            case ERASER: _canvas.erase(this.x.m_value, this.y.m_value, x, y);
-            case FILL: _canvas.fill(this.x.m_value, this.y.m_value, x, y);
+            case ERASER: _painter.erase(_downX, _downY);
+            case FILL: _painter.fill(_downX, _downY);
             case LINE:
-            case PENCIL: _canvas.pencil(this.x.m_value, this.y.m_value, x, y);
+            case PENCIL: _painter.pencil(_downX, _downY);
             case INVALID:
         }
         
-        _downX = x;
-        _downY = y;
+        
         _isDown = true;
     }
 
     override public function onMove(x :Int, y :Int) : Void
     {
+        var moveX = Std.int(x - this.x.m_value);
+        var moveY = Std.int(y - this.y.m_value);
+
         if(_isDown) {
-            switch this.paint.operation {
-                case CIRCLE: _canvas.drawEllipse(this.x.m_value, this.y.m_value, _downX, _downY, x, y, true);
-                case ERASER: _canvas.erase(this.x.m_value, this.y.m_value, x, y);
+            switch this.operation {
+                case CIRCLE: _painter.drawEllipse(moveX, moveY, _downX, _downY, true);
+                case ERASER: _painter.erase(moveX, moveY);
                 case FILL:
-                case LINE: _canvas.drawLine(this.x.m_value, this.y.m_value, _downX, _downY, x, y, true);
-                case PENCIL: _canvas.pencil(this.x.m_value, this.y.m_value, x, y);
+                case LINE: _painter.drawLine(moveX, moveY, _downX, _downY, true);
+                case PENCIL: _painter.pencil(moveX, moveY);
                 case INVALID:
             }
         }
@@ -80,11 +88,14 @@ class PixelContainer extends Rectangle
 
     private function onSystemUp(x :Int, y :Int) : Void
     {
-        switch this.paint.operation {
-            case CIRCLE: _canvas.drawEllipse(this.x.m_value, this.y.m_value, _downX, _downY, x, y, false);
+        var upX = Std.int(x - this.x.m_value);
+        var upY = Std.int(y - this.y.m_value);
+
+        switch this.operation {
+            case CIRCLE: _painter.drawEllipse(upX, upY, _downX, _downY, false);
             case ERASER:
             case FILL:
-            case LINE: _canvas.drawLine(this.x.m_value, this.y.m_value, _downX, _downY, x, y, false);
+            case LINE: _painter.drawLine(upX, upY, _downX, _downY, false);
             case PENCIL:
             case INVALID:
         }
@@ -99,15 +110,17 @@ class PixelContainer extends Rectangle
         framebuffer.g2.color = 0xffeeeeee;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         
-        _canvas.draw(x.m_value, y.m_value, framebuffer);
+        framebuffer.g2.pushTranslation(x.m_value, y.m_value);
+        _painter.draw(framebuffer);
+        framebuffer.g2.popTransformation();
     }
 
     override public function afterSolved() : Void
     {
-        _canvas.resize(this.width.m_value, this.height.m_value);
+        _painter.resize(this.width.m_value, this.height.m_value);
     }
 
-    private var _canvas :Canvas;
+    private var _painter :Painter;
     private var _isDown :Bool;
     private var _downX :Int;
     private var _downY :Int;

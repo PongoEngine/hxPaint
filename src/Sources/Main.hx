@@ -26,7 +26,7 @@ import kha.Scheduler;
 
 import hxPaint.Paint;
 import hxPaint.element.LeftColumn;
-import hxPaint.element.PixelContainer;
+import hxPaint.element.canvas.Canvas;
 import hxPaint.element.Button;
 import hxPaint.element.header.Header;
 import hxPaint.element.header.HeaderButton;
@@ -41,20 +41,21 @@ class Main
         System.init({title: "hxPaint", width: 1366, height: 768, resizable: true}, function() {
             kha.Assets.loadEverything(function() {
                 var paint = new Paint(kha.System.windowWidth(), kha.System.windowHeight());
+                var canvas = new Canvas(paint);
 
                 var fnButtonOff = function() {
-                    paint.operation = INVALID;
+                    canvas.operation = INVALID;
                 }
 
                 paint.window
                     .addChild(new Body(paint)
                         .addChild(new LeftColumn(paint)
-                            .addChild(new Button(paint, function() {paint.operation = PENCIL;}, fnButtonOff)) //pencil
-                            .addChild(new Button(paint, function() {paint.operation = FILL;}, fnButtonOff)) //fill
-                            .addChild(new Button(paint, function() {paint.operation = LINE;}, fnButtonOff)) //line
-                            .addChild(new Button(paint, function() {paint.operation = CIRCLE;}, fnButtonOff)) //circle
-                            .addChild(new Button(paint, function() {paint.operation = ERASER;}, fnButtonOff))) //eraser
-                        .addChild(new PixelContainer(paint)))
+                            .addChild(new Button(paint, function() {canvas.operation = PENCIL;}, fnButtonOff)) //pencil
+                            .addChild(new Button(paint, function() {canvas.operation = FILL;}, fnButtonOff)) //fill
+                            .addChild(new Button(paint, function() {canvas.operation = LINE;}, fnButtonOff)) //line
+                            .addChild(new Button(paint, function() {canvas.operation = CIRCLE;}, fnButtonOff)) //circle
+                            .addChild(new Button(paint, function() {canvas.operation = ERASER;}, fnButtonOff))) //eraser
+                        .addChild(canvas))
 
                     .addChild(new Header(paint)
                         .addChild(new HeaderButton(paint, "File")

@@ -31,7 +31,6 @@ class Paint
 {
     public var window :Window;
     public var mouse :Mouse;
-    public var operation :PaintOperation;
 
     public function new(width :Int, height :Int) : Void
     {
@@ -39,7 +38,6 @@ class Paint
         _height = height;
         this.window = new Window(this, _width, _height);
         this.mouse = new Mouse(window);
-        this.operation = INVALID;
         _layout = new Layout(window);
     }
 
