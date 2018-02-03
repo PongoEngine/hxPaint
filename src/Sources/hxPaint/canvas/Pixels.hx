@@ -2,76 +2,87 @@ package hxPaint.canvas;
 
 abstract Pixels(Array<Int>)
 {
+    public static inline var SIZE :Int = 16;
+
     public inline function new() : Void
     {
-        this = [for (i in 0...16*16) 0];
+        this = [for (i in 0...SIZE*SIZE) 0];
     }
 
-    public function getColor(xCell :Int, yCell :Int) : Int
+    /**
+     *  [Description]
+     *  @param xCell - 
+     *  @param yCell - 
+     *  @return Int
+     */
+    public function getPixel(xCell :Int, yCell :Int) : Int
     {
-        var index = yCell * 16 + xCell;
+        var index = yCell * SIZE + xCell;
         return this[index];
     }
 
-    public function setColor(xCell :Int, yCell :Int, color :Int) : Void
+    /**
+     *  [Description]
+     *  @param xCell - 
+     *  @param yCell - 
+     *  @param color - 
+     */
+    public function setPixel(xCell :Int, yCell :Int, color :Int) : Void
     {
-        if(xCell >= 16 || yCell >= 16 || xCell < 0 || yCell < 0) {
+        if(xCell >= SIZE || yCell >= SIZE || xCell < 0 || yCell < 0) {
             return;
         }
-        var index = (yCell * 16) + xCell;
+        var index = (yCell * SIZE) + xCell;
         this[index] = color;
     }
 
-    public function clear() : Void
+    /**
+     *  [Description]
+     *  @param color - 
+     */
+    public function clear(color :Int = 0) : Void
     {
-        for(i in 0...16*16) {
-            this[i] = 0;
+        for(i in 0...SIZE*SIZE) {
+            this[i] = color;
         }
     }
 
-    public function isLeftWall(x :Int) : Bool
-    {
-        return x == 0;
-    }
-
-    public function isRightWall(x :Int) : Bool
-    {
-        return x == 15;
-    }
-
-    public function isTopWall(y :Int) : Bool
-    {
-        return y == 0;
-    }
-
-    public function isBottomWall(y :Int) : Bool
-    {
-        return y == 15;
-    }
-
-    public function fill(x :Int, y :Int, targetColor :Int, replacementColor :Int) : Void
+    /**
+     *  [Description]
+     *  @param xCell - 
+     *  @param yCell - 
+     *  @param targetColor - 
+     *  @param replacementColor - 
+     */
+    public function fill(xCell :Int, yCell :Int, targetColor :Int, replacementColor :Int) : Void
     {
         if(targetColor == replacementColor) return;
-        if(getColor(x,y) != targetColor) return;
-        setColor(x,y,replacementColor);
+        if(getPixel(xCell,yCell) != targetColor) return;
+        setPixel(xCell,yCell,replacementColor);
 
-        if(!isBottomWall(y)) {
-            fill(x, y+1, targetColor, replacementColor);
+        if(yCell < SIZE-1) {
+            fill(xCell, yCell+1, targetColor, replacementColor);
         }
-        if(!isTopWall(y)) {
-            fill(x, y-1, targetColor, replacementColor);
+        if(yCell > 0) {
+            fill(xCell, yCell-1, targetColor, replacementColor);
         }
-        if(!isLeftWall(x)) {
-            fill(x-1, y, targetColor, replacementColor);
+        if(xCell > 0) {
+            fill(xCell-1, yCell, targetColor, replacementColor);
         }
-        if(!isRightWall(x)) {
-            fill(x+1, y, targetColor, replacementColor);
+        if(xCell < SIZE-1) {
+            fill(xCell+1, yCell, targetColor, replacementColor);
         }
-        
-        return;
     }
 
-    public function drawEllipse(x0 :Int, y0 :Int, x1 :Int, y1 :Int) : Void
+    /**
+     *  [Description]
+     *  @param x0 - 
+     *  @param y0 - 
+     *  @param x1 - 
+     *  @param y1 - 
+     *  @param color - 
+     */
+    public function drawEllipse(x0 :Int, y0 :Int, x1 :Int, y1 :Int, color :Int) : Void
     {
         var a :Int = Std.int(Math.abs(x1-x0));
         var b :Int = Std.int(Math.abs(y1-y0));
@@ -93,85 +104,48 @@ abstract Pixels(Array<Int>)
         b1 = 8*b*b;
 
         do {
-            setColor(x1, y0, 0xff00ff00); /*   I. Quadrant */
-            setColor(x0, y0, 0xff00ff00); /*  II. Quadrant */
-            setColor(x0, y1, 0xff00ff00); /* III. Quadrant */
-            setColor(x1, y1, 0xff00ff00); /*  IV. Quadrant */
+            setPixel(x1, y0, color); /*   I. Quadrant */
+            setPixel(x0, y0, color); /*  II. Quadrant */
+            setPixel(x0, y1, color); /* III. Quadrant */
+            setPixel(x1, y1, color); /*  IV. Quadrant */
             e2 = 2*err;
             if (e2 <= dy) { y0++; y1--; err += dy += a; }  /* y step */ 
             if (e2 >= dx || 2*err > dy) { x0++; x1--; err += dx += b1; } /* x step */
         } while (x0 <= x1);
         
         while (y0-y1 < b) {  /* too early stop of flat ellipses a=1 */
-            setColor(x0-1, y0, 0xff00ff00); /* -> finish tip of ellipse */
-            setColor(x1+1, y0++, 0xff00ff00); 
-            setColor(x0-1, y1, 0xff00ff00);
-            setColor(x1+1, y1--, 0xff00ff00); 
+            setPixel(x0-1, y0, color); /* -> finish tip of ellipse */
+            setPixel(x1+1, y0++, color); 
+            setPixel(x0-1, y1, color);
+            setPixel(x1+1, y1--, color); 
         }
     }
 
-    public function plotLine(x0 :Int, y0 :Int, x1 :Int, y1 :Int) : Void
+    /**
+     *  [Description]
+     *  @param x0 - 
+     *  @param y0 - 
+     *  @param x1 - 
+     *  @param y1 - 
+     *  @param color - 
+     */
+    public function drawLine(x0 :Int, y0 :Int, x1 :Int, y1 :Int, color :Int) : Void
     {
-        if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
-            if (x0 > x1) {
-                plotLineLow(x1, y1, x0, y0);
+        var dx :Int =  Std.int(Math.abs(x1-x0));
+        var sx :Int = x0<x1 ? 1 : -1;
+        var dy :Int = Std.int(-Math.abs(y1-y0));
+        var sy :Int = y0<y1 ? 1 : -1; 
+        var err :Int = dx+dy;
+        var e2 :Int; /* error value e_xy */
+        
+        while(true){  /* loop */
+            setPixel(x0, y0, color);
+            if (x0==x1 && y0==y1) {
+                break;
             }
-            else {
-                plotLineLow(x0, y0, x1, y1);
-            }
+            e2 = 2*err;
+            if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
+            if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
         }
-        else {
-            if (y0 > y1) {
-                plotLineHigh(x1, y1, x0, y0);
-            }
-            else {
-                plotLineHigh(x0, y0, x1, y1);
-            }
-        }
-            
-    }
-
-    private function plotLineLow(x0 :Int, y0 :Int, x1 :Int, y1 :Int) : Void
-    {
-        var dx = x1 - x0;
-        var dy = y1 - y0;
-        var yi = 1;
-        if (dy < 0) {
-            yi = -1;
-            dy = -dy;
-        }
-        var D = 2*dy - dx;
-        var y = y0;
-
-        for(x in x0...x1+1) {
-            setColor(x, y, 0xff00ff00);
-            if (D > 0) {
-                y = y + yi;
-                D = D - 2*dx;
-            }
-            D = D + 2*dy;
-        }
-    }
-
-    private function plotLineHigh(x0 :Int, y0 :Int, x1 :Int, y1 :Int) : Void
-    {
-        var dx = x1 - x0;
-        var dy = y1 - y0;
-        var xi = 1;
-        if (dx < 0) {
-            xi = -1;
-            dx = -dx;
-        }
-        var D = 2*dx - dy;
-        var x = x0;
-
-        for(y in y0...y1+1) {
-            setColor(x, y, 0xff00ff00);
-            if(D > 0) {
-                x = x + xi;
-                D = D - 2*dy;
-            }
-            D = D + 2*dx;
-        }
-    }  
+    } 
 }

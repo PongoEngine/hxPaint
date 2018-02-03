@@ -21,14 +21,12 @@ class Canvas
             for(yCell in 0...Y_CELLS) {
                 var xPos = _centerX + xOffset + xCell*_cellSquare;
                 var yPos = _centerY + yOffset + yCell*_cellSquare;
-                framebuffer.g2.color = _pixels.getColor(xCell,yCell);
+                
+                framebuffer.g2.color = _pixels.getPixel(xCell,yCell);
                 framebuffer.g2.fillRect(xPos,yPos,_cellSquare, _cellSquare);
 
-                var color = _tempPixels.getColor(xCell,yCell);
-                if(color != 0) {
-                    framebuffer.g2.color = color;
-                    framebuffer.g2.fillRect(xPos,yPos,_cellSquare, _cellSquare);
-                }
+                framebuffer.g2.color = _tempPixels.getPixel(xCell,yCell);
+                framebuffer.g2.fillRect(xPos,yPos,_cellSquare, _cellSquare);
 
                 framebuffer.g2.color = 0xff484848;
                 framebuffer.g2.drawRect(xPos,yPos,_cellSquare, _cellSquare);
@@ -38,55 +36,59 @@ class Canvas
 
     public function pencil(xOffset :Float, yOffset :Float, x :Int, y :Int) : Void
     {
-        getCells(xOffset, yOffset, x, y, function(xCell,yCell) {
-            _pixels.setColor(xCell, yCell, 0xffff0000);
-        });
+        var xCell = xCell(xOffset, x);
+        var yCell = yCell(yOffset, y);
+
+        _pixels.setPixel(xCell, yCell, 0xffff0000);
     }
 
     public function fill(xOffset :Float, yOffset :Float, x :Int, y :Int) : Void
     {
-        getCells(xOffset, yOffset, x, y, function(xCell,yCell) {
-            // _pixels.setColor(xCell, yCell, 0xffff0000);
-            var cellColor = _pixels.getColor(xCell, yCell);
-            _pixels.fill(xCell,yCell, cellColor, 0xff330055);
-        });
+        var xCell = xCell(xOffset, x);
+        var yCell = yCell(yOffset, y);
+
+        var cellColor = _pixels.getPixel(xCell, yCell);
+        _pixels.fill(xCell,yCell, cellColor, 0xff330055);
     }
 
     public function erase(xOffset :Float, yOffset :Float, x :Int, y :Int) : Void
     {
-        getCells(xOffset, yOffset, x, y, function(xCell,yCell) {
-            _pixels.setColor(xCell, yCell, 0xffffffff);
-        });
+        var xCell = xCell(xOffset, x);
+        var yCell = yCell(yOffset, y);
+
+        _pixels.setPixel(xCell, yCell, 0);
     }
 
     public function drawLine(xOffset :Float, yOffset :Float, x0 :Int, y0 :Int, x1 :Int, y1 :Int, isTemp :Bool) : Void
     {
-        getCells(xOffset, yOffset, x0, y0, function(xCell0 :Int,yCell0 :Int) {
-            getCells(xOffset, yOffset, x1, y1, function(xCell1 :Int,yCell1 :Int) {
-                _tempPixels.clear();
-                if(isTemp) {
-                    _tempPixels.plotLine(xCell0, yCell0, xCell1, yCell1);
-                }
-                else {
-                    _pixels.plotLine(xCell0, yCell0, xCell1, yCell1);
-                }
-            });
-        });
+        var xCell0 = xCell(xOffset, x0);
+        var yCell0 = yCell(yOffset, y0);
+        var xCell1 = xCell(xOffset, x1);
+        var yCell1 = yCell(yOffset, y1);
+
+        _tempPixels.clear();
+        if(isTemp) {
+            _tempPixels.drawLine(xCell0, yCell0, xCell1, yCell1, 0xff00ff0f);
+        }
+        else {
+            _pixels.drawLine(xCell0, yCell0, xCell1, yCell1, 0xff00ff0f);
+        }
     }
 
     public function drawEllipse(xOffset :Float, yOffset :Float, x0 :Int, y0 :Int, x1 :Int, y1 :Int, isTemp :Bool) : Void
     {
-        getCells(xOffset, yOffset, x0, y0, function(xCell0 :Int,yCell0 :Int) {
-            getCells(xOffset, yOffset, x1, y1, function(xCell1 :Int,yCell1 :Int) {
-                _tempPixels.clear();
-                if(isTemp) {
-                    _tempPixels.drawEllipse(xCell0, yCell0, xCell1, yCell1);
-                }
-                else {
-                    _pixels.drawEllipse(xCell0, yCell0, xCell1, yCell1);
-                }
-            });
-        });
+        var xCell0 = xCell(xOffset, x0);
+        var yCell0 = yCell(yOffset, y0);
+        var xCell1 = xCell(xOffset, x1);
+        var yCell1 = yCell(yOffset, y1);
+
+        _tempPixels.clear();
+        if(isTemp) {
+            _tempPixels.drawEllipse(xCell0, yCell0, xCell1, yCell1, 0xff00f0f0);
+        }
+        else {
+            _pixels.drawEllipse(xCell0, yCell0, xCell1, yCell1, 0xff00f0f0);
+        }
     }
 
     public function resize(width :Float, height :Float) : Void
@@ -98,17 +100,17 @@ class Canvas
         _centerY = (height - _cellSquare*Y_CELLS) / 2;
     }
 
-    private function getCells(xOffset :Float, yOffset :Float, x :Float, y :Float, fn :Int -> Int -> Void) : Void
+    private inline function xCell(xOffset :Float, x :Float) : Int
     {
         var realX = x-(_centerX+xOffset);
-        var realY = y-(_centerY+yOffset);
-        var maxPos = _cellSquare*16;
-        if(realX > maxPos || realY > maxPos || realX < 0 || realY < 0) {
-            return;
-        }
-        return fn(Math.floor(realX / _cellSquare), Math.floor(realY / _cellSquare));
+        return Math.floor(realX / _cellSquare);
     }
-      
+
+    private inline function yCell(yOffset :Float, y :Float) : Int
+    {
+        var realY = y-(_centerY+yOffset);
+        return Math.floor(realY / _cellSquare);
+    }
 
     private var _cellSquare :Float;
     private var _centerX :Float;

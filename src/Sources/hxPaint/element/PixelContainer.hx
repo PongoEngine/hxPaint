@@ -37,17 +37,7 @@ class PixelContainer extends Rectangle
         _downX = -1;
         _downY = -1;
 
-        paint.mouse.connectUp(function(x,y) {
-            switch this.paint.operation {
-                case CIRCLE: _canvas.drawEllipse(this.x.m_value, this.y.m_value, _downX, _downY, x, y, false);
-                case ERASER:
-                case FILL:
-                case LINE: _canvas.drawLine(this.x.m_value, this.y.m_value, _downX, _downY, x, y, false);
-                case PENCIL:
-                case INVALID:
-            }
-            _isDown = false;
-        });
+        paint.mouse.connectUp(onSystemUp);
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
@@ -88,20 +78,33 @@ class PixelContainer extends Rectangle
         }
     }
 
+    private function onSystemUp(x :Int, y :Int) : Void
+    {
+        switch this.paint.operation {
+            case CIRCLE: _canvas.drawEllipse(this.x.m_value, this.y.m_value, _downX, _downY, x, y, false);
+            case ERASER:
+            case FILL:
+            case LINE: _canvas.drawLine(this.x.m_value, this.y.m_value, _downX, _downY, x, y, false);
+            case PENCIL:
+            case INVALID:
+        }
+
+        _downX = -1;
+        _downY = -1;
+        _isDown = false;
+    }
+
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
         framebuffer.g2.color = 0xffeeeeee;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
         
-        _canvas.draw(x.m_value + 2, y.m_value + 1, framebuffer);
-
-        framebuffer.g2.color = 0xff484848;
-        framebuffer.g2.drawRect(x.m_value + 2, y.m_value + 1, width.m_value - 2, height.m_value - 2);
+        _canvas.draw(x.m_value, y.m_value, framebuffer);
     }
 
     override public function afterSolved() : Void
     {
-        _canvas.resize(this.width.m_value - 2, this.height.m_value - 2);
+        _canvas.resize(this.width.m_value, this.height.m_value);
     }
 
     private var _canvas :Canvas;
