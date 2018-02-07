@@ -26,17 +26,13 @@ import hxPaint.Paint;
 
 using hxPaint.layout.LayoutTools;
 
-class Button extends Rectangle
+class SpecialButton extends Rectangle
 {
-    public function new(paint :Paint, title :String, ?fnOn : Void -> Void, ?fnOff : Void -> Void) : Void
+    public function new(paint :Paint, ?fnOn : Void -> Void, ?fnOff : Void -> Void) : Void
     {
         super(paint);
-        _title = title;
         _fnOn = fnOn;
         _fnOff = fnOff;
-
-        _width = kha.Assets.fonts.Roboto_Black.width(12, _title);
-        _height = kha.Assets.fonts.Roboto_Black.height(12);
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
@@ -58,13 +54,6 @@ class Button extends Rectangle
         framebuffer.g2.color = 0xff212121;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
 
-        framebuffer.g2.color = 0xffffffff;
-        framebuffer.g2.fontSize = 12;
-        var centerX = x.m_value - _width/2 + width.m_value/2;
-        var centerY = y.m_value - _height/2 + height.m_value/2;
-        framebuffer.g2.drawString(_title, centerX, centerY);
-        framebuffer.g2.fontSize = 18;
-
         if(_isOn) {
             framebuffer.g2.color = 0xffb2dfdb;
             framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value, 2);
@@ -73,8 +62,6 @@ class Button extends Rectangle
 
     override public function onUp(x :Int, y :Int) : Void
     {
-        turnOffOthers();
-        
         if(_isOn) {
             turnOff();
         }
@@ -99,20 +86,7 @@ class Button extends Rectangle
         }
     }
 
-    private function turnOffOthers() : Void
-    {
-        var buttons :Array<Button> = this.paint.window.getAll(Button);
-        for(button in buttons) {
-            if(button != this) {
-                button.turnOff();
-            }
-        }
-    }
-
     private var _isOn :Bool;
-    private var _title :String;
     private var _fnOn :Void -> Void;
     private var _fnOff :Void -> Void;
-    private var _width :Float;
-    private var _height :Float;
 }

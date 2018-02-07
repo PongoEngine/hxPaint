@@ -29,8 +29,6 @@ using hxPaint.layout.LayoutTools;
 
 class Canvas extends Rectangle
 {
-    public var operation :PaintOperation;
-
     public function new(paint :Paint) : Void
     {
         super(paint);
@@ -38,7 +36,6 @@ class Canvas extends Rectangle
         _isDown = false;
         _downX = -1;
         _downY = -1;
-        this.operation = INVALID;
 
         paint.mouse.connectUp(onSystemUp);
     }
@@ -56,12 +53,12 @@ class Canvas extends Rectangle
         _downX = Std.int(x - this.x.m_value);
         _downY = Std.int(y - this.y.m_value);
 
-        switch this.operation {
+        switch paint.model.operation {
             case CIRCLE:
             case ERASER: _painter.erase(_downX, _downY);
-            case FILL: _painter.fill(_downX, _downY, 0xffaaaaaa);
+            case FILL: _painter.fill(_downX, _downY, this.paint.model.fillColor);
             case LINE:
-            case PENCIL: _painter.pencil(_downX, _downY, 0xff444444, true);
+            case PENCIL: _painter.pencil(_downX, _downY, this.paint.model.pencilColor, true);
             case INVALID:
         }
         
@@ -75,12 +72,12 @@ class Canvas extends Rectangle
         var moveY = Std.int(y - this.y.m_value);
 
         if(_isDown) {
-            switch this.operation {
-                case CIRCLE: _painter.drawEllipse(moveX, moveY, _downX, _downY, 0xff444444, true);
+            switch paint.model.operation {
+                case CIRCLE: _painter.drawEllipse(moveX, moveY, _downX, _downY, this.paint.model.circleColor, true);
                 case ERASER: _painter.erase(moveX, moveY);
                 case FILL:
-                case LINE: _painter.drawLine(moveX, moveY, _downX, _downY, 0xff444444, true);
-                case PENCIL: _painter.pencil(moveX, moveY, 0xff444444, false);
+                case LINE: _painter.drawLine(moveX, moveY, _downX, _downY, this.paint.model.lineColor, true);
+                case PENCIL: _painter.pencil(moveX, moveY, this.paint.model.pencilColor, false);
                 case INVALID:
             }
         }
@@ -91,11 +88,11 @@ class Canvas extends Rectangle
         var upX = Std.int(x - this.x.m_value);
         var upY = Std.int(y - this.y.m_value);
 
-        switch this.operation {
-            case CIRCLE: _painter.drawEllipse(upX, upY, _downX, _downY, 0xff444444, false);
+        switch paint.model.operation {
+            case CIRCLE: _painter.drawEllipse(upX, upY, _downX, _downY, this.paint.model.circleColor, false);
             case ERASER:
             case FILL:
-            case LINE: _painter.drawLine(upX, upY, _downX, _downY, 0xff444444, false);
+            case LINE: _painter.drawLine(upX, upY, _downX, _downY, this.paint.model.lineColor, false);
             case PENCIL:
             case INVALID:
         }

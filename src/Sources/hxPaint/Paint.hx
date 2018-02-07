@@ -31,6 +31,7 @@ class Paint
 {
     public var window :Window;
     public var mouse :Mouse;
+    public var model :Model;
 
     public function new(width :Int, height :Int) : Void
     {
@@ -38,6 +39,7 @@ class Paint
         _height = height;
         this.window = new Window(this, _width, _height);
         this.mouse = new Mouse(window);
+        this.model = new Model();
         _layout = new Layout(window);
     }
 
@@ -73,7 +75,9 @@ class Paint
 
     public static function render_impl(element :Rectangle, framebuffer :kha.Framebuffer)
     {
-        framebuffer.g2.scissor(Math.round(element.x.m_value), Math.round(element.y.m_value), Math.round(element.width.m_value), Math.round(element.height.m_value));
+        if(element.width.m_value <= 0 || element.height.m_value <= 0) return;
+
+        framebuffer.g2.scissor(Std.int(element.x), Std.int(element.y), Std.int(element.width), Std.int(element.height));
         element.draw(framebuffer);
         for(child in element.children) {
             render_impl(child, framebuffer);
@@ -87,6 +91,8 @@ class Paint
             update_impl(child, dt);
         }
     }
+
+    private static var count = 0;
     
     private var _layout :Layout;
     private var _width :Int;

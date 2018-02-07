@@ -23,20 +23,16 @@ package hxPaint.element;
 
 import jasper.Solver;
 import hxPaint.Paint;
+import kha.Color;
 
 using hxPaint.layout.LayoutTools;
 
-class Button extends Rectangle
+class ColorButton extends Rectangle
 {
-    public function new(paint :Paint, title :String, ?fnOn : Void -> Void, ?fnOff : Void -> Void) : Void
+    public function new(paint :Paint, color :Int) : Void
     {
         super(paint);
-        _title = title;
-        _fnOn = fnOn;
-        _fnOff = fnOff;
-
-        _width = kha.Assets.fonts.Roboto_Black.width(12, _title);
-        _height = kha.Assets.fonts.Roboto_Black.height(12);
+        _color = color;
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
@@ -55,64 +51,27 @@ class Button extends Rectangle
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xff212121;
+        framebuffer.g2.color = _color;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
 
-        framebuffer.g2.color = 0xffffffff;
-        framebuffer.g2.fontSize = 12;
-        var centerX = x.m_value - _width/2 + width.m_value/2;
-        var centerY = y.m_value - _height/2 + height.m_value/2;
-        framebuffer.g2.drawString(_title, centerX, centerY);
-        framebuffer.g2.fontSize = 18;
+        var isSelected = switch this.paint.model.operation {
+            case CIRCLE: this.paint.model.circleColor == _color;
+            case FILL: this.paint.model.fillColor == _color;
+            case LINE: this.paint.model.lineColor == _color;
+            case PENCIL: this.paint.model.pencilColor == _color;
+            case _: false;
+        }
 
-        if(_isOn) {
-            framebuffer.g2.color = 0xffb2dfdb;
+        if(isSelected) {
+            framebuffer.g2.color = 0xffffffff;
             framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value, 2);
         }
     }
 
     override public function onUp(x :Int, y :Int) : Void
     {
-        turnOffOthers();
-        
-        if(_isOn) {
-            turnOff();
-        }
-        else {
-            turnOn();
-        }
+        this.paint.model.selectColor(_color);
     }
 
-    public function turnOn() : Void
-    {
-        _isOn = true;
-        if(_fnOn != null) {
-            _fnOn();
-        }
-    }
-
-    public function turnOff() : Void
-    {
-        _isOn = false;
-        if(_fnOff != null) {
-            _fnOff();
-        }
-    }
-
-    private function turnOffOthers() : Void
-    {
-        var buttons :Array<Button> = this.paint.window.getAll(Button);
-        for(button in buttons) {
-            if(button != this) {
-                button.turnOff();
-            }
-        }
-    }
-
-    private var _isOn :Bool;
-    private var _title :String;
-    private var _fnOn :Void -> Void;
-    private var _fnOff :Void -> Void;
-    private var _width :Float;
-    private var _height :Float;
+    private var _color :Color;
 }

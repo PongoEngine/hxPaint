@@ -21,13 +21,15 @@
 
 package hxPaint.element.canvas;
 
+import kha.Color;
+
 abstract Pixels(Array<Int>)
 {
     public static inline var SIZE :Int = 64;
 
     public inline function new() : Void
     {
-        this = [for (i in 0...SIZE*SIZE) 0];
+        this = [for (i in 0...SIZE*SIZE) YELLOW_GREEN];
     }
 
     /**
@@ -169,4 +171,18 @@ abstract Pixels(Array<Int>)
             if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
         }
     } 
+
+    public static inline var BLACK :Color = 0xff000000;
+    public static inline var BLUE :Color = 0xff0066FF;
+    public static inline var BROWN :Color = 0xffAF593E;
+    public static inline var GREEN :Color = 0xff01A368;
+    public static inline var ORANGE :Color = 0xffFF861F;
+    public static inline var RED :Color = 0xffED0A3F;
+    public static inline var RED_ORANGE :Color = 0xffFF3F34;
+    public static inline var SKY_BLUE :Color = 0xff76D7EA;
+    public static inline var VIOLET :Color = 0xff8359A3;
+    public static inline var WHITE :Color = 0xffFFFFFF;
+    public static inline var YELLOW :Color = 0xffFBE870;
+    public static inline var YELLOW_GREEN :Color = 0xffC5E17A;
+    private static var colors :Array<Color> = [ BLACK, BLUE, BROWN, GREEN, ORANGE, RED, RED_ORANGE, SKY_BLUE, VIOLET, WHITE, YELLOW, YELLOW_GREEN];
 }

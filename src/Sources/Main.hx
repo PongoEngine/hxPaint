@@ -26,8 +26,12 @@ import kha.Scheduler;
 
 import hxPaint.Paint;
 import hxPaint.element.LeftColumn;
+import hxPaint.element.Pallete;
 import hxPaint.element.canvas.Canvas;
+import hxPaint.element.canvas.Pixels;
 import hxPaint.element.Button;
+import hxPaint.element.ColorButton;
+import hxPaint.element.SpecialButton;
 import hxPaint.element.header.Header;
 import hxPaint.element.header.HeaderButton;
 import hxPaint.element.header.HeaderList;
@@ -42,20 +46,35 @@ class Main
             kha.Assets.loadEverything(function() {
                 var paint = new Paint(kha.System.windowWidth(), kha.System.windowHeight());
                 var canvas = new Canvas(paint);
+                var palette :Pallete = cast new Pallete(paint)
+                    .addChild(new ColorButton(paint, Pixels.BLACK)) //Black #000000
+                    .addChild(new ColorButton(paint, Pixels.BLUE)) //Blue #0066FF
+                    .addChild(new ColorButton(paint, Pixels.BROWN)) //Brown #AF593E
+                    .addChild(new ColorButton(paint, Pixels.GREEN)) //Green #01A368
+                    .addChild(new ColorButton(paint, Pixels.ORANGE)) //Orange #FF861F
+                    .addChild(new ColorButton(paint, Pixels.RED)) //Red #ED0A3F
+                    .addChild(new ColorButton(paint, Pixels.RED_ORANGE)) //Red Orange #FF3F34
+                    .addChild(new ColorButton(paint, Pixels.SKY_BLUE)) //Sky Blue #76D7EA
+                    .addChild(new ColorButton(paint, Pixels.VIOLET)) //Violet (Purple) #8359A3
+                    .addChild(new ColorButton(paint, Pixels.WHITE)) //White #FFFFFF
+                    .addChild(new ColorButton(paint, Pixels.YELLOW)) //Yellow #FBE870
+                    .addChild(new ColorButton(paint, Pixels.YELLOW_GREEN)); //Yellow Green #C5E17A
 
                 var fnButtonOff = function() {
-                    canvas.operation = INVALID;
+                    paint.model.operation = INVALID;
                 }
 
                 paint.window
                     .addChild(new Body(paint)
                         .addChild(new LeftColumn(paint)
-                            .addChild(new Button(paint, function() {canvas.operation = PENCIL;}, fnButtonOff)) //pencil
-                            .addChild(new Button(paint, function() {canvas.operation = FILL;}, fnButtonOff)) //fill
-                            .addChild(new Button(paint, function() {canvas.operation = LINE;}, fnButtonOff)) //line
-                            .addChild(new Button(paint, function() {canvas.operation = CIRCLE;}, fnButtonOff)) //circle
-                            .addChild(new Button(paint, function() {canvas.operation = ERASER;}, fnButtonOff))) //eraser
-                        .addChild(canvas))
+                            .addChild(new Button(paint, "PENCIL", function() {paint.model.operation = PENCIL;}, fnButtonOff)) //pencil
+                            .addChild(new Button(paint, "FILL", function() {paint.model.operation = FILL;}, fnButtonOff)) //fill
+                            .addChild(new Button(paint, "LINE", function() {paint.model.operation = LINE;}, fnButtonOff)) //line
+                            .addChild(new Button(paint, "CIRCLE", function() {paint.model.operation = CIRCLE;}, fnButtonOff)) //circle
+                            .addChild(new Button(paint, "ERASER", function() {paint.model.operation = ERASER;}, fnButtonOff)) //eraser
+                            .addChild(new SpecialButton(paint, function() {palette.open();}, function(){palette.close();})))
+                        .addChild(canvas)
+                        .addChild(palette))
 
                     .addChild(new Header(paint)
                         .addChild(new HeaderButton(paint, "File")
