@@ -26,12 +26,12 @@ import kha.Scheduler;
 
 import hxPaint.Paint;
 import hxPaint.element.LeftColumn;
-import hxPaint.element.Pallete;
+import hxPaint.element.palette.Pallete;
+import hxPaint.element.palette.ColorOption;
+import hxPaint.element.palette.PaletteToggle;
 import hxPaint.element.canvas.Canvas;
 import hxPaint.element.canvas.Pixels;
-import hxPaint.element.Button;
-import hxPaint.element.ColorButton;
-import hxPaint.element.SpecialButton;
+import hxPaint.element.ToolButton;
 import hxPaint.element.header.Header;
 import hxPaint.element.header.HeaderButton;
 import hxPaint.element.header.HeaderList;
@@ -44,55 +44,52 @@ class Main
     {
         System.init({title: "hxPaint", width: 1366, height: 768}, function() {
             kha.Assets.loadEverything(function() {
+
+                var toggle :PaletteToggle;
                 var paint = new Paint(kha.System.windowWidth(), kha.System.windowHeight());
                 var canvas = new Canvas(paint);
-                var palette :Pallete = cast new Pallete(paint)
-                    .addChild(new ColorButton(paint, Pixels.BLACK)) //Black #000000
-                    .addChild(new ColorButton(paint, Pixels.BLUE)) //Blue #0066FF
-                    .addChild(new ColorButton(paint, Pixels.BROWN)) //Brown #AF593E
-                    .addChild(new ColorButton(paint, Pixels.GREEN)) //Green #01A368
-                    .addChild(new ColorButton(paint, Pixels.ORANGE)) //Orange #FF861F
-                    .addChild(new ColorButton(paint, Pixels.RED)) //Red #ED0A3F
-                    .addChild(new ColorButton(paint, Pixels.RED_ORANGE)) //Red Orange #FF3F34
-                    .addChild(new ColorButton(paint, Pixels.SKY_BLUE)) //Sky Blue #76D7EA
-                    .addChild(new ColorButton(paint, Pixels.VIOLET)) //Violet (Purple) #8359A3
-                    .addChild(new ColorButton(paint, Pixels.WHITE)) //White #FFFFFF
-                    .addChild(new ColorButton(paint, Pixels.YELLOW)) //Yellow #FBE870
-                    .addChild(new ColorButton(paint, Pixels.YELLOW_GREEN)); //Yellow Green #C5E17A
-
-                var fnButtonOff = function() {
-                    paint.model.operation = INVALID;
-                }
-
                 paint.window
                     .addChild(new Body(paint)
                         .addChild(new LeftColumn(paint)
-                            .addChild(new Button(paint, "PENCIL", function() {paint.model.operation = PENCIL;}, fnButtonOff)) //pencil
-                            .addChild(new Button(paint, "FILL", function() {paint.model.operation = FILL;}, fnButtonOff)) //fill
-                            .addChild(new Button(paint, "LINE", function() {paint.model.operation = LINE;}, fnButtonOff)) //line
-                            .addChild(new Button(paint, "CIRCLE", function() {paint.model.operation = CIRCLE;}, fnButtonOff)) //circle
-                            .addChild(new Button(paint, "ERASER", function() {paint.model.operation = ERASER;}, fnButtonOff)) //eraser
-                            .addChild(new SpecialButton(paint, function() {palette.open();}, function(){palette.close();})))
+                            .addChild(new ToolButton(paint, "PENCIL", PENCIL)) //pencil
+                            .addChild(new ToolButton(paint, "FILL", FILL)) //fill
+                            .addChild(new ToolButton(paint, "LINE", LINE)) //line
+                            .addChild(new ToolButton(paint, "CIRCLE", CIRCLE)) //circle
+                            .addChild(new ToolButton(paint, "ERASER", ERASER)) //eraser
+                            .addChild(toggle = new PaletteToggle(paint)))
                         .addChild(canvas)
-                        .addChild(palette))
+                        .addChild(new Pallete(paint)
+                            .addChild(new ColorOption(paint, Pixels.BLACK))
+                            .addChild(new ColorOption(paint, Pixels.BLUE))
+                            .addChild(new ColorOption(paint, Pixels.BROWN))
+                            .addChild(new ColorOption(paint, Pixels.GREEN))
+                            .addChild(new ColorOption(paint, Pixels.ORANGE))
+                            .addChild(new ColorOption(paint, Pixels.RED))
+                            .addChild(new ColorOption(paint, Pixels.RED_ORANGE))
+                            .addChild(new ColorOption(paint, Pixels.SKY_BLUE))
+                            .addChild(new ColorOption(paint, Pixels.VIOLET))
+                            .addChild(new ColorOption(paint, Pixels.WHITE))
+                            .addChild(new ColorOption(paint, Pixels.YELLOW))
+                            .addChild(new ColorOption(paint, Pixels.YELLOW_GREEN))))
 
                     .addChild(new Header(paint)
                         .addChild(new HeaderButton(paint, "File")
                             .addChild(new HeaderList(paint)
-                                .addChild(new HeaderListItem(paint, "NEW"))
-                                .addChild(new HeaderListItem(paint, "SAVE"))))
+                                .addChild(new HeaderListItem(paint, "OPTION1"))
+                                .addChild(new HeaderListItem(paint, "OPTION2"))))
 
                         .addChild(new HeaderButton(paint, "Edit")
                             .addChild(new HeaderList(paint)
-                                .addChild(new HeaderListItem(paint, "UNDO - (cmd-z)"))))
+                                .addChild(new HeaderListItem(paint, "OPTION_A"))))
 
                         .addChild(new HeaderButton(paint, "Help")
                             .addChild(new HeaderList(paint)
-                                .addChild(new HeaderListItem(paint, "DOCUMENTS"))
-                                .addChild(new HeaderListItem(paint, "CYOA"))
-                                .addChild(new HeaderListItem(paint, "ABOUT khaPOW")))));
+                                .addChild(new HeaderListItem(paint, "OPTION_B"))
+                                .addChild(new HeaderListItem(paint, "OPTION_C"))
+                                .addChild(new HeaderListItem(paint, "OPTION_D")))));
 
                 paint.initLayout();
+                toggle.turnOn();
 
                 var hasInit = false;
                 System.notifyOnRender(function(framebuffer) {

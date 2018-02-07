@@ -23,16 +23,20 @@ package hxPaint.element;
 
 import jasper.Solver;
 import hxPaint.Paint;
+import hxPaint.element.canvas.PaintOperation;
 
 using hxPaint.layout.LayoutTools;
 
-class SpecialButton extends Rectangle
+class ToolButton extends Rectangle
 {
-    public function new(paint :Paint, ?fnOn : Void -> Void, ?fnOff : Void -> Void) : Void
+    public function new(paint :Paint, title :String, operation : PaintOperation) : Void
     {
         super(paint);
-        _fnOn = fnOn;
-        _fnOff = fnOff;
+        _title = title;
+        _operation = operation;
+
+        _width = kha.Assets.fonts.Roboto_Black.width(12, _title);
+        _height = kha.Assets.fonts.Roboto_Black.height(12);
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
@@ -54,15 +58,28 @@ class SpecialButton extends Rectangle
         framebuffer.g2.color = 0xff212121;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
 
-        if(_isOn) {
-            framebuffer.g2.color = 0xffb2dfdb;
-            framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value, 2);
+        framebuffer.g2.color = 0xffffffff;
+        framebuffer.g2.fontSize = 12;
+        var centerX = x.m_value - _width/2 + width.m_value/2;
+        var centerY = y.m_value - _height/2 + height.m_value/2;
+        framebuffer.g2.drawString(_title, centerX, centerY);
+        framebuffer.g2.fontSize = 18;
+
+        if(this._operation == paint.model.operation) {
+            framebuffer.g2.color = switch this._operation {
+                case CIRCLE: this.paint.model.circleColor;
+                case FILL: this.paint.model.fillColor;
+                case LINE: this.paint.model.lineColor;
+                case PENCIL: this.paint.model.pencilColor;
+                case _: 0xffb2dfdb;
+            }
+            framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value, 8);
         }
     }
 
     override public function onUp(x :Int, y :Int) : Void
     {
-        if(_isOn) {
+        if(paint.model.operation == _operation) {
             turnOff();
         }
         else {
@@ -72,21 +89,17 @@ class SpecialButton extends Rectangle
 
     public function turnOn() : Void
     {
-        _isOn = true;
-        if(_fnOn != null) {
-            _fnOn();
-        }
+        paint.model.operation = _operation;
     }
 
     public function turnOff() : Void
     {
-        _isOn = false;
-        if(_fnOff != null) {
-            _fnOff();
-        }
+        paint.model.operation = INVALID;
     }
 
     private var _isOn :Bool;
-    private var _fnOn :Void -> Void;
-    private var _fnOff :Void -> Void;
+    private var _title :String;
+    private var _operation :PaintOperation;
+    private var _width :Float;
+    private var _height :Float;
 }

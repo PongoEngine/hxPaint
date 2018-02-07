@@ -19,15 +19,14 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package hxPaint.element;
+package hxPaint.element.palette;
 
 import jasper.Solver;
-import jasper.Strength;
 import hxPaint.Paint;
 
 using hxPaint.layout.LayoutTools;
 
-class Pallete extends Rectangle
+class PaletteToggle extends Rectangle
 {
     public function new(paint :Paint) : Void
     {
@@ -36,29 +35,50 @@ class Pallete extends Rectangle
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
-        var parentFirstChild = parent.children[0];
-        solver.addConstraint(this.left() == parentFirstChild.right());
-        solver.addConstraint(this.top() == parent.top());
-        solver.addConstraint(this.height == parent.height);
-        solver.addEditVariable(this.width, Strength.STRONG);
-        close();
+        solver.addConstraint(this.left() == parent.left() + 5);
+        solver.addConstraint(this.width == parent.width - 10);
+        solver.addConstraint(this.height == 20);
+
+        if(prevSibling == null) {
+            solver.addConstraint(this.top() == parent.top() + 5);
+        }
+        else {
+            solver.addConstraint(this.top() == prevSibling.bottom() + 5);
+        }
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = 0xff484848;
+        framebuffer.g2.color = 0xff212121;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
-        framebuffer.g2.color = 0xffb2dfdb;
-        framebuffer.g2.drawLine(x.m_value, y.m_value, x.m_value, y.m_value + height.m_value, 2);
+
+        if(_isOn) {
+            framebuffer.g2.color = 0xffb2dfdb;
+            framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value, 2);
+        }
     }
 
-    public function open() : Void
+    override public function onUp(x :Int, y :Int) : Void
     {
-        this.paint.suggest(this.width, 40);
+        if(_isOn) {
+            turnOff();
+        }
+        else {
+            turnOn();
+        }
     }
 
-    public function close() : Void
+    public function turnOn() : Void
     {
-        this.paint.suggest(this.width, 0);
+        _isOn = true;
+        this.paint.model.palette.open();
     }
+
+    public function turnOff() : Void
+    {
+        _isOn = false;
+        this.paint.model.palette.close();
+    }
+
+    private var _isOn :Bool;
 }

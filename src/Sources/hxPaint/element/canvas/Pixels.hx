@@ -29,7 +29,7 @@ abstract Pixels(Array<Int>)
 
     public inline function new() : Void
     {
-        this = [for (i in 0...SIZE*SIZE) YELLOW_GREEN];
+        this = [for (i in 0...SIZE*SIZE) 0];
     }
 
     /**

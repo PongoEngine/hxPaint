@@ -30,6 +30,7 @@ class Rectangle
     public var y :Variable;
     public var width :Variable;
     public var height :Variable;
+    public var parent :Rectangle;
     public var children :Array<Rectangle>;
     public var paint :Paint;
 
@@ -45,6 +46,7 @@ class Rectangle
 
     public function addChild(child :Rectangle) : Rectangle
     {
+        child.parent = this;
         children.push(child);
         return this;
     }
@@ -75,25 +77,5 @@ class Rectangle
 
     public function onUp(x :Int, y :Int) : Void
     {
-    }
-
-    public function getAll<T:Rectangle>(classType :Class<Dynamic>) : Array<T>
-    {
-        var rectangles :Array<T> = [];
-        getAll_impl(this, classType, rectangles);
-        return rectangles;
-    }
-
-    private static function getAll_impl<T:Rectangle>(rectangle :Rectangle, classType :Class<Dynamic>, rectangles :Array<T>) : Void
-    {
-        for(c in rectangle.children) {
-            if(Type.getClass(c) == classType) {
-                rectangles.push(cast c);
-            }
-        }
-
-        for(child in rectangle.children) {
-            getAll_impl(child, classType, rectangles);
-        }
     }
 }

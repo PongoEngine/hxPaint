@@ -19,59 +19,47 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package hxPaint.element;
+package hxPaint.element.palette;
 
 import jasper.Solver;
+import jasper.Strength;
 import hxPaint.Paint;
-import kha.Color;
 
 using hxPaint.layout.LayoutTools;
 
-class ColorButton extends Rectangle
+class Pallete extends Rectangle
 {
-    public function new(paint :Paint, color :Int) : Void
+    public function new(paint :Paint) : Void
     {
         super(paint);
-        _color = color;
+        paint.model.palette = this;
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
-        solver.addConstraint(this.left() == parent.left() + 5);
-        solver.addConstraint(this.width == parent.width - 10);
-        solver.addConstraint(this.height == this.width);
-
-        if(prevSibling == null) {
-            solver.addConstraint(this.top() == parent.top() + 5);
-        }
-        else {
-            solver.addConstraint(this.top() == prevSibling.bottom() + 5);
-        }
+        var parentFirstChild = parent.children[0];
+        solver.addConstraint(this.left() == parentFirstChild.right());
+        solver.addConstraint(this.top() == parent.top());
+        solver.addConstraint(this.height == parent.height);
+        solver.addEditVariable(this.width, Strength.STRONG);
+        close();
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
-        framebuffer.g2.color = _color;
+        framebuffer.g2.color = 0xff484848;
         framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
-
-        var isSelected = switch this.paint.model.operation {
-            case CIRCLE: this.paint.model.circleColor == _color;
-            case FILL: this.paint.model.fillColor == _color;
-            case LINE: this.paint.model.lineColor == _color;
-            case PENCIL: this.paint.model.pencilColor == _color;
-            case _: false;
-        }
-
-        if(isSelected) {
-            framebuffer.g2.color = 0xffffffff;
-            framebuffer.g2.drawRect(x.m_value, y.m_value, width.m_value, height.m_value, 2);
-        }
+        framebuffer.g2.color = 0xffb2dfdb;
+        framebuffer.g2.drawLine(x.m_value, y.m_value, x.m_value, y.m_value + height.m_value, 2);
     }
 
-    override public function onUp(x :Int, y :Int) : Void
+    public function open() : Void
     {
-        this.paint.model.selectColor(_color);
+        this.paint.suggest(this.width, 40);
     }
 
-    private var _color :Color;
+    public function close() : Void
+    {
+        this.paint.suggest(this.width, 0);
+    }
 }

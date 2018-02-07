@@ -78,10 +78,9 @@ class HeaderButton extends Rectangle
 
     private function closeOthers() : Void
     {
-        var buttons :Array<HeaderButton> = this.paint.window.getAll(HeaderButton);
-        for(button in buttons) {
-            if(button != this) {
-                button.close();
+        for (child in this.parent.children) {
+            if(child != this) {
+                cast(child, HeaderButton).close();
             }
         }
     }
