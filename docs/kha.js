@@ -152,9 +152,16 @@ Main.__name__ = true;
 Main.main = function() {
 	kha_System.init({ title : "hxPaint", width : 1366, height : 768},function() {
 		kha_Assets.loadEverything(function() {
-			var paint = new hxPaint_Paint();
-			paint.window.addChild(new hxPaint_element_Body(paint).addChild(new hxPaint_element_LeftColumn(paint).addChild(new hxPaint_element_Button(paint)).addChild(new hxPaint_element_Button(paint)).addChild(new hxPaint_element_Button(paint)).addChild(new hxPaint_element_Button(paint)).addChild(new hxPaint_element_Button(paint))).addChild(new hxPaint_element_PixelContainer(paint))).addChild(new hxPaint_element_header_Header(paint).addChild(new hxPaint_element_header_HeaderButton(paint,"File").addChild(new hxPaint_element_header_HeaderList(paint).addChild(new hxPaint_element_header_HeaderListItem(paint,"NEW")).addChild(new hxPaint_element_header_HeaderListItem(paint,"SAVE")))).addChild(new hxPaint_element_header_HeaderButton(paint,"Edit").addChild(new hxPaint_element_header_HeaderList(paint).addChild(new hxPaint_element_header_HeaderListItem(paint,"UNDO - (cmd-z)")))).addChild(new hxPaint_element_header_HeaderButton(paint,"Help").addChild(new hxPaint_element_header_HeaderList(paint).addChild(new hxPaint_element_header_HeaderListItem(paint,"DOCUMENTS")).addChild(new hxPaint_element_header_HeaderListItem(paint,"CYOA")).addChild(new hxPaint_element_header_HeaderListItem(paint,"ABOUT khaPOW")))));
+			var toggle;
+			var paint = new hxPaint_Paint(kha_System.windowWidth(),kha_System.windowHeight());
+			var canvas = new hxPaint_element_canvas_Canvas(paint);
+			var paint1 = paint.window;
+			var tmp = new hxPaint_element_Body(paint);
+			var tmp1 = new hxPaint_element_LeftColumn(paint).addChild(new hxPaint_element_ToolButton(paint,"PENCIL",1)).addChild(new hxPaint_element_ToolButton(paint,"FILL",2)).addChild(new hxPaint_element_ToolButton(paint,"LINE",3)).addChild(new hxPaint_element_ToolButton(paint,"CIRCLE",4)).addChild(new hxPaint_element_ToolButton(paint,"ERASER",5));
+			toggle = new hxPaint_element_palette_PaletteToggle(paint);
+			paint1.addChild(tmp.addChild(tmp1.addChild(toggle)).addChild(canvas).addChild(new hxPaint_element_palette_Pallete(paint).addChild(new hxPaint_element_palette_ColorOption(paint,-16777216)).addChild(new hxPaint_element_palette_ColorOption(paint,-16750849)).addChild(new hxPaint_element_palette_ColorOption(paint,-5285570)).addChild(new hxPaint_element_palette_ColorOption(paint,-16669848)).addChild(new hxPaint_element_palette_ColorOption(paint,-31201)).addChild(new hxPaint_element_palette_ColorOption(paint,-1242561)).addChild(new hxPaint_element_palette_ColorOption(paint,-49356)).addChild(new hxPaint_element_palette_ColorOption(paint,-8988694)).addChild(new hxPaint_element_palette_ColorOption(paint,-8169053)).addChild(new hxPaint_element_palette_ColorOption(paint,-1)).addChild(new hxPaint_element_palette_ColorOption(paint,-268176)).addChild(new hxPaint_element_palette_ColorOption(paint,-3808902)))).addChild(new hxPaint_element_header_Header(paint).addChild(new hxPaint_element_header_HeaderButton(paint,"File").addChild(new hxPaint_element_header_HeaderList(paint).addChild(new hxPaint_element_header_HeaderListItem(paint,"OPTION1")).addChild(new hxPaint_element_header_HeaderListItem(paint,"OPTION2")))).addChild(new hxPaint_element_header_HeaderButton(paint,"Edit").addChild(new hxPaint_element_header_HeaderList(paint).addChild(new hxPaint_element_header_HeaderListItem(paint,"OPTION_A")))).addChild(new hxPaint_element_header_HeaderButton(paint,"Help").addChild(new hxPaint_element_header_HeaderList(paint).addChild(new hxPaint_element_header_HeaderListItem(paint,"OPTION_B")).addChild(new hxPaint_element_header_HeaderListItem(paint,"OPTION_C")).addChild(new hxPaint_element_header_HeaderListItem(paint,"OPTION_D")))));
 			paint._layout.initLayout();
+			toggle.turnOn();
 			var hasInit = false;
 			kha_System.notifyOnRender(function(framebuffer) {
 				if(!hasInit) {
@@ -163,7 +170,9 @@ Main.main = function() {
 					hasInit = true;
 				}
 				framebuffer.get_g2().begin(null,-1);
-				paint.render(framebuffer);
+				var tmp2 = kha_System.windowWidth();
+				var tmp3 = kha_System.windowHeight();
+				paint.render(tmp2,tmp3,framebuffer);
 				framebuffer.get_g2().end();
 			});
 			kha_Scheduler.addTimeTask(function() {
@@ -1200,15 +1209,58 @@ haxe_io__$UInt8Array_UInt8Array_$Impl_$.fromBytes = function(bytes,bytePos,lengt
 	}
 	return new Uint8Array(bytes.b.bufferValue,bytePos,length);
 };
-var hxPaint_Paint = function() {
-	this.window = new hxPaint_element_Window(this);
-	new hxPaint_input_Mouse(this.window);
+var hxPaint_Model = function() {
+	this.palette = null;
+	this.operation = 1;
+	this.pencilColor = -16777216;
+	this.fillColor = -16777216;
+	this.lineColor = -16777216;
+	this.circleColor = -16777216;
+};
+$hxClasses["hxPaint.Model"] = hxPaint_Model;
+hxPaint_Model.__name__ = true;
+hxPaint_Model.prototype = {
+	operation: null
+	,pencilColor: null
+	,fillColor: null
+	,lineColor: null
+	,circleColor: null
+	,palette: null
+	,selectColor: function(color) {
+		var _g = this.operation;
+		switch(_g) {
+		case 1:
+			this.pencilColor = color;
+			break;
+		case 2:
+			this.fillColor = color;
+			break;
+		case 3:
+			this.lineColor = color;
+			break;
+		case 4:
+			this.circleColor = color;
+			break;
+		default:
+		}
+	}
+	,__class__: hxPaint_Model
+};
+var hxPaint_Paint = function(width,height) {
+	this._width = width;
+	this._height = height;
+	this.window = new hxPaint_element_Window(this,this._width,this._height);
+	this.mouse = new hxPaint_input_Mouse(this.window);
+	this.model = new hxPaint_Model();
 	this._layout = new hxPaint_layout_Layout(this.window);
 };
 $hxClasses["hxPaint.Paint"] = hxPaint_Paint;
 hxPaint_Paint.__name__ = true;
 hxPaint_Paint.render_impl = function(element,framebuffer) {
-	framebuffer.get_g2().scissor(Math.round(element.x.m_value),Math.round(element.y.m_value),Math.round(element.width.m_value),Math.round(element.height.m_value));
+	if(element.width.m_value <= 0 || element.height.m_value <= 0) {
+		return;
+	}
+	framebuffer.get_g2().scissor(jasper__$Variable_Variable_$Impl_$.toFloat(element.x) | 0,jasper__$Variable_Variable_$Impl_$.toFloat(element.y) | 0,jasper__$Variable_Variable_$Impl_$.toFloat(element.width) | 0,jasper__$Variable_Variable_$Impl_$.toFloat(element.height) | 0);
 	element.draw(framebuffer);
 	var _g = 0;
 	var _g1 = element.children;
@@ -1230,47 +1282,23 @@ hxPaint_Paint.update_impl = function(element,dt) {
 };
 hxPaint_Paint.prototype = {
 	window: null
-	,render: function(framebuffer) {
+	,mouse: null
+	,model: null
+	,render: function(width,height,framebuffer) {
+		if(this._width != width || this._height != height) {
+			this.window.resize(width,height);
+			this._width = width;
+			this._height = height;
+		}
 		hxPaint_Paint.render_impl(this.window,framebuffer);
 	}
 	,update: function(dt) {
 		hxPaint_Paint.update_impl(this.window,dt);
 	}
 	,_layout: null
+	,_width: null
+	,_height: null
 	,__class__: hxPaint_Paint
-};
-var hxPaint_canvas_Canvas = function() {
-	this._cellSquare = 0;
-	this._centerX = 0;
-	this._centerY = 0;
-};
-$hxClasses["hxPaint.canvas.Canvas"] = hxPaint_canvas_Canvas;
-hxPaint_canvas_Canvas.__name__ = true;
-hxPaint_canvas_Canvas.prototype = {
-	draw: function(xOffset,yOffset,framebuffer) {
-		framebuffer.get_g2().set_color(-12040120);
-		var _g = 0;
-		while(_g < 16) {
-			var x = _g++;
-			var _g1 = 0;
-			while(_g1 < 16) {
-				var y = _g1++;
-				var x1 = this._centerX + xOffset + x * this._cellSquare;
-				var y1 = this._centerY + yOffset + y * this._cellSquare;
-				framebuffer.get_g2().drawRect(x1,y1,this._cellSquare,this._cellSquare);
-			}
-		}
-	}
-	,resize: function(width,height) {
-		var square = width > height ? height : width;
-		this._cellSquare = square / 16;
-		this._centerX = (width - this._cellSquare * 16) / 2;
-		this._centerY = (height - this._cellSquare * 16) / 2;
-	}
-	,_cellSquare: null
-	,_centerX: null
-	,_centerY: null
-	,__class__: hxPaint_canvas_Canvas
 };
 var hxPaint_element_Rectangle = function(paint) {
 	this.paint = paint;
@@ -1286,32 +1314,16 @@ var hxPaint_element_Rectangle = function(paint) {
 };
 $hxClasses["hxPaint.element.Rectangle"] = hxPaint_element_Rectangle;
 hxPaint_element_Rectangle.__name__ = true;
-hxPaint_element_Rectangle.getAll_impl = function(rectangle,classType,rectangles) {
-	var _g = 0;
-	var _g1 = rectangle.children;
-	while(_g < _g1.length) {
-		var c = _g1[_g];
-		++_g;
-		if((c == null ? null : js_Boot.getClass(c)) == classType) {
-			rectangles.push(c);
-		}
-	}
-	var _g2 = 0;
-	var _g11 = rectangle.children;
-	while(_g2 < _g11.length) {
-		var child = _g11[_g2];
-		++_g2;
-		hxPaint_element_Rectangle.getAll_impl(child,classType,rectangles);
-	}
-};
 hxPaint_element_Rectangle.prototype = {
 	x: null
 	,y: null
 	,width: null
 	,height: null
+	,parent: null
 	,children: null
 	,paint: null
 	,addChild: function(child) {
+		child.parent = this;
 		this.children.push(child);
 		return this;
 	}
@@ -1328,11 +1340,6 @@ hxPaint_element_Rectangle.prototype = {
 	,onMove: function(x,y) {
 	}
 	,onUp: function(x,y) {
-	}
-	,getAll: function(classType) {
-		var rectangles = [];
-		hxPaint_element_Rectangle.getAll_impl(this,classType,rectangles);
-		return rectangles;
 	}
 	,__class__: hxPaint_element_Rectangle
 };
@@ -1353,61 +1360,6 @@ hxPaint_element_Body.prototype = $extend(hxPaint_element_Rectangle.prototype,{
 	}
 	,__class__: hxPaint_element_Body
 });
-var hxPaint_element_Button = function(paint) {
-	hxPaint_element_Rectangle.call(this,paint);
-};
-$hxClasses["hxPaint.element.Button"] = hxPaint_element_Button;
-hxPaint_element_Button.__name__ = true;
-hxPaint_element_Button.__super__ = hxPaint_element_Rectangle;
-hxPaint_element_Button.prototype = $extend(hxPaint_element_Rectangle.prototype,{
-	solve: function(solver,parent,prevSibling) {
-		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0),5)));
-		var _g = this.width;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractValue(parent.width,10);
-		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,this.width));
-		if(prevSibling == null) {
-			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0),5)));
-		} else {
-			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.y,prevSibling.height),5)));
-		}
-	}
-	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(-14606047);
-		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		if(this._isOn) {
-			framebuffer.get_g2().set_color(-5054501);
-			framebuffer.get_g2().drawRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value,2);
-		}
-	}
-	,onUp: function(x,y) {
-		if(this._isOn) {
-			this.turnOff();
-		} else {
-			this.turnOn();
-		}
-		this.turnOffOthers();
-	}
-	,turnOn: function() {
-		this._isOn = true;
-	}
-	,turnOff: function() {
-		this._isOn = false;
-	}
-	,turnOffOthers: function() {
-		var buttons = this.paint.window.getAll(hxPaint_element_Button);
-		var _g = 0;
-		while(_g < buttons.length) {
-			var button = buttons[_g];
-			++_g;
-			if(button != this) {
-				button.turnOff();
-			}
-		}
-	}
-	,_isOn: null
-	,__class__: hxPaint_element_Button
-});
 var hxPaint_element_LeftColumn = function(paint) {
 	hxPaint_element_Rectangle.call(this,paint);
 };
@@ -1427,37 +1379,84 @@ hxPaint_element_LeftColumn.prototype = $extend(hxPaint_element_Rectangle.prototy
 	}
 	,__class__: hxPaint_element_LeftColumn
 });
-var hxPaint_element_PixelContainer = function(paint) {
+var hxPaint_element_ToolButton = function(paint,title,operation) {
 	hxPaint_element_Rectangle.call(this,paint);
-	this._canvas = new hxPaint_canvas_Canvas();
+	this._title = title;
+	this._operation = operation;
+	this._width = kha_Assets.fonts.Roboto_Black.width(12,this._title);
+	this._height = kha_Assets.fonts.Roboto_Black.height(12);
 };
-$hxClasses["hxPaint.element.PixelContainer"] = hxPaint_element_PixelContainer;
-hxPaint_element_PixelContainer.__name__ = true;
-hxPaint_element_PixelContainer.__super__ = hxPaint_element_Rectangle;
-hxPaint_element_PixelContainer.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+$hxClasses["hxPaint.element.ToolButton"] = hxPaint_element_ToolButton;
+hxPaint_element_ToolButton.__name__ = true;
+hxPaint_element_ToolButton.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_ToolButton.prototype = $extend(hxPaint_element_Rectangle.prototype,{
 	solve: function(solver,parent,prevSibling) {
-		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.x,prevSibling.width)));
-		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0)));
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0),5)));
 		var _g = this.width;
-		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractVariable(parent.width,prevSibling.width);
+		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractValue(parent.width,10);
 		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
-		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,parent.height));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,this.width));
+		if(prevSibling == null) {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0),5)));
+		} else {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.y,prevSibling.height),5)));
+		}
 	}
 	,draw: function(framebuffer) {
-		framebuffer.get_g2().set_color(-1118482);
+		framebuffer.get_g2().set_color(-14606047);
 		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
-		this._canvas.draw(this.x.m_value + 2,this.y.m_value + 1,framebuffer);
-		framebuffer.get_g2().set_color(-12040120);
-		framebuffer.get_g2().drawRect(this.x.m_value + 2,this.y.m_value + 1,this.width.m_value - 2,this.height.m_value - 2);
+		framebuffer.get_g2().set_color(-1);
+		framebuffer.get_g2().set_fontSize(12);
+		var centerX = this.x.m_value - this._width / 2 + this.width.m_value / 2;
+		var centerY = this.y.m_value - this._height / 2 + this.height.m_value / 2;
+		framebuffer.get_g2().drawString(this._title,centerX,centerY);
+		framebuffer.get_g2().set_fontSize(18);
+		if(this._operation == this.paint.model.operation) {
+			var _g = this._operation;
+			var tmp;
+			switch(_g) {
+			case 1:
+				tmp = this.paint.model.pencilColor;
+				break;
+			case 2:
+				tmp = this.paint.model.fillColor;
+				break;
+			case 3:
+				tmp = this.paint.model.lineColor;
+				break;
+			case 4:
+				tmp = this.paint.model.circleColor;
+				break;
+			default:
+				tmp = -5054501;
+			}
+			framebuffer.get_g2().set_color(tmp);
+			framebuffer.get_g2().drawRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value,8);
+		}
 	}
-	,afterSolved: function() {
-		this._canvas.resize(this.width.m_value - 2,this.height.m_value - 2);
+	,onUp: function(x,y) {
+		if(this.paint.model.operation == this._operation) {
+			this.turnOff();
+		} else {
+			this.turnOn();
+		}
 	}
-	,_canvas: null
-	,__class__: hxPaint_element_PixelContainer
+	,turnOn: function() {
+		this.paint.model.operation = this._operation;
+	}
+	,turnOff: function() {
+		this.paint.model.operation = -1;
+	}
+	,_title: null
+	,_operation: null
+	,_width: null
+	,_height: null
+	,__class__: hxPaint_element_ToolButton
 });
-var hxPaint_element_Window = function(paint) {
+var hxPaint_element_Window = function(paint,width,height) {
 	hxPaint_element_Rectangle.call(this,paint);
+	this._initialWidth = width;
+	this._initialHeight = height;
 };
 $hxClasses["hxPaint.element.Window"] = hxPaint_element_Window;
 hxPaint_element_Window.__name__ = true;
@@ -1466,11 +1465,365 @@ hxPaint_element_Window.prototype = $extend(hxPaint_element_Rectangle.prototype,{
 	solve: function(solver,parent,prevSibling) {
 		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.x,0));
 		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.y,0));
-		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.width,kha_System.windowWidth()));
-		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.height,kha_System.windowHeight()));
+		solver.addEditVariable(this.width,1000000);
+		solver.addEditVariable(this.height,1000000);
+		solver.suggestValue(this.width,this._initialWidth);
+		solver.suggestValue(this.height,this._initialHeight);
 	}
+	,resize: function(width,height) {
+		this.paint._layout.suggest(this.width,width);
+		this.paint._layout.suggest(this.height,height);
+	}
+	,_initialWidth: null
+	,_initialHeight: null
 	,__class__: hxPaint_element_Window
 });
+var hxPaint_element_canvas_Canvas = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
+	this._painter = new hxPaint_element_canvas_Painter();
+	this._isDown = false;
+	this._downX = -1;
+	this._downY = -1;
+	paint.mouse.connectUp($bind(this,this.onSystemUp));
+};
+$hxClasses["hxPaint.element.canvas.Canvas"] = hxPaint_element_canvas_Canvas;
+hxPaint_element_canvas_Canvas.__name__ = true;
+hxPaint_element_canvas_Canvas.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_canvas_Canvas.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.x,prevSibling.width)));
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0)));
+		var _g = this.width;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractVariable(parent.width,prevSibling.width);
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,parent.height));
+	}
+	,onDown: function(x,y) {
+		this._downX = x - this.x.m_value | 0;
+		this._downY = y - this.y.m_value | 0;
+		var _g = this.paint.model.operation;
+		switch(_g) {
+		case -1:
+			break;
+		case 1:
+			this._painter.pencil(this._downX,this._downY,this.paint.model.pencilColor,true);
+			break;
+		case 2:
+			this._painter.fill(this._downX,this._downY,this.paint.model.fillColor);
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		case 5:
+			this._painter.erase(this._downX,this._downY);
+			break;
+		}
+		this._isDown = true;
+	}
+	,onMove: function(x,y) {
+		var moveX = x - this.x.m_value | 0;
+		var moveY = y - this.y.m_value | 0;
+		if(this._isDown) {
+			var _g = this.paint.model.operation;
+			switch(_g) {
+			case -1:
+				break;
+			case 1:
+				this._painter.pencil(moveX,moveY,this.paint.model.pencilColor,false);
+				break;
+			case 2:
+				break;
+			case 3:
+				this._painter.drawLine(moveX,moveY,this._downX,this._downY,this.paint.model.lineColor,true);
+				break;
+			case 4:
+				this._painter.drawEllipse(moveX,moveY,this._downX,this._downY,this.paint.model.circleColor,true);
+				break;
+			case 5:
+				this._painter.erase(moveX,moveY);
+				break;
+			}
+		}
+	}
+	,onSystemUp: function(x,y) {
+		var upX = x - this.x.m_value | 0;
+		var upY = y - this.y.m_value | 0;
+		var _g = this.paint.model.operation;
+		switch(_g) {
+		case -1:
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			this._painter.drawLine(upX,upY,this._downX,this._downY,this.paint.model.lineColor,false);
+			break;
+		case 4:
+			this._painter.drawEllipse(upX,upY,this._downX,this._downY,this.paint.model.circleColor,false);
+			break;
+		case 5:
+			break;
+		}
+		this._downX = -1;
+		this._downY = -1;
+		this._isDown = false;
+	}
+	,draw: function(framebuffer) {
+		framebuffer.get_g2().set_color(-1118482);
+		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+		framebuffer.get_g2().pushTranslation(this.x.m_value,this.y.m_value);
+		this._painter.draw(framebuffer);
+		framebuffer.get_g2().popTransformation();
+	}
+	,afterSolved: function() {
+		this._painter.resize(this.width.m_value,this.height.m_value);
+	}
+	,_painter: null
+	,_isDown: null
+	,_downX: null
+	,_downY: null
+	,__class__: hxPaint_element_canvas_Canvas
+});
+var hxPaint_element_canvas_Painter = function() {
+	this._cellSquare = 0;
+	this._centerX = 0;
+	this._centerY = 0;
+	var this1;
+	var _g = [];
+	var _g2 = 0;
+	var _g1 = 4096;
+	while(_g2 < _g1) {
+		var i = _g2++;
+		_g.push(0);
+	}
+	this1 = _g;
+	this._pixels = this1;
+	var this2;
+	var _g3 = [];
+	var _g21 = 0;
+	var _g11 = 4096;
+	while(_g21 < _g11) {
+		var i1 = _g21++;
+		_g3.push(0);
+	}
+	this2 = _g3;
+	this._tempPixels = this2;
+	this._lastPencilX = 0;
+	this._lastPencilY = 0;
+	this.showEdges = false;
+};
+$hxClasses["hxPaint.element.canvas.Painter"] = hxPaint_element_canvas_Painter;
+hxPaint_element_canvas_Painter.__name__ = true;
+hxPaint_element_canvas_Painter.prototype = {
+	showEdges: null
+	,draw: function(framebuffer) {
+		var _g = 0;
+		while(_g < 64) {
+			var xCell = _g++;
+			var _g1 = 0;
+			while(_g1 < 64) {
+				var yCell = _g1++;
+				var xPos = this._centerX + xCell * this._cellSquare;
+				var yPos = this._centerY + yCell * this._cellSquare;
+				framebuffer.get_g2().set_color(hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.getPixel(this._pixels,xCell,yCell));
+				framebuffer.get_g2().fillRect(xPos,yPos,this._cellSquare,this._cellSquare);
+				framebuffer.get_g2().set_color(hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.getPixel(this._tempPixels,xCell,yCell));
+				framebuffer.get_g2().fillRect(xPos,yPos,this._cellSquare,this._cellSquare);
+				if(this.showEdges) {
+					framebuffer.get_g2().set_color(-12040120);
+					framebuffer.get_g2().drawRect(xPos,yPos,this._cellSquare,this._cellSquare);
+				}
+			}
+		}
+		framebuffer.get_g2().set_color(-12040120);
+		framebuffer.get_g2().drawRect(this._centerX,this._centerY,this._cellSquare * 64 - 1,this._cellSquare * 64 - 1);
+	}
+	,pencil: function(x,y,color,isFresh) {
+		if(isFresh) {
+			var xCell = Math.floor((x - this._centerX) / this._cellSquare);
+			var yCell = Math.floor((y - this._centerY) / this._cellSquare);
+			hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this._pixels,xCell,yCell,color);
+		} else {
+			this.drawLine(x,y,this._lastPencilX,this._lastPencilY,color,false);
+		}
+		this._lastPencilX = x;
+		this._lastPencilY = y;
+	}
+	,fill: function(x,y,color) {
+		var xCell = Math.floor((x - this._centerX) / this._cellSquare);
+		var yCell = Math.floor((y - this._centerY) / this._cellSquare);
+		var cellColor = hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.getPixel(this._pixels,xCell,yCell);
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.fill(this._pixels,xCell,yCell,cellColor,color);
+	}
+	,erase: function(x,y) {
+		var xCell = Math.floor((x - this._centerX) / this._cellSquare);
+		var yCell = Math.floor((y - this._centerY) / this._cellSquare);
+		var _g = -2;
+		while(_g < 3) {
+			var eX = _g++;
+			var _g1 = -2;
+			while(_g1 < 3) {
+				var eY = _g1++;
+				hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this._pixels,xCell + eX,yCell + eY,0);
+			}
+		}
+	}
+	,drawLine: function(x0,y0,x1,y1,color,isTemp) {
+		var xCell0 = Math.floor((x0 - this._centerX) / this._cellSquare);
+		var yCell0 = Math.floor((y0 - this._centerY) / this._cellSquare);
+		var xCell1 = Math.floor((x1 - this._centerX) / this._cellSquare);
+		var yCell1 = Math.floor((y1 - this._centerY) / this._cellSquare);
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.clear(this._tempPixels);
+		if(isTemp) {
+			hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.drawLine(this._tempPixels,xCell0,yCell0,xCell1,yCell1,color);
+		} else {
+			hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.drawLine(this._pixels,xCell0,yCell0,xCell1,yCell1,color);
+		}
+	}
+	,drawEllipse: function(x0,y0,x1,y1,color,isTemp) {
+		var xCell0 = Math.floor((x0 - this._centerX) / this._cellSquare);
+		var yCell0 = Math.floor((y0 - this._centerY) / this._cellSquare);
+		var xCell1 = Math.floor((x1 - this._centerX) / this._cellSquare);
+		var yCell1 = Math.floor((y1 - this._centerY) / this._cellSquare);
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.clear(this._tempPixels);
+		if(isTemp) {
+			hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.drawEllipse(this._tempPixels,xCell0,yCell0,xCell1,yCell1,color);
+		} else {
+			hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.drawEllipse(this._pixels,xCell0,yCell0,xCell1,yCell1,color);
+		}
+	}
+	,resize: function(width,height) {
+		var square = width > height ? height : width;
+		this._cellSquare = square / 64;
+		this._centerX = (width - this._cellSquare * 64) / 2;
+		this._centerY = (height - this._cellSquare * 64) / 2;
+	}
+	,_cellSquare: null
+	,_centerX: null
+	,_centerY: null
+	,_pixels: null
+	,_tempPixels: null
+	,_lastPencilX: null
+	,_lastPencilY: null
+	,__class__: hxPaint_element_canvas_Painter
+};
+var hxPaint_element_canvas__$Pixels_Pixels_$Impl_$ = {};
+$hxClasses["hxPaint.element.canvas._Pixels.Pixels_Impl_"] = hxPaint_element_canvas__$Pixels_Pixels_$Impl_$;
+hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.__name__ = true;
+hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.getPixel = function(this1,xCell,yCell) {
+	var index = yCell * 64 + xCell;
+	return this1[index];
+};
+hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel = function(this1,xCell,yCell,color) {
+	if(xCell >= 64 || yCell >= 64 || xCell < 0 || yCell < 0) {
+		return;
+	}
+	var index = yCell * 64 + xCell;
+	this1[index] = color;
+};
+hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.clear = function(this1,color) {
+	if(color == null) {
+		color = 0;
+	}
+	var _g1 = 0;
+	var _g = 4096;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this1[i] = color;
+	}
+};
+hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.fill = function(this1,xCell,yCell,targetColor,replacementColor) {
+	if(targetColor == replacementColor) {
+		return;
+	}
+	if(hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.getPixel(this1,xCell,yCell) != targetColor) {
+		return;
+	}
+	hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,xCell,yCell,replacementColor);
+	if(yCell < 63) {
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.fill(this1,xCell,yCell + 1,targetColor,replacementColor);
+	}
+	if(yCell > 0) {
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.fill(this1,xCell,yCell - 1,targetColor,replacementColor);
+	}
+	if(xCell > 0) {
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.fill(this1,xCell - 1,yCell,targetColor,replacementColor);
+	}
+	if(xCell < 63) {
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.fill(this1,xCell + 1,yCell,targetColor,replacementColor);
+	}
+};
+hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.drawEllipse = function(this1,x0,y0,x1,y1,color) {
+	var a = Math.abs(x1 - x0) | 0;
+	var b = Math.abs(y1 - y0) | 0;
+	var b1 = b & 1;
+	var dx = 4 * (1 - a) * b * b;
+	var dy = 4 * (b1 + 1) * a * a;
+	var err = dx + dy + b1 * a * a;
+	var e2;
+	if(x0 > x1) {
+		x0 = x1;
+		x1 += a;
+	}
+	if(y0 > y1) {
+		y0 = y1;
+	}
+	y0 += (b + 1) / 2 | 0;
+	y1 = y0 - b1;
+	a *= 8 * a;
+	b1 = 8 * b * b;
+	while(true) {
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,x1,y0,color);
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,x0,y0,color);
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,x0,y1,color);
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,x1,y1,color);
+		e2 = 2 * err;
+		if(e2 <= dy) {
+			++y0;
+			--y1;
+			err += dy += a;
+		}
+		if(e2 >= dx || 2 * err > dy) {
+			++x0;
+			--x1;
+			err += dx += b1;
+		}
+		if(!(x0 <= x1)) {
+			break;
+		}
+	}
+	while(y0 - y1 < b) {
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,x0 - 1,y0,color);
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,x1 + 1,y0++,color);
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,x0 - 1,y1,color);
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,x1 + 1,y1--,color);
+	}
+};
+hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.drawLine = function(this1,x0,y0,x1,y1,color) {
+	var dx = Math.abs(x1 - x0) | 0;
+	var sx = x0 < x1 ? 1 : -1;
+	var dy = -Math.abs(y1 - y0) | 0;
+	var sy = y0 < y1 ? 1 : -1;
+	var err = dx + dy;
+	var e2;
+	while(true) {
+		hxPaint_element_canvas__$Pixels_Pixels_$Impl_$.setPixel(this1,x0,y0,color);
+		if(x0 == x1 && y0 == y1) {
+			break;
+		}
+		e2 = 2 * err;
+		if(e2 >= dy) {
+			err += dy;
+			x0 += sx;
+		}
+		if(e2 <= dx) {
+			err += dx;
+			y0 += sy;
+		}
+	}
+};
 var hxPaint_element_header_Header = function(paint) {
 	hxPaint_element_Rectangle.call(this,paint);
 };
@@ -1530,13 +1883,13 @@ hxPaint_element_header_HeaderButton.prototype = $extend(hxPaint_element_Rectangl
 		(js_Boot.__cast(this.children[0] , hxPaint_element_header_HeaderList)).close();
 	}
 	,closeOthers: function() {
-		var buttons = this.paint.window.getAll(hxPaint_element_header_HeaderButton);
 		var _g = 0;
-		while(_g < buttons.length) {
-			var button = buttons[_g];
+		var _g1 = this.parent.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
 			++_g;
-			if(button != this) {
-				button.close();
+			if(child != this) {
+				(js_Boot.__cast(child , hxPaint_element_header_HeaderButton)).close();
 			}
 		}
 	}
@@ -1631,8 +1984,136 @@ hxPaint_element_header_HeaderListItem.prototype = $extend(hxPaint_element_Rectan
 	,_height: null
 	,__class__: hxPaint_element_header_HeaderListItem
 });
+var hxPaint_element_palette_ColorOption = function(paint,color) {
+	hxPaint_element_Rectangle.call(this,paint);
+	this._color = color;
+};
+$hxClasses["hxPaint.element.palette.ColorOption"] = hxPaint_element_palette_ColorOption;
+hxPaint_element_palette_ColorOption.__name__ = true;
+hxPaint_element_palette_ColorOption.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_palette_ColorOption.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0),5)));
+		var _g = this.width;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractValue(parent.width,10);
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,this.width));
+		if(prevSibling == null) {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0),5)));
+		} else {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.y,prevSibling.height),5)));
+		}
+	}
+	,draw: function(framebuffer) {
+		framebuffer.get_g2().set_color(this._color);
+		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+		var isSelected;
+		var _g = this.paint.model.operation;
+		switch(_g) {
+		case 1:
+			isSelected = this.paint.model.pencilColor == this._color;
+			break;
+		case 2:
+			isSelected = this.paint.model.fillColor == this._color;
+			break;
+		case 3:
+			isSelected = this.paint.model.lineColor == this._color;
+			break;
+		case 4:
+			isSelected = this.paint.model.circleColor == this._color;
+			break;
+		default:
+			isSelected = false;
+		}
+		if(isSelected) {
+			framebuffer.get_g2().set_color(-1);
+			framebuffer.get_g2().drawRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value,2);
+		}
+	}
+	,onUp: function(x,y) {
+		this.paint.model.selectColor(this._color);
+	}
+	,_color: null
+	,__class__: hxPaint_element_palette_ColorOption
+});
+var hxPaint_element_palette_PaletteToggle = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
+};
+$hxClasses["hxPaint.element.palette.PaletteToggle"] = hxPaint_element_palette_PaletteToggle;
+hxPaint_element_palette_PaletteToggle.__name__ = true;
+hxPaint_element_palette_PaletteToggle.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_palette_PaletteToggle.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.x,0),5)));
+		var _g = this.width;
+		var _g1 = jasper__$Variable_Variable_$Impl_$.subtractValue(parent.width,10);
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsVariable(_g1,_g));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsValue(this.height,20));
+		if(prevSibling == null) {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0),5)));
+		} else {
+			solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Expression_Expression_$Impl_$.addValue(jasper__$Variable_Variable_$Impl_$.addVariable(prevSibling.y,prevSibling.height),5)));
+		}
+	}
+	,draw: function(framebuffer) {
+		framebuffer.get_g2().set_color(-14606047);
+		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+		if(this._isOn) {
+			framebuffer.get_g2().set_color(-5054501);
+			framebuffer.get_g2().drawRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value,2);
+		}
+	}
+	,onUp: function(x,y) {
+		if(this._isOn) {
+			this.turnOff();
+		} else {
+			this.turnOn();
+		}
+	}
+	,turnOn: function() {
+		this._isOn = true;
+		this.paint.model.palette.open();
+	}
+	,turnOff: function() {
+		this._isOn = false;
+		this.paint.model.palette.close();
+	}
+	,_isOn: null
+	,__class__: hxPaint_element_palette_PaletteToggle
+});
+var hxPaint_element_palette_Pallete = function(paint) {
+	hxPaint_element_Rectangle.call(this,paint);
+	paint.model.palette = this;
+};
+$hxClasses["hxPaint.element.palette.Pallete"] = hxPaint_element_palette_Pallete;
+hxPaint_element_palette_Pallete.__name__ = true;
+hxPaint_element_palette_Pallete.__super__ = hxPaint_element_Rectangle;
+hxPaint_element_palette_Pallete.prototype = $extend(hxPaint_element_Rectangle.prototype,{
+	solve: function(solver,parent,prevSibling) {
+		var parentFirstChild = parent.children[0];
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.x,0),jasper__$Variable_Variable_$Impl_$.addVariable(parentFirstChild.x,parentFirstChild.width)));
+		solver.addConstraint(jasper__$Expression_Expression_$Impl_$.equalsExpression(jasper__$Variable_Variable_$Impl_$.addValue(this.y,0),jasper__$Variable_Variable_$Impl_$.addValue(parent.y,0)));
+		solver.addConstraint(jasper__$Variable_Variable_$Impl_$.equalsVariable(this.height,parent.height));
+		solver.addEditVariable(this.width,1000000);
+		this.close();
+	}
+	,draw: function(framebuffer) {
+		framebuffer.get_g2().set_color(-12040120);
+		framebuffer.get_g2().fillRect(this.x.m_value,this.y.m_value,this.width.m_value,this.height.m_value);
+		framebuffer.get_g2().set_color(-5054501);
+		framebuffer.get_g2().drawLine(this.x.m_value,this.y.m_value,this.x.m_value,this.y.m_value + this.height.m_value,2);
+	}
+	,open: function() {
+		this.paint._layout.suggest(this.width,40);
+	}
+	,close: function() {
+		this.paint._layout.suggest(this.width,0);
+	}
+	,__class__: hxPaint_element_palette_Pallete
+});
 var hxPaint_input_Mouse = function(window) {
 	this.initMouse(window);
+	this._upConnections = [];
 };
 $hxClasses["hxPaint.input.Mouse"] = hxPaint_input_Mouse;
 hxPaint_input_Mouse.__name__ = true;
@@ -1671,16 +2152,28 @@ hxPaint_input_Mouse.hitTest_impl = function(rectangle,x,y,type) {
 	}
 };
 hxPaint_input_Mouse.prototype = {
-	initMouse: function(window) {
+	connectUp: function(fn) {
+		this._upConnections.push(fn);
+	}
+	,initMouse: function(window) {
+		var _gthis = this;
 		kha_input_Mouse.get().notify(function(button,x,y) {
 			hxPaint_input_Mouse.hitTest_impl(window,x,y,0);
 		},function(button1,x1,y1) {
 			hxPaint_input_Mouse.hitTest_impl(window,x1,y1,1);
+			var _g = 0;
+			var _g1 = _gthis._upConnections;
+			while(_g < _g1.length) {
+				var c = _g1[_g];
+				++_g;
+				c(x1,y1);
+			}
 		},function(x2,y2,cX,cY) {
 			hxPaint_input_Mouse.hitTest_impl(window,x2,y2,2);
 		},function(w) {
 		});
 	}
+	,_upConnections: null
 	,__class__: hxPaint_input_Mouse
 };
 var hxPaint_layout_Layout = function(window) {
@@ -2060,12 +2553,12 @@ jasper_Tag.prototype = {
 var jasper_SolverImpl = function() {
 	var this1 = new jasper_ds_JasperMap();
 	this.m_cns = this1;
-	var this2 = new jasper_ds_JasperMap();
-	this.m_rows = this2;
-	var this3 = new jasper_ds_JasperMap();
-	this.m_vars = this3;
-	var this4 = new jasper_ds_JasperMap();
-	this.m_edits = this4;
+	var this11 = new jasper_ds_JasperMap();
+	this.m_rows = this11;
+	var this12 = new jasper_ds_JasperMap();
+	this.m_vars = this12;
+	var this13 = new jasper_ds_JasperMap();
+	this.m_edits = this13;
 	this.m_infeasible_rows = [];
 	this.m_objective = new jasper_Row();
 	this.m_artificial = null;
@@ -2074,7 +2567,7 @@ $hxClasses["jasper.SolverImpl"] = jasper_SolverImpl;
 jasper_SolverImpl.__name__ = true;
 jasper_SolverImpl.prototype = {
 	addConstraint: function(constraint) {
-		if(this.m_cns._map.exists(constraint)) {
+		if(this.m_cns._map.h.__keys__[constraint.__id__] != null) {
 			throw new js__$Boot_HaxeError(new jasper_DuplicateConstraint(constraint));
 		}
 		var tag = new jasper_Tag();
@@ -2100,15 +2593,15 @@ jasper_SolverImpl.prototype = {
 			}
 			this1._map.set(subject,rowptr);
 		}
-		var this2 = this.m_cns;
-		if(!this2._map.exists(constraint)) {
-			this2._keys.push(constraint);
+		var this11 = this.m_cns;
+		if(!this11._map.exists(constraint)) {
+			this11._keys.push(constraint);
 		}
-		this2._map.set(constraint,tag);
+		this11._map.set(constraint,tag);
 		this.optimize(this.m_objective);
 	}
 	,addEditVariable: function(variable,strength) {
-		if(this.m_edits._map.exists(variable)) {
+		if(this.m_edits._map.h.__keys__[variable.__id__] != null) {
 			throw new js__$Boot_HaxeError(new jasper_DuplicateEditVariable(variable));
 		}
 		strength = jasper__$Strength_Strength_$Impl_$.clip(strength);
@@ -2124,27 +2617,27 @@ jasper_SolverImpl.prototype = {
 		info.tag = this.m_cns._map.get(cn);
 		info.constraint = cn;
 		info.constant = 0.0;
-		var this3 = this.m_edits;
-		if(!this3._map.exists(variable)) {
-			this3._keys.push(variable);
+		var this11 = this.m_edits;
+		if(!this11._map.exists(variable)) {
+			this11._keys.push(variable);
 		}
-		this3._map.set(variable,info);
+		this11._map.set(variable,info);
 	}
 	,suggestValue: function(variable,value) {
-		if(!this.m_edits._map.exists(variable)) {
+		if(this.m_edits._map.h.__keys__[variable.__id__] == null) {
 			throw new js__$Boot_HaxeError(new jasper_UnknownEditVariable(variable));
 		}
 		var info = this.m_edits._map.get(variable);
 		var delta = value - info.constant;
 		info.constant = value;
-		if(this.m_rows._map.exists(info.tag.marker)) {
+		if(this.m_rows._map.h.__keys__[info.tag.marker.__id__] != null) {
 			if(this.m_rows._map.get(info.tag.marker).add(-delta) < 0.0) {
 				this.m_infeasible_rows.push(info.tag.marker);
 			}
 			this.dualOptimize();
 			return;
 		}
-		if(this.m_rows._map.exists(info.tag.other)) {
+		if(this.m_rows._map.h.__keys__[info.tag.other.__id__] != null) {
 			if(this.m_rows._map.get(info.tag.other).add(delta) < 0.0) {
 				this.m_infeasible_rows.push(info.tag.other);
 			}
@@ -2166,7 +2659,7 @@ jasper_SolverImpl.prototype = {
 		while(var_it.hasNext()) {
 			var var_it1 = var_it.next();
 			var var_ = var_it1.first;
-			if(!this.m_rows._map.exists(var_it1.second)) {
+			if(this.m_rows._map.h.__keys__[var_it1.second.__id__] == null) {
 				var_.m_value = 0.0;
 			} else {
 				var_.m_value = this.m_rows._map.get(var_it1.second).m_constant;
@@ -2176,18 +2669,18 @@ jasper_SolverImpl.prototype = {
 	,reset: function() {
 		var this1 = new jasper_ds_JasperMap();
 		this.m_cns = this1;
-		var this2 = new jasper_ds_JasperMap();
-		this.m_rows = this2;
-		var this3 = new jasper_ds_JasperMap();
-		this.m_vars = this3;
-		var this4 = new jasper_ds_JasperMap();
-		this.m_edits = this4;
+		var this11 = new jasper_ds_JasperMap();
+		this.m_rows = this11;
+		var this12 = new jasper_ds_JasperMap();
+		this.m_vars = this12;
+		var this13 = new jasper_ds_JasperMap();
+		this.m_edits = this13;
 		this.m_infeasible_rows = [];
 		this.m_objective = new jasper_Row();
 		this.m_artificial = null;
 	}
 	,getVarSymbol: function(variable) {
-		if(this.m_vars._map.exists(variable)) {
+		if(this.m_vars._map.h.__keys__[variable.__id__] != null) {
 			return this.m_vars._map.get(variable);
 		}
 		var symbol = new jasper_Symbol(1);
@@ -2208,7 +2701,7 @@ jasper_SolverImpl.prototype = {
 			++_g;
 			if(!jasper_Util.nearZero(term.m_coefficient)) {
 				var symbol = this.getVarSymbol(term.m_variable);
-				if(this.m_rows._map.exists(symbol)) {
+				if(this.m_rows._map.h.__keys__[symbol.__id__] != null) {
 					row.insertRow(this.m_rows._map.get(symbol),term.m_coefficient);
 				} else {
 					row.insertSymbol(symbol,term.m_coefficient);
@@ -2287,16 +2780,16 @@ jasper_SolverImpl.prototype = {
 		var art = new jasper_Symbol(2);
 		var this1 = this.m_rows;
 		var row1 = new jasper_Row(row.m_constant);
-		var it = new jasper_ds__$JasperMap_KeyValIterator(row.m_cells);
-		while(it.hasNext()) {
-			var it1 = it.next();
-			var this2 = row1.m_cells;
-			var k = it1.first;
-			var v = it1.second;
-			if(!this2._map.exists(k)) {
-				this2._keys.push(k);
+		var it1 = new jasper_ds__$JasperMap_KeyValIterator(row.m_cells);
+		while(it1.hasNext()) {
+			var it11 = it1.next();
+			var this11 = row1.m_cells;
+			var k = it11.first;
+			var v = it11.second;
+			if(!this11._map.exists(k)) {
+				this11._keys.push(k);
 			}
-			this2._map.set(k,v);
+			this11._map.set(k,v);
 		}
 		var v1 = row1;
 		if(!this1._map.exists(art)) {
@@ -2304,22 +2797,22 @@ jasper_SolverImpl.prototype = {
 		}
 		this1._map.set(art,v1);
 		var row2 = new jasper_Row(row.m_constant);
-		var it2 = new jasper_ds__$JasperMap_KeyValIterator(row.m_cells);
-		while(it2.hasNext()) {
-			var it3 = it2.next();
-			var this3 = row2.m_cells;
-			var k1 = it3.first;
-			var v2 = it3.second;
-			if(!this3._map.exists(k1)) {
-				this3._keys.push(k1);
+		var it12 = new jasper_ds__$JasperMap_KeyValIterator(row.m_cells);
+		while(it12.hasNext()) {
+			var it13 = it12.next();
+			var this12 = row2.m_cells;
+			var k1 = it13.first;
+			var v2 = it13.second;
+			if(!this12._map.exists(k1)) {
+				this12._keys.push(k1);
 			}
-			this3._map.set(k1,v2);
+			this12._map.set(k1,v2);
 		}
 		this.m_artificial = row2;
 		this.optimize(this.m_artificial);
 		var success = jasper_Util.nearZero(this.m_artificial.m_constant);
 		this.m_artificial = null;
-		if(this.m_rows._map.exists(art)) {
+		if(this.m_rows._map.h.__keys__[art.__id__] != null) {
 			var rowptr = this.m_rows._map.get(art);
 			var _this = this.m_rows;
 			if(_this._map.remove(art)) {
@@ -2334,16 +2827,16 @@ jasper_SolverImpl.prototype = {
 			}
 			rowptr.solveForSymbols(art,entering);
 			this.substitute(entering,rowptr);
-			var this4 = this.m_rows;
-			if(!this4._map.exists(entering)) {
-				this4._keys.push(entering);
+			var this13 = this.m_rows;
+			if(!this13._map.exists(entering)) {
+				this13._keys.push(entering);
 			}
-			this4._map.set(entering,rowptr);
+			this13._map.set(entering,rowptr);
 		}
-		var it4 = new jasper_ds__$JasperMap_KeyValIterator(this.m_rows);
-		while(it4.hasNext()) {
-			var it5 = it4.next();
-			it5.second.remove(art);
+		var it = new jasper_ds__$JasperMap_KeyValIterator(this.m_rows);
+		while(it.hasNext()) {
+			var it2 = it.next();
+			it2.second.remove(art);
 		}
 		this.m_objective.remove(art);
 		return success;
@@ -2574,6 +3067,9 @@ jasper__$Variable_$.prototype = {
 var jasper__$Variable_Variable_$Impl_$ = {};
 $hxClasses["jasper._Variable.Variable_Impl_"] = jasper__$Variable_Variable_$Impl_$;
 jasper__$Variable_Variable_$Impl_$.__name__ = true;
+jasper__$Variable_Variable_$Impl_$.toFloat = function(this1) {
+	return this1.m_value;
+};
 jasper__$Variable_Variable_$Impl_$.multiplyValue = function(variable,coefficient) {
 	var this1 = new jasper__$Term_$(variable,coefficient);
 	return this1;
@@ -4485,20 +4981,20 @@ kha_Shaders.init = function() {
 	var _g1 = 0;
 	while(_g1 < 3) {
 		var i1 = _g1++;
-		var data1 = Reflect.field(kha_Shaders,"painter_colored_vertData" + i1);
+		var data1 = Reflect.field(kha_Shaders,"painter_image_fragData" + i1);
 		var bytes1 = haxe_Unserializer.run(data1);
 		blobs1.push(kha_internal_BytesBlob.fromBytes(bytes1));
 	}
-	kha_Shaders.painter_colored_vert = new kha_graphics4_VertexShader(blobs1,["painter-colored.vert.essl","painter-colored-relaxed.vert.essl","painter-colored-webgl2.vert.essl"]);
+	kha_Shaders.painter_image_frag = new kha_graphics4_FragmentShader(blobs1,["painter-image.frag.essl","painter-image-relaxed.frag.essl","painter-image-webgl2.frag.essl"]);
 	var blobs2 = [];
 	var _g2 = 0;
 	while(_g2 < 3) {
 		var i2 = _g2++;
-		var data2 = Reflect.field(kha_Shaders,"painter_image_fragData" + i2);
+		var data2 = Reflect.field(kha_Shaders,"painter_colored_vertData" + i2);
 		var bytes2 = haxe_Unserializer.run(data2);
 		blobs2.push(kha_internal_BytesBlob.fromBytes(bytes2));
 	}
-	kha_Shaders.painter_image_frag = new kha_graphics4_FragmentShader(blobs2,["painter-image.frag.essl","painter-image-relaxed.frag.essl","painter-image-webgl2.frag.essl"]);
+	kha_Shaders.painter_colored_vert = new kha_graphics4_VertexShader(blobs2,["painter-colored.vert.essl","painter-colored-relaxed.vert.essl","painter-colored-webgl2.vert.essl"]);
 	var blobs3 = [];
 	var _g3 = 0;
 	while(_g3 < 3) {
@@ -5636,24 +6132,24 @@ kha_audio2_Audio1.__name__ = true;
 kha_audio2_Audio1._init = function() {
 	var this1 = new Array(16);
 	kha_audio2_Audio1.soundChannels = this1;
-	var this2 = new Array(16);
-	kha_audio2_Audio1.streamChannels = this2;
-	var this3 = new Array(16);
-	kha_audio2_Audio1.internalSoundChannels = this3;
-	var this4 = new Array(16);
-	kha_audio2_Audio1.internalStreamChannels = this4;
-	var this5 = new Array(512);
-	kha_audio2_Audio1.sampleCache1 = this5;
-	var this6 = new Array(512);
-	kha_audio2_Audio1.sampleCache2 = this6;
+	var this11 = new Array(16);
+	kha_audio2_Audio1.streamChannels = this11;
+	var this12 = new Array(16);
+	kha_audio2_Audio1.internalSoundChannels = this12;
+	var this13 = new Array(16);
+	kha_audio2_Audio1.internalStreamChannels = this13;
+	var this14 = new Array(512);
+	kha_audio2_Audio1.sampleCache1 = this14;
+	var this15 = new Array(512);
+	kha_audio2_Audio1.sampleCache2 = this15;
 	kha_audio2_Audio.audioCallback = kha_audio2_Audio1.mix;
 };
 kha_audio2_Audio1.mix = function(samples,buffer) {
 	if(kha_audio2_Audio1.sampleCache1.length < samples) {
 		var this1 = new Array(samples);
 		kha_audio2_Audio1.sampleCache1 = this1;
-		var this2 = new Array(samples);
-		kha_audio2_Audio1.sampleCache2 = this2;
+		var this11 = new Array(samples);
+		kha_audio2_Audio1.sampleCache2 = this11;
 	}
 	var _g1 = 0;
 	var _g = samples;
@@ -12722,6 +13218,46 @@ kha_graphics2_Graphics.prototype = {
 	,get_fontGlyphs: function() {
 		return this.myFontGlyphs;
 	}
+	,pushTransformation: function(transformation) {
+		var trans = new kha_math_FastMatrix3(1,0,0,0,1,0,0,0,1);
+		trans._00 = transformation._00;
+		trans._10 = transformation._10;
+		trans._20 = transformation._20;
+		trans._01 = transformation._01;
+		trans._11 = transformation._11;
+		trans._21 = transformation._21;
+		trans._02 = transformation._02;
+		trans._12 = transformation._12;
+		trans._22 = transformation._22;
+		this.setTransformation(trans);
+		this.transformations.push(trans);
+	}
+	,popTransformation: function() {
+		var ret = this.transformations.pop();
+		this.setTransformation(this.transformations[this.transformations.length - 1]);
+		return ret;
+	}
+	,pushTranslation: function(tx,ty) {
+		var _this__22;
+		var _this__21;
+		var _this__20;
+		var _this__12;
+		var _this__11;
+		var _this__10;
+		var _this__02;
+		var _this__01;
+		var _this__00 = 1;
+		_this__10 = 0;
+		_this__20 = tx;
+		_this__01 = 0;
+		_this__11 = 1;
+		_this__21 = ty;
+		_this__02 = 0;
+		_this__12 = 0;
+		_this__22 = 1;
+		var m = this.transformations[this.transformations.length - 1];
+		this.pushTransformation(new kha_math_FastMatrix3(_this__00 * m._00 + _this__10 * m._01 + _this__20 * m._02,_this__00 * m._10 + _this__10 * m._11 + _this__20 * m._12,_this__00 * m._20 + _this__10 * m._21 + _this__20 * m._22,_this__01 * m._00 + _this__11 * m._01 + _this__21 * m._02,_this__01 * m._10 + _this__11 * m._11 + _this__21 * m._12,_this__01 * m._20 + _this__11 * m._21 + _this__21 * m._22,_this__02 * m._00 + _this__12 * m._01 + _this__22 * m._02,_this__02 * m._10 + _this__12 * m._11 + _this__22 * m._12,_this__02 * m._20 + _this__12 * m._21 + _this__22 * m._22));
+	}
 	,get_opacity: function() {
 		return this.opacities[this.opacities.length - 1];
 	}
@@ -12732,6 +13268,8 @@ kha_graphics2_Graphics.prototype = {
 	,opacities: null
 	,myFontSize: null
 	,myFontGlyphs: null
+	,setTransformation: function(transformation) {
+	}
 	,__class__: kha_graphics2_Graphics
 };
 var kha_graphics2_Graphics1 = function(canvas) {
@@ -16955,6 +17493,9 @@ kha_js_CanvasGraphics.prototype = $extend(kha_graphics2_Graphics.prototype,{
 		this.canvas.rect(x,y,width,height);
 		this.canvas.clip();
 	}
+	,setTransformation: function(transformation) {
+		this.canvas.setTransform(transformation._00,transformation._01,transformation._10,transformation._11,transformation._20,transformation._21);
+	}
 	,__class__: kha_js_CanvasGraphics
 });
 var kha_js_EnvironmentVariables = function() {
@@ -18038,12 +18579,12 @@ kha_Scheduler.startTime = 0;
 kha_Shaders.painter_colored_fragData0 = "s198:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdmFyeWluZyBoaWdocCB2ZWM0IGZyYWdtZW50Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9GcmFnRGF0YVswXSA9IGZyYWdtZW50Q29sb3I7Cn0KCg";
 kha_Shaders.painter_colored_fragData1 = "s192:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX0ZyYWdEYXRhWzBdID0gZnJhZ21lbnRDb2xvcjsKfQoK";
 kha_Shaders.painter_colored_fragData2 = "s210:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7CgpvdXQgdmVjNCBGcmFnQ29sb3I7CmluIHZlYzQgZnJhZ21lbnRDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIEZyYWdDb2xvciA9IGZyYWdtZW50Q29sb3I7Cn0KCg";
-kha_Shaders.painter_colored_vertData0 = "s331:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IHByb2plY3Rpb25NYXRyaXggKiB2ZWM0KHZlcnRleFBvc2l0aW9uLCAxLjApOwogICAgZnJhZ21lbnRDb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
-kha_Shaders.painter_colored_vertData1 = "s374:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKYXR0cmlidXRlIG1lZGl1bXAgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyBtZWRpdW1wIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIG1lZGl1bXAgdmVjNCB2ZXJ0ZXhDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX1Bvc2l0aW9uID0gcHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCk7CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
-kha_Shaders.painter_colored_vertData2 = "s354:I3ZlcnNpb24gMzAwIGVzCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKaW4gbWVkaXVtcCB2ZWMzIHZlcnRleFBvc2l0aW9uOwpvdXQgbWVkaXVtcCB2ZWM0IGZyYWdtZW50Q29sb3I7CmluIG1lZGl1bXAgdmVjNCB2ZXJ0ZXhDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX1Bvc2l0aW9uID0gcHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCk7CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
 kha_Shaders.painter_image_fragData0 = "s471:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4OwoKdmFyeWluZyBoaWdocCB2ZWMyIHRleENvb3JkOwp2YXJ5aW5nIGhpZ2hwIHZlYzQgY29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBoaWdocCB2ZWM0IHRleGNvbG9yID0gdGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpICogY29sb3I7CiAgICBoaWdocCB2ZWMzIF8zMiA9IHRleGNvbG9yLnh5eiAqIGNvbG9yLnc7CiAgICB0ZXhjb2xvciA9IHZlYzQoXzMyLngsIF8zMi55LCBfMzIueiwgdGV4Y29sb3Iudyk7CiAgICBnbF9GcmFnRGF0YVswXSA9IHRleGNvbG9yOwp9Cgo";
 kha_Shaders.painter_image_fragData1 = "s444:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp1bmlmb3JtIG1lZGl1bXAgc2FtcGxlcjJEIHRleDsKCnZhcnlpbmcgdmVjMiB0ZXhDb29yZDsKdmFyeWluZyB2ZWM0IGNvbG9yOwoKdm9pZCBtYWluKCkKewogICAgdmVjNCB0ZXhjb2xvciA9IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkKSAqIGNvbG9yOwogICAgdmVjMyBfMzIgPSB0ZXhjb2xvci54eXogKiBjb2xvci53OwogICAgdGV4Y29sb3IgPSB2ZWM0KF8zMi54LCBfMzIueSwgXzMyLnosIHRleGNvbG9yLncpOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB0ZXhjb2xvcjsKfQoK";
 kha_Shaders.painter_image_fragData2 = "s452:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gbWVkaXVtcCBpbnQ7Cgp1bmlmb3JtIG1lZGl1bXAgc2FtcGxlcjJEIHRleDsKCmluIHZlYzIgdGV4Q29vcmQ7CmluIHZlYzQgY29sb3I7Cm91dCB2ZWM0IEZyYWdDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIHZlYzQgdGV4Y29sb3IgPSB0ZXh0dXJlKHRleCwgdGV4Q29vcmQpICogY29sb3I7CiAgICB2ZWMzIF8zMiA9IHRleGNvbG9yLnh5eiAqIGNvbG9yLnc7CiAgICB0ZXhjb2xvciA9IHZlYzQoXzMyLngsIF8zMi55LCBfMzIueiwgdGV4Y29sb3Iudyk7CiAgICBGcmFnQ29sb3IgPSB0ZXhjb2xvcjsKfQoK";
+kha_Shaders.painter_colored_vertData0 = "s331:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IHByb2plY3Rpb25NYXRyaXggKiB2ZWM0KHZlcnRleFBvc2l0aW9uLCAxLjApOwogICAgZnJhZ21lbnRDb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
+kha_Shaders.painter_colored_vertData1 = "s374:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKYXR0cmlidXRlIG1lZGl1bXAgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyBtZWRpdW1wIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIG1lZGl1bXAgdmVjNCB2ZXJ0ZXhDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX1Bvc2l0aW9uID0gcHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCk7CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
+kha_Shaders.painter_colored_vertData2 = "s354:I3ZlcnNpb24gMzAwIGVzCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKaW4gbWVkaXVtcCB2ZWMzIHZlcnRleFBvc2l0aW9uOwpvdXQgbWVkaXVtcCB2ZWM0IGZyYWdtZW50Q29sb3I7CmluIG1lZGl1bXAgdmVjNCB2ZXJ0ZXhDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX1Bvc2l0aW9uID0gcHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCk7CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
 kha_Shaders.painter_image_vertData0 = "s415:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgY29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSBwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKTsKICAgIHRleENvb3JkID0gdGV4UG9zaXRpb247CiAgICBjb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
 kha_Shaders.painter_image_vertData1 = "s479:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKYXR0cmlidXRlIG1lZGl1bXAgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyBtZWRpdW1wIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247CnZhcnlpbmcgbWVkaXVtcCB2ZWM0IGNvbG9yOwphdHRyaWJ1dGUgbWVkaXVtcCB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSBwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKTsKICAgIHRleENvb3JkID0gdGV4UG9zaXRpb247CiAgICBjb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
 kha_Shaders.painter_image_vertData2 = "s444:I3ZlcnNpb24gMzAwIGVzCgp1bmlmb3JtIG1lZGl1bXAgbWF0NCBwcm9qZWN0aW9uTWF0cml4OwoKaW4gbWVkaXVtcCB2ZWMzIHZlcnRleFBvc2l0aW9uOwpvdXQgbWVkaXVtcCB2ZWMyIHRleENvb3JkOwppbiBtZWRpdW1wIHZlYzIgdGV4UG9zaXRpb247Cm91dCBtZWRpdW1wIHZlYzQgY29sb3I7CmluIG1lZGl1bXAgdmVjNCB2ZXJ0ZXhDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGdsX1Bvc2l0aW9uID0gcHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCk7CiAgICB0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwogICAgY29sb3IgPSB2ZXJ0ZXhDb2xvcjsKfQoK";
