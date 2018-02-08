@@ -12,7 +12,7 @@ https://pongoengine.github.io/hxPaint
 As of Feb. 5th 2018 this project is mainly demonstraiting the power of constraint based layouts using [Jasper](//github.com/PongoEngine/jasper).
 
 Goals
-- Simplify constraint management. Use Stylesheet declarations.
+- Simplify layout management
 - Create export formats.
 - Allow custom project dimensions.
 - Allow Scrolling
