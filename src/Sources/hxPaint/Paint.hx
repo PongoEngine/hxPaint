@@ -77,7 +77,7 @@ class Paint
     {
         if(element.width.m_value <= 0 || element.height.m_value <= 0) return;
 
-        framebuffer.g2.scissor(Std.int(element.x), Std.int(element.y), Std.int(element.width), Std.int(element.height));
+        framebuffer.g2.scissor(Std.int(element.x.m_value), Std.int(element.y.m_value), Std.int(element.width.m_value), Std.int(element.height.m_value));
         element.draw(framebuffer);
         for(child in element.children) {
             render_impl(child, framebuffer);
