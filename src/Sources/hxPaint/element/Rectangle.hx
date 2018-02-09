@@ -51,6 +51,15 @@ class Rectangle
         return this;
     }
 
+    public function removeChild(child :Rectangle) : Rectangle
+    {
+        if(child.parent != this) return this;
+
+        child.parent = null;
+        children.remove(child);
+        return this;
+    }
+
     public function update(dt :Float) : Void
     {
     }

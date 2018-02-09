@@ -22,11 +22,12 @@
 package hxPaint.element.header;
 
 import jasper.Solver;
+import jasper.Strength;
 import hxPaint.Paint;
 
 using hxPaint.layout.LayoutTools;
 
-class HeaderListItem extends Rectangle
+class SubHeaderListItem extends Rectangle
 {
     public function new(paint :Paint, title :String) : Void
     {
@@ -34,49 +35,22 @@ class HeaderListItem extends Rectangle
 
         _title = title;
         _height = kha.Assets.fonts.Roboto_Black.height(18);
-        _isOpen = false;
-
-        this.addChild(new SubHeaderListItem(paint, "Test"));
     }
 
     override public function solve(solver :jasper.Solver, parent :Rectangle, prevSibling :Rectangle) : Void
     {
-        if(prevSibling == null) {
-            solver.addConstraint(this.top() == parent.top());
-        }
-        else {
-            solver.addConstraint(this.top() == prevSibling.bottom());
-        }
-        
-        solver.addConstraint(this.left() == parent.left());
-        solver.addConstraint(this.width == parent.width);
-        solver.addEditVariable(this.height, jasper.Strength.MEDIUM);
-    }
-
-    override public function onUp(x :Int, y :Int) : Void
-    {
-        if(_isOpen) {
-            cast(this.children[0], SubHeaderListItem).close();
-        }
-        else {
-            cast(this.children[0], SubHeaderListItem).open();
-        }
-
-        _isOpen = !_isOpen;
-    }
-
-    public function open() : Void
-    {
-        this.paint.suggest(this.height, OPEN_HEIGHT);
-    }
-
-    public function close() : Void
-    {
-        this.paint.suggest(this.height, 0);
+        solver.addConstraint(this.top() == parent.top());
+        solver.addConstraint(this.left() == parent.right());
+        solver.addConstraint(this.height == parent.height);
+        solver.addEditVariable(this.width, Strength.STRONG);
+        close();
     }
 
     override public function draw(framebuffer :kha.Framebuffer) : Void
     {
+        framebuffer.g2.color = 0xff484848;
+        framebuffer.g2.fillRect(x.m_value, y.m_value, width.m_value, height.m_value);
+        
         framebuffer.g2.color = 0xffffffff;
         var centerY = y.m_value - _height/2 + height.m_value/2;
         framebuffer.g2.drawString(_title, x.m_value + 20, centerY);
@@ -85,9 +59,18 @@ class HeaderListItem extends Rectangle
         framebuffer.g2.drawLine(x.m_value, y.m_value, x.m_value + width.m_value, y.m_value,1);
     }
 
-    private static inline var OPEN_HEIGHT = 40;
+    public function open() : Void
+    {
+        this.paint.suggest(this.width, OPEN_WIDTH);
+    }
+
+    public function close() : Void
+    {
+        this.paint.suggest(this.width, 0);
+    }
+
+    private static inline var OPEN_WIDTH = 100;
     private var _title :String;
     private var _width :Float;
     private var _height :Float;
-    private var _isOpen :Bool;
 }
